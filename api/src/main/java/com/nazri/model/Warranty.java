@@ -15,21 +15,6 @@ public class Warranty extends PanacheEntityBase {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(name = "product_name", nullable = false)
-    private String productName;
-    
-    @Column(name = "brand")
-    private String brand;
-    
-    @Column(name = "model_number")
-    private String modelNumber;
-    
-    @Column(name = "serial_number")
-    private String serialNumber;
-    
-    @Column(name = "purchase_date", nullable = false)
-    private LocalDate purchaseDate;
-    
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
@@ -41,15 +26,6 @@ public class Warranty extends PanacheEntityBase {
     
     @Column(name = "warranty_type")
     private String warrantyType;
-    
-    @Column(name = "purchase_location")
-    private String purchaseLocation;
-    
-    @Column(name = "purchase_price")
-    private BigDecimal purchasePrice;
-    
-    @Column(name = "receipt_number")
-    private String receiptNumber;
     
     @Column(name = "notes")
     private String notes;
@@ -72,6 +48,10 @@ public class Warranty extends PanacheEntityBase {
     @JoinColumn(name = "company_id", nullable = false)
     private Company company;
     
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+    
     @OneToMany(mappedBy = "warranty", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Claim> claims;
     
@@ -81,26 +61,6 @@ public class Warranty extends PanacheEntityBase {
     // Getters
     public Long getId() {
         return id;
-    }
-    
-    public String getProductName() {
-        return productName;
-    }
-    
-    public String getBrand() {
-        return brand;
-    }
-    
-    public String getModelNumber() {
-        return modelNumber;
-    }
-    
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-    
-    public LocalDate getPurchaseDate() {
-        return purchaseDate;
     }
     
     public LocalDate getStartDate() {
@@ -117,18 +77,6 @@ public class Warranty extends PanacheEntityBase {
     
     public String getWarrantyType() {
         return warrantyType;
-    }
-    
-    public String getPurchaseLocation() {
-        return purchaseLocation;
-    }
-    
-    public BigDecimal getPurchasePrice() {
-        return purchasePrice;
-    }
-    
-    public String getReceiptNumber() {
-        return receiptNumber;
     }
     
     public String getNotes() {
@@ -155,6 +103,10 @@ public class Warranty extends PanacheEntityBase {
         return company;
     }
     
+    public Product getProduct() {
+        return product;
+    }
+    
     public List<Claim> getClaims() {
         return claims;
     }
@@ -162,26 +114,6 @@ public class Warranty extends PanacheEntityBase {
     // Setters
     public void setId(Long id) {
         this.id = id;
-    }
-    
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-    
-    public void setBrand(String brand) {
-        this.brand = brand;
-    }
-    
-    public void setModelNumber(String modelNumber) {
-        this.modelNumber = modelNumber;
-    }
-    
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-    
-    public void setPurchaseDate(LocalDate purchaseDate) {
-        this.purchaseDate = purchaseDate;
     }
     
     public void setStartDate(LocalDate startDate) {
@@ -198,18 +130,6 @@ public class Warranty extends PanacheEntityBase {
     
     public void setWarrantyType(String warrantyType) {
         this.warrantyType = warrantyType;
-    }
-    
-    public void setPurchaseLocation(String purchaseLocation) {
-        this.purchaseLocation = purchaseLocation;
-    }
-    
-    public void setPurchasePrice(BigDecimal purchasePrice) {
-        this.purchasePrice = purchasePrice;
-    }
-    
-    public void setReceiptNumber(String receiptNumber) {
-        this.receiptNumber = receiptNumber;
     }
     
     public void setNotes(String notes) {
@@ -236,6 +156,10 @@ public class Warranty extends PanacheEntityBase {
         this.company = company;
     }
     
+    public void setProduct(Product product) {
+        this.product = product;
+    }
+    
     public void setClaims(List<Claim> claims) {
         this.claims = claims;
     }
@@ -244,18 +168,10 @@ public class Warranty extends PanacheEntityBase {
     public String toString() {
         return "Warranty{" +
                 "id=" + id +
-                ", productName='" + productName + '\'' +
-                ", brand='" + brand + '\'' +
-                ", modelNumber='" + modelNumber + '\'' +
-                ", serialNumber='" + serialNumber + '\'' +
-                ", purchaseDate=" + purchaseDate +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 ", warrantyPeriod=" + warrantyPeriod +
                 ", warrantyType='" + warrantyType + '\'' +
-                ", purchaseLocation='" + purchaseLocation + '\'' +
-                ", purchasePrice=" + purchasePrice +
-                ", receiptNumber='" + receiptNumber + '\'' +
                 ", notes='" + notes + '\'' +
                 ", status='" + status + '\'' +
                 ", createdAt=" + createdAt +
