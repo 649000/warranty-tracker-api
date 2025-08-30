@@ -1,4 +1,4 @@
-#Maven
+# Maven
 target/
 pom.xml.tag
 pom.xml.releaseBackup
@@ -6,40 +6,45 @@ pom.xml.versionsBackup
 release.properties
 .flattened-pom.xml
 
-# Eclipse
+# IDEs
 .project
 .classpath
 .settings/
 bin/
-
-# IntelliJ
-.idea
+.idea/
 *.ipr
 *.iml
 *.iws
-
-# NetBeans
 nb-configuration.xml
-
-# Visual Studio Code
-.vscode
+.vscode/
 .factorypath
 
-# OSX
+# OS
 .DS_Store
 
-# Vim
+# Editors
 *.swp
 *.swo
 
-# patch
+# Patch files
 *.orig
 *.rej
 
 # Local environment
 .env
 
-# Plugin directory
-/.quarkus/cli/plugins/
+# Quarkus
+.quarkus/
+.quarkus-dev/
+quarkus.log
+
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log
+
+# Test reports
+surefire-reports/
+failsafe-reports/
+
 # TLS Certificates
 .certs/
