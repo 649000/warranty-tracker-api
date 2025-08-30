@@ -5,27 +5,17 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class ProductRepository implements PanacheRepository<Product> {
-    
-    /**
-     * Find a product by its ID
-     * @param id the product ID
-     * @return Optional containing the product if found
-     */
-    public Optional<Product> findById(Long id) {
-        return findByIdOptional(id);
-    }
     
     /**
      * Find a product by serial number
      * @param serialNumber the product serial number
      * @return Optional containing the product if found
      */
-    public Optional<Product> findBySerialNumber(String serialNumber) {
-        return find("serialNumber", serialNumber).firstResultOptional();
+    public List<Product> findBySerialNumber(String serialNumber) {
+        return find("serialNumber", serialNumber).list();
     }
     
     /**

@@ -6,19 +6,9 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class WarrantyRepository implements PanacheRepository<Warranty> {
-    
-    /**
-     * Find a warranty by its ID
-     * @param id the warranty ID
-     * @return Optional containing the warranty if found
-     */
-    public Optional<Warranty> findWarrantyById(Long id) {
-        return findByIdOptional(id);
-    }
     
     /**
      * Find all warranties for a specific user

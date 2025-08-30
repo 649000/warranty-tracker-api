@@ -5,27 +5,17 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class CompanyRepository implements PanacheRepository<Company> {
-    
-    /**
-     * Find a company by its ID
-     * @param id the company ID
-     * @return Optional containing the company if found
-     */
-    public Optional<Company> findById(Long id) {
-        return findByIdOptional(id);
-    }
     
     /**
      * Find a company by name
      * @param name the company name
      * @return Optional containing the company if found
      */
-    public Optional<Company> findByName(String name) {
-        return find("name", name).firstResultOptional();
+    public List<Company> findByName(String name) {
+        return find("name", name).list();
     }
     
     /**

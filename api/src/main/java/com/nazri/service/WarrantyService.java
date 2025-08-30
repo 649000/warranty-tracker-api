@@ -3,9 +3,11 @@ package com.nazri.service;
 import com.nazri.model.Warranty;
 import com.nazri.model.User;
 import com.nazri.model.Company;
+import com.nazri.model.Product;
 import com.nazri.repository.WarrantyRepository;
 import com.nazri.repository.UserRepository;
 import com.nazri.repository.CompanyRepository;
+import com.nazri.repository.ProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,9 @@ public class WarrantyService {
     
     @Inject
     CompanyRepository companyRepository;
+    
+    @Inject
+    ProductRepository productRepository;
     
     /**
      * Find a warranty by its ID
@@ -80,12 +85,12 @@ public class WarrantyService {
     }
     
     /**
-     * Find warranties by product name (partial match)
-     * @param productName the product name to search for
+     * Find warranties by product ID
+     * @param productId the product ID
      * @return list of warranties
      */
-    public List<Warranty> findByProductNameContaining(String productName) {
-        return warrantyRepository.findByProductNameContaining(productName);
+    public List<Warranty> findByProductId(Long productId) {
+        return warrantyRepository.findByProductId(productId);
     }
     
     /**
@@ -116,6 +121,17 @@ public class WarrantyService {
             throw new IllegalArgumentException("Company not found");
         }
         warranty.setCompany(company.get());
+        
+        // Validate product exists
+        if (warranty.getProduct() == null || warranty.getProduct().getId() == null) {
+            throw new IllegalArgumentException("Product is required");
+        }
+        
+        Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().getId());
+        if (product.isEmpty()) {
+            throw new IllegalArgumentException("Product not found");
+        }
+        warranty.setProduct(product.get());
         
         // Set default status if not provided
         if (warranty.getStatus() == null || warranty.getStatus().isEmpty()) {
@@ -148,6 +164,15 @@ public class WarrantyService {
                 throw new IllegalArgumentException("Company not found");
             }
             warranty.setCompany(company.get());
+        }
+        
+        // Validate product exists if being updated
+        if (warranty.getProduct() != null && warranty.getProduct().getId() != null) {
+            Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().getId());
+            if (product.isEmpty()) {
+                throw new IllegalArgumentException("Product not found");
+            }
+            warranty.setProduct(product.get());
         }
         
         return warrantyRepository.updateWarranty(warranty);
