@@ -2,6 +2,8 @@ package com.nazri.model;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,8 +28,8 @@ public class Product extends PanacheEntityBase {
     private String serialNumber;
     
     @Column(name = "purchase_date")
-    private java.time.LocalDate purchaseDate;
-    
+    private LocalDate purchaseDate;
+
     @Column(name = "purchase_price")
     private java.math.BigDecimal purchasePrice;
     
