@@ -76,8 +76,8 @@ public class UserService {
         Optional<User> userOptional = userRepository.findByFirebaseUid(firebaseUid);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
-            user.displayName = displayName;
-            user.photoUrl = photoUrl;
+            user.setDisplayName(displayName);
+            user.setPhotoUrl(photoUrl);
             userRepository.updateUser(user);
             return Optional.of(user);
         }

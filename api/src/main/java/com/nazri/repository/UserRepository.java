@@ -3,6 +3,7 @@ package com.nazri.repository;
 import com.nazri.model.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -41,8 +42,8 @@ public class UserRepository implements PanacheRepository<User> {
      * @return the created user
      */
     public User createUser(User user) {
-        user.createdAt = java.time.LocalDateTime.now();
-        user.updatedAt = java.time.LocalDateTime.now();
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         persistAndFlush(user);
         return user;
     }
@@ -53,7 +54,7 @@ public class UserRepository implements PanacheRepository<User> {
      * @return the updated user
      */
     public User updateUser(User user) {
-        user.updatedAt = java.time.LocalDateTime.now();
+        user.setUpdatedAt(LocalDateTime.now());
         getEntityManager().merge(user);
         return user;
     }
