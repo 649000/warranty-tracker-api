@@ -8,8 +8,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "users")
+@Table(name = "users", schema = "warranty_tracker")
 public class User extends PanacheEntityBase {
     
     @Id
@@ -28,11 +30,11 @@ public class User extends PanacheEntityBase {
     @Column
     public String photoUrl;
     
-    @Column(name = "created_at")
-    public java.time.LocalDateTime createdAt;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    public LocalDateTime createdAt;
     
-    @Column(name = "updated_at")
-    public java.time.LocalDateTime updatedAt;
+    @Column(name = "updated_at", nullable = false)
+    public LocalDateTime updatedAt;
     
     // Default constructor
     public User() {}
@@ -41,8 +43,8 @@ public class User extends PanacheEntityBase {
     public User(String firebaseUid, String email) {
         this.firebaseUid = firebaseUid;
         this.email = email;
-        this.createdAt = java.time.LocalDateTime.now();
-        this.updatedAt = java.time.LocalDateTime.now();
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
     
     // Constructor with all fields
