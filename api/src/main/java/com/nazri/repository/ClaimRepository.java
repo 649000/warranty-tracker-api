@@ -5,19 +5,9 @@ import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @ApplicationScoped
 public class ClaimRepository implements PanacheRepository<Claim> {
-    
-    /**
-     * Find a claim by its ID
-     * @param id the claim ID
-     * @return Optional containing the claim if found
-     */
-    public Optional<Claim> findById(Long id) {
-        return findByIdOptional(id);
-    }
     
     /**
      * Find all claims for a specific warranty
