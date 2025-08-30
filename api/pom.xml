@@ -20,6 +20,7 @@
 
     <dependencyManagement>
         <dependencies>
+            <!-- Import Quarkus BOM to manage versions of all Quarkus dependencies -->
             <dependency>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>${quarkus.platform.artifact-id}</artifactId>
@@ -31,18 +32,19 @@
     </dependencyManagement>
 
     <dependencies>
-        <!-- JSON serialization/deserialization -->
+        <!-- JSON serialization/deserialization for REST endpoints -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-rest-jackson</artifactId>
         </dependency>
 
-        <!-- CDI (Contexts and Dependency Injection) -->
+        <!-- CDI (Contexts and Dependency Injection) for dependency injection -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-arc</artifactId>
         </dependency>
 
+        <!-- AWS Lambda HTTP support for serverless deployment -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-amazon-lambda-http</artifactId>
@@ -54,23 +56,25 @@
             <artifactId>quarkus-hibernate-validator</artifactId>
         </dependency>
 
-        <!-- Health checks -->
+        <!-- Health checks for monitoring application status -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-health</artifactId>
         </dependency>
 
-        <!-- OpenAPI/Swagger documentation -->
+        <!-- OpenAPI/Swagger documentation for REST APIs -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-smallrye-openapi</artifactId>
         </dependency>
 
+        <!-- Hibernate ORM with Panache for database access -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-hibernate-orm-panache</artifactId>
         </dependency>
 
+        <!-- PostgreSQL JDBC driver for database connectivity -->
         <dependency>
             <groupId>io.quarkus</groupId>
             <artifactId>quarkus-jdbc-postgresql</artifactId>
@@ -79,6 +83,7 @@
 
     <build>
         <plugins>
+            <!-- Quarkus Maven plugin for building and running the application -->
             <plugin>
                 <groupId>${quarkus.platform.group-id}</groupId>
                 <artifactId>quarkus-maven-plugin</artifactId>
@@ -95,6 +100,8 @@
                     </execution>
                 </executions>
             </plugin>
+            
+            <!-- Maven compiler plugin for Java compilation -->
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${compiler-plugin.version}</version>
@@ -102,6 +109,8 @@
                     <parameters>true</parameters>
                 </configuration>
             </plugin>
+            
+            <!-- Maven surefire plugin for running unit tests -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
@@ -112,6 +121,8 @@
                     </systemPropertyVariables>
                 </configuration>
             </plugin>
+            
+            <!-- Maven failsafe plugin for running integration tests -->
             <plugin>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${surefire-plugin.version}</version>
