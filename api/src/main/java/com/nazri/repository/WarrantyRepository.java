@@ -66,30 +66,12 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
     
     /**
-     * Find warranties by product name (partial match)
-     * @param productName the product name to search for
+     * Find warranties by product ID
+     * @param productId the product ID
      * @return list of warranties
      */
-    public List<Warranty> findByProductNameContaining(String productName) {
-        return find("productName like ?1", "%" + productName + "%").list();
-    }
-    
-    /**
-     * Find warranties by brand (partial match)
-     * @param brand the brand to search for
-     * @return list of warranties
-     */
-    public List<Warranty> findByBrandContaining(String brand) {
-        return find("brand like ?1", "%" + brand + "%").list();
-    }
-    
-    /**
-     * Find warranties by model number (partial match)
-     * @param modelNumber the model number to search for
-     * @return list of warranties
-     */
-    public List<Warranty> findByModelNumberContaining(String modelNumber) {
-        return find("modelNumber like ?1", "%" + modelNumber + "%").list();
+    public List<Warranty> findByProductId(Long productId) {
+        return find("product.id", productId).list();
     }
     
     /**
