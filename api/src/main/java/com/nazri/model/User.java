@@ -16,25 +16,25 @@ public class User extends PanacheEntityBase {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public Long id;
+    private Long id;
     
     @Column(unique = true, nullable = false)
-    public String firebaseUid;
+    private String firebaseUid;
     
     @Column(nullable = false)
-    public String email;
+    private String email;
     
     @Column(name = "display_name")
-    public String displayName;
+    private String displayName;
     
-    @Column
-    public String photoUrl;
+    @Column(name = "photo_url")
+    private String photoUrl;
     
     @Column(name = "created_at", nullable = false, updatable = false)
-    public LocalDateTime createdAt;
+    private LocalDateTime createdAt;
     
     @Column(name = "updated_at", nullable = false)
-    public LocalDateTime updatedAt;
+    private LocalDateTime updatedAt;
     
     // Default constructor
     public User() {}
@@ -52,6 +52,64 @@ public class User extends PanacheEntityBase {
         this(firebaseUid, email);
         this.displayName = displayName;
         this.photoUrl = photoUrl;
+    }
+    
+    // Getters
+    public Long getId() {
+        return id;
+    }
+    
+    public String getFirebaseUid() {
+        return firebaseUid;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+    
+    public String getDisplayName() {
+        return displayName;
+    }
+    
+    public String getPhotoUrl() {
+        return photoUrl;
+    }
+    
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+    
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+    
+    // Setters
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
+    public void setFirebaseUid(String firebaseUid) {
+        this.firebaseUid = firebaseUid;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public void setDisplayName(String displayName) {
+        this.displayName = displayName;
+    }
+    
+    public void setPhotoUrl(String photoUrl) {
+        this.photoUrl = photoUrl;
+    }
+    
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+    
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
     
     @Override
