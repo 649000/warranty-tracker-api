@@ -30,33 +30,30 @@ public class CompanyResource {
 
     @GET
     public Response getAllCompanies() {
-//
-        return Response.ok(jwt.toString()).build();
-//        try {
-//            List<Company> companies = companyService.findAllCompanies();
-//            return Response.ok(companies).build();
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                    .entity("Error retrieving companies: " + e.getMessage()).build();
-//        }
+        try {
+            List<Company> companies = companyService.findAllCompanies();
+            return Response.ok(companies).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving companies: " + e.getMessage()).build();
+        }
     }
 
     @GET
     @Path("/{id}")
     public Response getCompanyById(@PathParam("id") Long id) {
-        return Response.ok(securityContext.getUserPrincipal().toString()).build();
-//        try {
-//            Company company = Company.findById(id);
-//            if (company != null) {
-//                return Response.ok(company).build();
-//            } else {
-//                return Response.status(Response.Status.NOT_FOUND)
-//                        .entity("Company not found with id: " + id).build();
-//            }
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                    .entity("Error retrieving company: " + e.getMessage()).build();
-//        }
+        try {
+            Company company = Company.findById(id);
+            if (company != null) {
+                return Response.ok(company).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("Company not found with id: " + id).build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Error retrieving company: " + e.getMessage()).build();
+        }
     }
 
     @GET
