@@ -8,6 +8,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Path("/company")
@@ -24,8 +25,19 @@ public class CompanyResource extends BaseResource {
     public Response getAllCompanies() {
         try {
             LOG.info("Fetching all companies");
-            List<Company> companies = companyService.findAllCompanies();
+//            List<Company> companies = companyService.findAllCompanies();
+            List<Company> companies = Company.findAll().list();
             LOG.info("Found " + companies.size() + " companies");
+
+            // Force initialization of all entities
+            for (Company company : companies) {
+                // Access a few fields to ensure they're loaded
+                LOG.info(company.getName());
+                company.getName();
+                company.getContactEmail();
+            }
+
+
             return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error retrieving companies", e);
