@@ -15,7 +15,7 @@ import java.util.Optional;
 @Path("/api/user-products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserProductResource {
+public class UserProductResource extends BaseResource {
 
     @Inject
     UserProductService userProductService;
@@ -25,29 +25,6 @@ public class UserProductResource {
 
     @Inject
     JsonWebToken jwt;
-
-    // Helper method to get current user
-    private Optional<User> getCurrentUser() {
-        String firebaseUid = jwt.getSubject();
-        return userService.findByFirebaseUid(firebaseUid);
-    }
-    
-    // Helper method to validate current user
-    private User validateCurrentUser() {
-        return getCurrentUser()
-            .orElseThrow(() -> new WebApplicationException(
-                Response.status(Response.Status.NOT_FOUND)
-                    .entity("User not found").build()));
-    }
-    
-    // Helper method to validate user product ownership
-    private void validateUserProductOwnership(UserProduct userProduct, User user) {
-        if (!userProduct.getUser().getId().equals(user.getId())) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.FORBIDDEN)
-                    .entity("Access denied: User product does not belong to user").build());
-        }
-    }
 
     @GET
     public Response getUserProducts() {

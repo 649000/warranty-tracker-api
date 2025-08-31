@@ -17,7 +17,7 @@ import java.util.Optional;
 @Path("/api/warranties")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class WarrantyResource {
+public class WarrantyResource extends BaseResource {
 
     @Inject
     WarrantyService warrantyService;
@@ -27,29 +27,6 @@ public class WarrantyResource {
 
     @Inject
     JsonWebToken jwt;
-
-    // Helper method to get current user
-    private Optional<User> getCurrentUser() {
-        String firebaseUid = jwt.getSubject();
-        return userService.findByFirebaseUid(firebaseUid);
-    }
-    
-    // Helper method to validate current user
-    private User validateCurrentUser() {
-        return getCurrentUser()
-            .orElseThrow(() -> new WebApplicationException(
-                Response.status(Response.Status.NOT_FOUND)
-                    .entity("User not found").build()));
-    }
-    
-    // Helper method to validate warranty ownership
-    private void validateWarrantyOwnership(Warranty warranty, User user) {
-        if (!warranty.getUser().getId().equals(user.getId())) {
-            throw new WebApplicationException(
-                Response.status(Response.Status.FORBIDDEN)
-                    .entity("Access denied: Warranty does not belong to user").build());
-        }
-    }
 
     @GET
     public Response getUserWarranties() {

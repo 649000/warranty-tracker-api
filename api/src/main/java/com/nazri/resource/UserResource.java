@@ -16,27 +16,13 @@ import java.util.Optional;
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class UserResource {
+public class UserResource extends BaseResource {
 
     @Inject
     UserService userService;
 
     @Inject
     JsonWebToken jwt;
-
-    // Helper method to get current user
-    private Optional<User> geJWTUser() {
-        String firebaseUid = jwt.getSubject();
-        return userService.findByFirebaseUid(firebaseUid);
-    }
-    
-    // Helper method to validate current user
-    private User validateCurrentUser() {
-        return geJWTUser()
-            .orElseThrow(() -> new WebApplicationException(
-                Response.status(Response.Status.NOT_FOUND)
-                    .entity("User not found").build()));
-    }
 
     @GET
     public Response getCurrentUser() {
