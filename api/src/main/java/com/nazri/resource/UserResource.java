@@ -24,17 +24,25 @@ public class UserResource {
     @Inject
     JsonWebToken jwt;
 
+    // Helper method to get current user
+    private Optional<User> getCurrentUser() {
+        String firebaseUid = jwt.getSubject();
+        return userService.findByFirebaseUid(firebaseUid);
+    }
+    
+    // Helper method to validate current user
+    private User validateCurrentUser() {
+        return getCurrentUser()
+            .orElseThrow(() -> new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                    .entity("User not found").build()));
+    }
+
     @GET
     public Response getCurrentUser() {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
-            if (user.isPresent()) {
-                return Response.ok(user.get()).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            return Response.ok(user).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving user: " + e.getMessage()).build();
@@ -67,22 +75,14 @@ public class UserResource {
     @PUT
     public Response updateUser(User userData) {
         try {
-            String firebaseUid = jwt.getSubject();
+            User user = validateCurrentUser();
             
-            // Check if user exists
-            Optional<User> existingUser = userService.findByFirebaseUid(firebaseUid);
-            if (existingUser.isPresent()) {
-                // Only update display name from the provided data
-                User updatedUser = existingUser.get();
-                if (userData.getDisplayName() != null) {
-                    updatedUser.setDisplayName(userData.getDisplayName());
-                }
-                updatedUser = userService.updateUser(updatedUser);
-                return Response.ok(updatedUser).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+            // Only update display name from the provided data
+            if (userData.getDisplayName() != null) {
+                user.setDisplayName(userData.getDisplayName());
             }
+            user = userService.updateUser(user);
+            return Response.ok(user).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error updating user: " + e.getMessage()).build();

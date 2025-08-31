@@ -31,19 +31,30 @@ public class UserProductResource {
         String firebaseUid = jwt.getSubject();
         return userService.findByFirebaseUid(firebaseUid);
     }
+    
+    // Helper method to validate current user
+    private User validateCurrentUser() {
+        return getCurrentUser()
+            .orElseThrow(() -> new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                    .entity("User not found").build()));
+    }
+    
+    // Helper method to validate user product ownership
+    private void validateUserProductOwnership(UserProduct userProduct, User user) {
+        if (!userProduct.getUser().getId().equals(user.getId())) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: User product does not belong to user").build());
+        }
+    }
 
     @GET
     public Response getUserProducts() {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                List<UserProduct> userProducts = userProductService.findByUserId(user.get().getId());
-                return Response.ok(userProducts).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            List<UserProduct> userProducts = userProductService.findByUserId(user.getId());
+            return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving user products: " + e.getMessage()).build();
@@ -54,25 +65,14 @@ public class UserProductResource {
     @Path("/{id}")
     public Response getUserProductById(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                UserProduct userProduct = UserProduct.findById(id);
-                if (userProduct != null) {
-                    // Check if user product belongs to the current user
-                    if (userProduct.getUser().getId().equals(user.get().getId())) {
-                        return Response.ok(userProduct).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: User product does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("User product not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            UserProduct userProduct = UserProduct.findById(id);
+            if (userProduct != null) {
+                validateUserProductOwnership(userProduct, user);
+                return Response.ok(userProduct).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("User product not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -84,16 +84,10 @@ public class UserProductResource {
     @Path("/product/{productId}")
     public Response getUserProductsByProductId(@PathParam("productId") Long productId) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                List<UserProduct> userProducts = userProductService.findByUserIdAndProductId(
-                    user.get().getId(), productId);
-                return Response.ok(userProducts).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            List<UserProduct> userProducts = userProductService.findByUserIdAndProductId(
+                user.getId(), productId);
+            return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving user products: " + e.getMessage()).build();
@@ -103,24 +97,19 @@ public class UserProductResource {
     @POST
     public Response createUserProduct(UserProduct userProduct) {
         try {
-            Optional<User> user = getCurrentUser();
+            User user = validateCurrentUser();
             
-            if (user.isPresent()) {
-                // Check if a user product with the same serial number already exists for this user
-                if (userProduct.getSerialNumber() != null && 
-                    userProductService.existsByUserIdAndSerialNumber(user.get().getId(), userProduct.getSerialNumber())) {
-                    return Response.status(Response.Status.CONFLICT)
-                            .entity("User product with this serial number already exists for this user").build();
-                }
-                
-                // Set the current user as the owner
-                userProduct.setUser(user.get());
-                UserProduct createdUserProduct = userProductService.createUserProduct(userProduct);
-                return Response.status(Response.Status.CREATED).entity(createdUserProduct).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+            // Check if a user product with the same serial number already exists for this user
+            if (userProduct.getSerialNumber() != null && 
+                userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
+                return Response.status(Response.Status.CONFLICT)
+                        .entity("User product with this serial number already exists for this user").build();
             }
+            
+            // Set the current user as the owner
+            userProduct.setUser(user);
+            UserProduct createdUserProduct = userProductService.createUserProduct(userProduct);
+            return Response.status(Response.Status.CREATED).entity(createdUserProduct).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error creating user product: " + e.getMessage()).build();
@@ -131,37 +120,27 @@ public class UserProductResource {
     @Path("/{id}")
     public Response updateUserProduct(@PathParam("id") Long id, UserProduct userProduct) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                UserProduct existingUserProduct = UserProduct.findById(id);
-                if (existingUserProduct != null) {
-                    // Check if user product belongs to the current user
-                    if (existingUserProduct.getUser().getId().equals(user.get().getId())) {
-                        // Check if changing to a serial number that already exists for this user
-                        if (userProduct.getSerialNumber() != null && 
-                            !userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
-                            userProductService.existsByUserIdAndSerialNumber(user.get().getId(), userProduct.getSerialNumber())) {
-                            return Response.status(Response.Status.CONFLICT)
-                                    .entity("User product with this serial number already exists for this user").build();
-                        }
-                        
-                        // Set the ID and user to ensure we're updating the correct user product
-                        userProduct.setId(id);
-                        userProduct.setUser(user.get());
-                        UserProduct updatedUserProduct = userProductService.updateUserProduct(userProduct);
-                        return Response.ok(updatedUserProduct).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: User product does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("User product not found with id: " + id).build();
+            User user = validateCurrentUser();
+            UserProduct existingUserProduct = UserProduct.findById(id);
+            if (existingUserProduct != null) {
+                validateUserProductOwnership(existingUserProduct, user);
+                
+                // Check if changing to a serial number that already exists for this user
+                if (userProduct.getSerialNumber() != null && 
+                    !userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
+                    userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
+                    return Response.status(Response.Status.CONFLICT)
+                            .entity("User product with this serial number already exists for this user").build();
                 }
+                
+                // Set the ID and user to ensure we're updating the correct user product
+                userProduct.setId(id);
+                userProduct.setUser(user);
+                UserProduct updatedUserProduct = userProductService.updateUserProduct(userProduct);
+                return Response.ok(updatedUserProduct).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("User product not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -173,26 +152,15 @@ public class UserProductResource {
     @Path("/{id}")
     public Response deleteUserProduct(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                UserProduct userProduct = UserProduct.findById(id);
-                if (userProduct != null) {
-                    // Check if user product belongs to the current user
-                    if (userProduct.getUser().getId().equals(user.get().getId())) {
-                        userProductService.deleteUserProduct(id);
-                        return Response.noContent().build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: User product does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("User product not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            UserProduct userProduct = UserProduct.findById(id);
+            if (userProduct != null) {
+                validateUserProductOwnership(userProduct, user);
+                userProductService.deleteUserProduct(id);
+                return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("User product not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

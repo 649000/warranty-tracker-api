@@ -33,19 +33,30 @@ public class WarrantyResource {
         String firebaseUid = jwt.getSubject();
         return userService.findByFirebaseUid(firebaseUid);
     }
+    
+    // Helper method to validate current user
+    private User validateCurrentUser() {
+        return getCurrentUser()
+            .orElseThrow(() -> new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                    .entity("User not found").build()));
+    }
+    
+    // Helper method to validate warranty ownership
+    private void validateWarrantyOwnership(Warranty warranty, User user) {
+        if (!warranty.getUser().getId().equals(user.getId())) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: Warranty does not belong to user").build());
+        }
+    }
 
     @GET
     public Response getUserWarranties() {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
-                return Response.ok(warranties).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -56,25 +67,14 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response getWarrantyById(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Warranty> warranty = warrantyService.findById(id);
-                if (warranty.isPresent()) {
-                    // Check if warranty belongs to the current user
-                    if (warranty.get().getUser().getId().equals(user.get().getId())) {
-                        return Response.ok(warranty.get()).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Warranty does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Warranty not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Warranty> warranty = warrantyService.findById(id);
+            if (warranty.isPresent()) {
+                validateWarrantyOwnership(warranty.get(), user);
+                return Response.ok(warranty.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Warranty not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -86,19 +86,13 @@ public class WarrantyResource {
     @Path("/status/{status}")
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
-                // Filter by status
-                List<Warranty> filteredWarranties = warranties.stream()
-                        .filter(w -> w.getStatus().equals(status))
-                        .toList();
-                return Response.ok(filteredWarranties).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            // Filter by status
+            List<Warranty> filteredWarranties = warranties.stream()
+                    .filter(w -> w.getStatus().equals(status))
+                    .toList();
+            return Response.ok(filteredWarranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -110,21 +104,15 @@ public class WarrantyResource {
     public Response getExpiringWarranties(
             @QueryParam("days") @DefaultValue("30") Integer days) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                LocalDate endDate = LocalDate.now().plusDays(days);
-                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
-                // Filter expiring warranties
-                List<Warranty> expiringWarranties = warranties.stream()
-                        .filter(w -> w.getEndDate().isAfter(LocalDate.now()) && 
-                                w.getEndDate().isBefore(endDate))
-                        .toList();
-                return Response.ok(expiringWarranties).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            LocalDate endDate = LocalDate.now().plusDays(days);
+            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            // Filter expiring warranties
+            List<Warranty> expiringWarranties = warranties.stream()
+                    .filter(w -> w.getEndDate().isAfter(LocalDate.now()) && 
+                            w.getEndDate().isBefore(endDate))
+                    .toList();
+            return Response.ok(expiringWarranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -134,17 +122,11 @@ public class WarrantyResource {
     @POST
     public Response createWarranty(Warranty warranty) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                // Set the current user as the warranty owner
-                warranty.setUser(user.get());
-                Warranty createdWarranty = warrantyService.createWarranty(warranty);
-                return Response.status(Response.Status.CREATED).entity(createdWarranty).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            // Set the current user as the warranty owner
+            warranty.setUser(user);
+            Warranty createdWarranty = warrantyService.createWarranty(warranty);
+            return Response.status(Response.Status.CREATED).entity(createdWarranty).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(e.getMessage()).build();
@@ -158,29 +140,18 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response updateWarranty(@PathParam("id") Long id, Warranty warranty) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Warranty> existingWarranty = warrantyService.findById(id);
-                if (existingWarranty.isPresent()) {
-                    // Check if warranty belongs to the current user
-                    if (existingWarranty.get().getUser().getId().equals(user.get().getId())) {
-                        // Set the ID and user to ensure we're updating the correct warranty
-                        warranty.setId(id);
-                        warranty.setUser(user.get());
-                        Warranty updatedWarranty = warrantyService.updateWarranty(warranty);
-                        return Response.ok(updatedWarranty).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Warranty does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Warranty not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Warranty> existingWarranty = warrantyService.findById(id);
+            if (existingWarranty.isPresent()) {
+                validateWarrantyOwnership(existingWarranty.get(), user);
+                // Set the ID and user to ensure we're updating the correct warranty
+                warranty.setId(id);
+                warranty.setUser(user);
+                Warranty updatedWarranty = warrantyService.updateWarranty(warranty);
+                return Response.ok(updatedWarranty).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Warranty not found with id: " + id).build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -195,26 +166,15 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response deleteWarranty(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Warranty> warranty = warrantyService.findById(id);
-                if (warranty.isPresent()) {
-                    // Check if warranty belongs to the current user
-                    if (warranty.get().getUser().getId().equals(user.get().getId())) {
-                        warrantyService.deleteWarranty(id);
-                        return Response.noContent().build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Warranty does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Warranty not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Warranty> warranty = warrantyService.findById(id);
+            if (warranty.isPresent()) {
+                validateWarrantyOwnership(warranty.get(), user);
+                warrantyService.deleteWarranty(id);
+                return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Warranty not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

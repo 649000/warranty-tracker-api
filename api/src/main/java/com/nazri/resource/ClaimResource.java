@@ -33,26 +33,37 @@ public class ClaimResource {
         String firebaseUid = jwt.getSubject();
         return userService.findByFirebaseUid(firebaseUid);
     }
+    
+    // Helper method to validate current user
+    private User validateCurrentUser() {
+        return getCurrentUser()
+            .orElseThrow(() -> new WebApplicationException(
+                Response.status(Response.Status.NOT_FOUND)
+                    .entity("User not found").build()));
+    }
+    
+    // Helper method to validate claim ownership
+    private void validateClaimOwnership(Claim claim, User user) {
+        if (!claim.getWarranty().getUser().getId().equals(user.getId())) {
+            throw new WebApplicationException(
+                Response.status(Response.Status.FORBIDDEN)
+                    .entity("Access denied: Claim does not belong to user").build());
+        }
+    }
 
     @GET
     public Response getUserClaims() {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                // Get all warranties for the user first
-                List<Warranty> userWarranties = Warranty.list("user.id", user.get().getId());
-                // Extract warranty IDs
-                List<Long> warrantyIds = userWarranties.stream()
-                        .map(Warranty::getId)
-                        .collect(Collectors.toList());
-                // Get claims for those warranties
-                List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
-                return Response.ok(claims).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            // Get all warranties for the user first
+            List<Warranty> userWarranties = Warranty.list("user.id", user.getId());
+            // Extract warranty IDs
+            List<Long> warrantyIds = userWarranties.stream()
+                    .map(Warranty::getId)
+                    .collect(Collectors.toList());
+            // Get claims for those warranties
+            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
+            return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving claims: " + e.getMessage()).build();
@@ -63,26 +74,14 @@ public class ClaimResource {
     @Path("/{id}")
     public Response getClaimById(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Claim> claim = claimService.findById(id);
-                if (claim.isPresent()) {
-                    // Check if claim belongs to a warranty owned by the current user
-                    Warranty warranty = claim.get().getWarranty();
-                    if (warranty.getUser().getId().equals(user.get().getId())) {
-                        return Response.ok(claim.get()).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Claim does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Claim not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Claim> claim = claimService.findById(id);
+            if (claim.isPresent()) {
+                validateClaimOwnership(claim.get(), user);
+                return Response.ok(claim.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Claim not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -94,24 +93,18 @@ public class ClaimResource {
     @Path("/warranty/{warrantyId}")
     public Response getClaimsByWarrantyId(@PathParam("warrantyId") Long warrantyId) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                // Check if warranty belongs to the current user
-                Warranty warranty = Warranty.findById(warrantyId);
-                if (warranty != null && warranty.getUser().getId().equals(user.get().getId())) {
-                    List<Claim> claims = claimService.findByWarrantyId(warrantyId);
-                    return Response.ok(claims).build();
-                } else if (warranty == null) {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Warranty not found with id: " + warrantyId).build();
-                } else {
-                    return Response.status(Response.Status.FORBIDDEN)
-                            .entity("Access denied: Warranty does not belong to user").build();
-                }
-            } else {
+            User user = validateCurrentUser();
+            // Check if warranty belongs to the current user
+            Warranty warranty = Warranty.findById(warrantyId);
+            if (warranty != null && warranty.getUser().getId().equals(user.getId())) {
+                List<Claim> claims = claimService.findByWarrantyId(warrantyId);
+                return Response.ok(claims).build();
+            } else if (warranty == null) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Warranty not found with id: " + warrantyId).build();
+            } else {
+                return Response.status(Response.Status.FORBIDDEN)
+                        .entity("Access denied: Warranty does not belong to user").build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -123,22 +116,16 @@ public class ClaimResource {
     @Path("/status/{status}")
     public Response getClaimsByStatus(@PathParam("status") String status) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                // Get all warranties for the user first
-                List<Warranty> userWarranties = Warranty.list("user.id", user.get().getId());
-                // Extract warranty IDs
-                List<Long> warrantyIds = userWarranties.stream()
-                        .map(Warranty::getId)
-                        .collect(Collectors.toList());
-                // Get claims for those warranties with the specified status
-                List<Claim> claims = claimService.findByWarrantyIdsAndStatus(warrantyIds, status);
-                return Response.ok(claims).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
-            }
+            User user = validateCurrentUser();
+            // Get all warranties for the user first
+            List<Warranty> userWarranties = Warranty.list("user.id", user.getId());
+            // Extract warranty IDs
+            List<Long> warrantyIds = userWarranties.stream()
+                    .map(Warranty::getId)
+                    .collect(Collectors.toList());
+            // Get claims for those warranties with the specified status
+            List<Claim> claims = claimService.findByWarrantyIdsAndStatus(warrantyIds, status);
+            return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving claims: " + e.getMessage()).build();
@@ -148,26 +135,20 @@ public class ClaimResource {
     @POST
     public Response createClaim(Claim claim) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                // Check if warranty belongs to the current user
-                if (claim.getWarranty() != null) {
-                    Warranty warranty = claim.getWarranty();
-                    if (warranty.getUser().getId().equals(user.get().getId())) {
-                        Claim createdClaim = claimService.createClaim(claim);
-                        return Response.status(Response.Status.CREATED).entity(createdClaim).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Warranty does not belong to user").build();
-                    }
+            User user = validateCurrentUser();
+            // Check if warranty belongs to the current user
+            if (claim.getWarranty() != null) {
+                Warranty warranty = claim.getWarranty();
+                if (warranty.getUser().getId().equals(user.getId())) {
+                    Claim createdClaim = claimService.createClaim(claim);
+                    return Response.status(Response.Status.CREATED).entity(createdClaim).build();
                 } else {
-                    return Response.status(Response.Status.BAD_REQUEST)
-                            .entity("Warranty information is required").build();
+                    return Response.status(Response.Status.FORBIDDEN)
+                            .entity("Access denied: Warranty does not belong to user").build();
                 }
             } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Warranty information is required").build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -182,29 +163,17 @@ public class ClaimResource {
     @Path("/{id}")
     public Response updateClaim(@PathParam("id") Long id, Claim claim) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Claim> existingClaim = claimService.findById(id);
-                if (existingClaim.isPresent()) {
-                    // Check if claim belongs to a warranty owned by the current user
-                    Warranty warranty = existingClaim.get().getWarranty();
-                    if (warranty.getUser().getId().equals(user.get().getId())) {
-                        // Set the ID to ensure we're updating the correct claim
-                        claim.setId(id);
-                        Claim updatedClaim = claimService.updateClaim(claim);
-                        return Response.ok(updatedClaim).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Claim does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Claim not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Claim> existingClaim = claimService.findById(id);
+            if (existingClaim.isPresent()) {
+                validateClaimOwnership(existingClaim.get(), user);
+                // Set the ID to ensure we're updating the correct claim
+                claim.setId(id);
+                Claim updatedClaim = claimService.updateClaim(claim);
+                return Response.ok(updatedClaim).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Claim not found with id: " + id).build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
@@ -219,27 +188,15 @@ public class ClaimResource {
     @Path("/{id}")
     public Response deleteClaim(@PathParam("id") Long id) {
         try {
-            Optional<User> user = getCurrentUser();
-            
-            if (user.isPresent()) {
-                Optional<Claim> claim = claimService.findById(id);
-                if (claim.isPresent()) {
-                    // Check if claim belongs to a warranty owned by the current user
-                    Warranty warranty = claim.get().getWarranty();
-                    if (warranty.getUser().getId().equals(user.get().getId())) {
-                        claimService.deleteClaim(id);
-                        return Response.noContent().build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity("Access denied: Claim does not belong to user").build();
-                    }
-                } else {
-                    return Response.status(Response.Status.NOT_FOUND)
-                            .entity("Claim not found with id: " + id).build();
-                }
+            User user = validateCurrentUser();
+            Optional<Claim> claim = claimService.findById(id);
+            if (claim.isPresent()) {
+                validateClaimOwnership(claim.get(), user);
+                claimService.deleteClaim(id);
+                return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found").build();
+                        .entity("Claim not found with id: " + id).build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
