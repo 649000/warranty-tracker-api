@@ -39,6 +39,25 @@ public class ClaimService {
     }
     
     /**
+     * Find all claims for a list of warranty IDs
+     * @param warrantyIds list of warranty IDs
+     * @return list of claims
+     */
+    public List<Claim> findByWarrantyIds(List<Long> warrantyIds) {
+        return claimRepository.findByWarrantyIds(warrantyIds);
+    }
+    
+    /**
+     * Find claims by warranty IDs and status
+     * @param warrantyIds list of warranty IDs
+     * @param status the claim status
+     * @return list of claims
+     */
+    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
+        return claimRepository.findByWarrantyIdsAndStatus(warrantyIds, status);
+    }
+    
+    /**
      * Find claims by status
      * @param status the claim status
      * @return list of claims
