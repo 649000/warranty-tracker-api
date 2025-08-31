@@ -36,7 +36,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -51,11 +52,13 @@ public class WarrantyResource extends BaseResource {
                 return Response.ok(warranty.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Warranty not found with id: " + id).build();
+                        .entity(createErrorResponse("Warranty not found with id: " + id, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranty: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranty: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -72,7 +75,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(filteredWarranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -92,7 +96,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(expiringWarranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -106,10 +111,12 @@ public class WarrantyResource extends BaseResource {
             return Response.status(Response.Status.CREATED).entity(createdWarranty).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage()).build();
+                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating warranty: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating warranty: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -128,14 +135,17 @@ public class WarrantyResource extends BaseResource {
                 return Response.ok(updatedWarranty).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Warranty not found with id: " + id).build();
+                        .entity(createErrorResponse("Warranty not found with id: " + id, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage()).build();
+                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating warranty: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating warranty: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -151,11 +161,13 @@ public class WarrantyResource extends BaseResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Warranty not found with id: " + id).build();
+                        .entity(createErrorResponse("Warranty not found with id: " + id, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting warranty: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting warranty: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -170,7 +182,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -183,7 +196,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -196,7 +210,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -209,7 +224,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -227,7 +243,8 @@ public class WarrantyResource extends BaseResource {
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving warranties: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }

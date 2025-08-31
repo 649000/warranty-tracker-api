@@ -30,8 +30,12 @@ public class UserResource extends BaseResource {
             User user = validateCurrentUser();
             return Response.ok(user).build();
         } catch (Exception e) {
+            if (e instanceof WebApplicationException) {
+                throw e;
+            }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -43,7 +47,8 @@ public class UserResource extends BaseResource {
             // Check if user already exists
             if (userService.existsByFirebaseUid(firebaseUid)) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("User already exists").build();
+                        .entity(createErrorResponse("User already exists", "USER_EXISTS", Response.Status.CONFLICT.getStatusCode()))
+                        .build();
             }
 
             User createdUser = userService.createUser(
@@ -54,7 +59,8 @@ public class UserResource extends BaseResource {
             return Response.status(Response.Status.CREATED).entity(createdUser).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -70,8 +76,12 @@ public class UserResource extends BaseResource {
             user = userService.updateUser(user);
             return Response.ok(user).build();
         } catch (Exception e) {
+            if (e instanceof WebApplicationException) {
+                throw e;
+            }
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -85,7 +95,8 @@ public class UserResource extends BaseResource {
             return Response.ok(users).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving users: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving users: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -99,11 +110,13 @@ public class UserResource extends BaseResource {
                 return Response.ok(user).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found with id: " + id).build();
+                        .entity(createErrorResponse("User not found with id: " + id, "USER_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -118,11 +131,13 @@ public class UserResource extends BaseResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found with id: " + id).build();
+                        .entity(createErrorResponse("User not found with id: " + id, "USER_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -145,11 +160,13 @@ public class UserResource extends BaseResource {
                 return Response.ok(existingUser).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User not found with id: " + id).build();
+                        .entity(createErrorResponse("User not found with id: " + id, "USER_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating user: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating user: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }

@@ -34,7 +34,8 @@ public class UserProductResource extends BaseResource {
             return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving user products: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving user products: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -49,11 +50,13 @@ public class UserProductResource extends BaseResource {
                 return Response.ok(userProduct).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User product not found with id: " + id).build();
+                        .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving user product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -67,7 +70,8 @@ public class UserProductResource extends BaseResource {
             return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving user products: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving user products: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -80,7 +84,8 @@ public class UserProductResource extends BaseResource {
             if (userProduct.getSerialNumber() != null && 
                 userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("User product with this serial number already exists for this user").build();
+                        .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
+                        .build();
             }
             
             // Set the current user as the owner
@@ -89,7 +94,8 @@ public class UserProductResource extends BaseResource {
             return Response.status(Response.Status.CREATED).entity(createdUserProduct).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating user product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -107,7 +113,8 @@ public class UserProductResource extends BaseResource {
                     !userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
                     userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
                     return Response.status(Response.Status.CONFLICT)
-                            .entity("User product with this serial number already exists for this user").build();
+                            .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
+                            .build();
                 }
                 
                 // Set the ID and user to ensure we're updating the correct user product
@@ -117,11 +124,13 @@ public class UserProductResource extends BaseResource {
                 return Response.ok(updatedUserProduct).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User product not found with id: " + id).build();
+                        .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating user product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -137,11 +146,13 @@ public class UserProductResource extends BaseResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("User product not found with id: " + id).build();
+                        .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting user product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }

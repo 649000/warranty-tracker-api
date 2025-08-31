@@ -43,7 +43,8 @@ public class ClaimResource extends BaseResource {
             return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving claims: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -58,11 +59,13 @@ public class ClaimResource extends BaseResource {
                 return Response.ok(claim.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Claim not found with id: " + id).build();
+                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving claim: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -78,14 +81,17 @@ public class ClaimResource extends BaseResource {
                 return Response.ok(claims).build();
             } else if (warranty == null) {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Warranty not found with id: " + warrantyId).build();
+                        .entity(createErrorResponse("Warranty not found with id: " + warrantyId, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             } else {
                 return Response.status(Response.Status.FORBIDDEN)
-                        .entity("Access denied: Warranty does not belong to user").build();
+                        .entity(createErrorResponse("Access denied: Warranty does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving claims: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -105,7 +111,8 @@ public class ClaimResource extends BaseResource {
             return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving claims: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -121,18 +128,22 @@ public class ClaimResource extends BaseResource {
                     return Response.status(Response.Status.CREATED).entity(createdClaim).build();
                 } else {
                     return Response.status(Response.Status.FORBIDDEN)
-                            .entity("Access denied: Warranty does not belong to user").build();
+                            .entity(createErrorResponse("Access denied: Warranty does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
+                            .build();
                 }
             } else {
                 return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Warranty information is required").build();
+                        .entity(createErrorResponse("Warranty information is required", "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                        .build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage()).build();
+                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating claim: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -150,14 +161,17 @@ public class ClaimResource extends BaseResource {
                 return Response.ok(updatedClaim).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Claim not found with id: " + id).build();
+                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(e.getMessage()).build();
+                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating claim: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -173,11 +187,13 @@ public class ClaimResource extends BaseResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Claim not found with id: " + id).build();
+                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting claim: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }
