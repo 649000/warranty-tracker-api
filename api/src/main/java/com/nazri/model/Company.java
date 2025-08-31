@@ -1,11 +1,11 @@
 package com.nazri.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "companies", schema = "warranty_tracker")
@@ -44,6 +44,14 @@ public class Company extends PanacheEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    // Relationships
+    @JsonIgnore
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Warranty> warranties;
+
+    // Constructors
+    public Company() {
+    }
     public String getName() {
         return name;
     }
@@ -132,11 +140,18 @@ public class Company extends PanacheEntity {
         this.updatedAt = updatedAt;
     }
 
+    public List<Warranty> getWarranties() {
+        return warranties;
+    }
+
+    public void setWarranties(List<Warranty> warranties) {
+        this.warranties = warranties;
+    }
+
     @Override
     public String toString() {
         return "Company{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
+                "name='" + name + '\'' +
                 ", contactPhone='" + contactPhone + '\'' +
                 ", contactEmail='" + contactEmail + '\'' +
                 ", website='" + website + '\'' +
@@ -147,6 +162,7 @@ public class Company extends PanacheEntity {
                 ", returnInstructions='" + returnInstructions + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", id=" + id +
                 '}';
     }
 }
