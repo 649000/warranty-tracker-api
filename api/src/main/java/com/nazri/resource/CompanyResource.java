@@ -35,7 +35,7 @@ public class CompanyResource extends BaseResource {
     public Response getAllCompanies() {
         try {
             LOG.info("Fetching all companies");
-            List<Company> companies = Company.listAll();
+            List<Company> companies = Company.findAll().list();
             LOG.info("Found " + companies.size() + " companies");
             return Response.ok(companies).build();
         } catch (Exception e) {

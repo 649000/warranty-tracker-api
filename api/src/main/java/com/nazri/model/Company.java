@@ -47,7 +47,7 @@ public class Company extends PanacheEntityBase {
     private LocalDateTime updatedAt;
     
     // Relationships
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Warranty> warranties;
     
     // Constructors
