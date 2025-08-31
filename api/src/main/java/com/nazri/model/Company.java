@@ -1,11 +1,14 @@
 package com.nazri.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "companies", schema = "warranty_tracker")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Company extends PanacheEntityBase {
     
     @Id

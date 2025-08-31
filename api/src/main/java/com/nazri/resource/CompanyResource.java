@@ -19,7 +19,7 @@ public class CompanyResource extends BaseResource {
     public Response getAllCompanies() {
         try {
             LOG.info("Fetching all companies");
-            List<Company> companies = Company.listAll();
+            List<Company> companies = Company.findAll().list();
             LOG.info("Found " + companies.size() + " companies");
             return Response.ok(companies).build();
         } catch (Exception e) {
@@ -58,7 +58,7 @@ public class CompanyResource extends BaseResource {
         try {
             LOG.info("Searching companies by name: " + name);
             if (name == null || name.trim().isEmpty()) {
-                List<Company> companies = Company.listAll();
+                List<Company> companies = Company.findAll().list();
                 return Response.ok(companies).build();
             }
             
