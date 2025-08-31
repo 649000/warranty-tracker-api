@@ -1,16 +1,9 @@
 package com.nazri.resource;
 
 import com.nazri.model.Company;
-import com.nazri.service.CompanyService;
-import jakarta.annotation.security.PermitAll;
-import jakarta.annotation.security.RolesAllowed;
-import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.jboss.logging.Logger;
 
 import java.util.List;
@@ -22,20 +15,11 @@ public class CompanyResource extends BaseResource {
 
     private static final Logger LOG = Logger.getLogger(CompanyResource.class);
 
-    @Inject
-    CompanyService companyService;
-
-    @Inject
-    JsonWebToken jwt;
-
-    @Context
-    SecurityContext securityContext;
-
     @GET
     public Response getAllCompanies() {
         try {
             LOG.info("Fetching all companies");
-            List<Company> companies = Company.findAll().list();
+            List<Company> companies = Company.listAll();
             LOG.info("Found " + companies.size() + " companies");
             return Response.ok(companies).build();
         } catch (Exception e) {
@@ -69,10 +53,16 @@ public class CompanyResource extends BaseResource {
 
     @GET
     @Path("/search")
+    @Produces(MediaType.APPLICATION_JSON)
     public Response searchCompanies(@QueryParam("name") String name) {
         try {
             LOG.info("Searching companies by name: " + name);
-            List<Company> companies = companyService.findByNameContaining(name);
+            if (name == null || name.trim().isEmpty()) {
+                List<Company> companies = Company.listAll();
+                return Response.ok(companies).build();
+            }
+            
+            List<Company> companies = Company.find("name LIKE ?1", "%" + name + "%").list();
             return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error searching companies by name: " + name, e);
@@ -83,21 +73,16 @@ public class CompanyResource extends BaseResource {
     }
 
     @POST
-    @RolesAllowed("admin")
     public Response createCompany(Company company) {
         try {
             LOG.info("Creating company: " + company.getName());
-            // Check if company with same name already exists
-            if (company.getName() != null && !company.getName().isEmpty()) {
-                List<Company> existingCompanies = Company.find("name", company.getName()).list();
-                if (!existingCompanies.isEmpty()) {
-                    return Response.status(Response.Status.CONFLICT)
-                            .entity(createErrorResponse("Company with this name already exists", "COMPANY_EXISTS", Response.Status.CONFLICT.getStatusCode()))
-                            .build();
-                }
-            }
-
-            company = companyService.updateCompany(company);
+            
+            // Set timestamps
+            company.prePersist();
+            
+            // Persist the company
+            company.persist();
+            
             return Response.status(Response.Status.CREATED).entity(company).build();
         } catch (Exception e) {
             LOG.error("Error creating company: " + company.getName(), e);
@@ -109,16 +94,29 @@ public class CompanyResource extends BaseResource {
 
     @PUT
     @Path("/{id}")
-    @RolesAllowed("admin")
     public Response updateCompany(@PathParam("id") Long id, Company company) {
         try {
             LOG.info("Updating company with id: " + id);
             Company existingCompany = Company.findById(id);
             if (existingCompany != null) {
-                // Set the ID to ensure we're updating the correct company
-                company.setId(id);
-                company = companyService.updateCompany(company);
-                return Response.ok(company).build();
+                // Update the fields
+                existingCompany.setName(company.getName());
+                existingCompany.setContactPhone(company.getContactPhone());
+                existingCompany.setContactEmail(company.getContactEmail());
+                existingCompany.setWebsite(company.getWebsite());
+                existingCompany.setAddress(company.getAddress());
+                existingCompany.setClaimProcess(company.getClaimProcess());
+                existingCompany.setClaimUrl(company.getClaimUrl());
+                existingCompany.setSupportHours(company.getSupportHours());
+                existingCompany.setReturnInstructions(company.getReturnInstructions());
+                
+                // Update timestamp
+                existingCompany.preUpdate();
+                
+                // Merge changes
+                existingCompany.persist();
+                
+                return Response.ok(existingCompany).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
@@ -134,13 +132,12 @@ public class CompanyResource extends BaseResource {
 
     @DELETE
     @Path("/{id}")
-    @RolesAllowed("admin")
     public Response deleteCompany(@PathParam("id") Long id) {
         try {
             LOG.info("Deleting company with id: " + id);
             Company company = Company.findById(id);
             if (company != null) {
-                companyService.deleteCompany(id);
+                company.delete();
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
