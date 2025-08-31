@@ -27,9 +27,6 @@ public class User extends PanacheEntityBase {
     @Column(name = "display_name")
     private String displayName;
     
-    @Column(name = "photo_url")
-    private String photoUrl;
-    
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
@@ -70,10 +67,6 @@ public class User extends PanacheEntityBase {
         return displayName;
     }
     
-    public String getPhotoUrl() {
-        return photoUrl;
-    }
-    
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -99,10 +92,6 @@ public class User extends PanacheEntityBase {
         this.displayName = displayName;
     }
     
-    public void setPhotoUrl(String photoUrl) {
-        this.photoUrl = photoUrl;
-    }
-    
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
@@ -118,7 +107,6 @@ public class User extends PanacheEntityBase {
                 ", firebaseUid='" + firebaseUid + '\'' +
                 ", email='" + email + '\'' +
                 ", displayName='" + displayName + '\'' +
-                ", photoUrl='" + photoUrl + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 '}';

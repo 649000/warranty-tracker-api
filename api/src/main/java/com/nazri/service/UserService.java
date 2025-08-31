@@ -45,7 +45,6 @@ public class UserService {
      * @param firebaseUid the Firebase UID
      * @param email the user's email
      * @param displayName the user's display name
-     * @param photoUrl the user's photo URL
      * @return the created user
      */
     @Transactional
@@ -68,16 +67,14 @@ public class UserService {
      * Update user profile information
      * @param firebaseUid the Firebase UID of the user
      * @param displayName the new display name
-     * @param photoUrl the new photo URL
      * @return the updated user or empty optional if user not found
      */
     @Transactional
-    public Optional<User> updateUserProfile(String firebaseUid, String displayName, String photoUrl) {
+    public Optional<User> updateUserProfile(String firebaseUid, String displayName) {
         Optional<User> userOptional = userRepository.findByFirebaseUid(firebaseUid);
         if (userOptional.isPresent()) {
             User user = userOptional.get();
             user.setDisplayName(displayName);
-            user.setPhotoUrl(photoUrl);
             userRepository.updateUser(user);
             return Optional.of(user);
         }
