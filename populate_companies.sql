@@ -81,4 +81,84 @@ INSERT INTO warranty_tracker.companies (
  'Register online or contact Epson support for service', 
  'https://www.epson.com.sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
  'Contact Epson customer service for return authorization', 
+ NOW(), NOW()),
+
+-- Microsoft Singapore
+('Microsoft Singapore', '+65 6220 0800', 'support@microsoft.com', 
+ 'https://www.microsoft.com/sg/', '1 Marina Boulevard, #22-01 Singapore 018989', 
+ 'Submit online support request or contact customer service', 
+ 'https://support.microsoft.com/', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Microsoft customer service for return authorization', 
+ NOW(), NOW()),
+
+-- Lenovo Singapore
+('Lenovo Singapore', '+65 1800 852 852 852', 'support@lenovo.com', 
+ 'https://www.lenovo.com/sg/', '60 Paya Lebar Road, #12-01 Paya Lebar Square, Singapore 409015', 
+ 'Register online or contact technical support with product ID', 
+ 'https://support.lenovo.com/sg/en/', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Lenovo customer service for return merchandise authorization', 
+ NOW(), NOW()),
+
+-- ASUS Singapore
+('ASUS Singapore', '+65 6220 0800', 'support@asus.com', 
+ 'https://www.asus.com/sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Submit online service request or visit ASUS Service Center', 
+ 'https://www.asus.com/sg/support/', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact ASUS customer service for return authorization', 
+ NOW(), NOW()),
+
+-- Acer Singapore
+('Acer Singapore', '+65 6330 8811', 'support@acer.com', 
+ 'https://www.acer.com/sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Register online or contact Acer support with serial number', 
+ 'https://www.acer.com/sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Acer customer service for return procedures', 
+ NOW(), NOW()),
+
+-- Toshiba Singapore
+('Toshiba Singapore', '+65 6220 0800', 'support@toshiba.com', 
+ 'https://www.toshiba.com/sg/', '1 HarbourFront Avenue, #09-01 Keppel Bay Tower, Singapore 098632', 
+ 'Submit warranty claim with proof of purchase', 
+ 'https://www.toshiba.com/sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Toshiba customer service for return authorization', 
+ NOW(), NOW()),
+
+-- Sharp Singapore
+('Sharp Singapore', '+65 6220 0800', 'support@sharp.com', 
+ 'https://www.sharp.sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Contact authorized Sharp service center with warranty card', 
+ 'https://www.sharp.sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Bring product to authorized service center with receipt', 
+ NOW(), NOW()),
+
+-- Pioneer Singapore
+('Pioneer Singapore', '+65 6220 0800', 'support@pioneer.com', 
+ 'https://www.pioneer.sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Submit warranty claim at authorized service center', 
+ 'https://www.pioneer.sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Pioneer customer service for return procedures', 
+ NOW(), NOW()),
+
+-- JVC Singapore
+('JVC Singapore', '+65 6220 0800', 'support@jvc.com', 
+ 'https://www.jvc.com/sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Bring product to authorized service center with warranty card', 
+ 'https://www.jvc.com/sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact JVC customer service for return authorization', 
+ NOW(), NOW()),
+
+-- Bose Singapore
+('Bose Singapore', '+65 6220 0800', 'support@bose.com', 
+ 'https://www.bose.com.sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Register online or contact Bose support with proof of purchase', 
+ 'https://www.bose.com.sg/support', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Bose customer service for return merchandise authorization', 
+ NOW(), NOW()),
+
+-- Logitech Singapore
+('Logitech Singapore', '+65 6220 0800', 'support@logitech.com', 
+ 'https://www.logitech.com/sg/', '1 Scotts Road, #20-07 Shaw Centre, Singapore 228208', 
+ 'Submit online support request or contact customer service', 
+ 'https://support.logitech.com/sg/', '9:00 AM - 6:00 PM (Mon-Fri)', 
+ 'Contact Logitech customer service for return authorization', 
  NOW(), NOW());
