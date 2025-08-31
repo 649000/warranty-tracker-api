@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+import org.jboss.logging.Logger;
 
 import java.util.List;
 
@@ -18,6 +19,8 @@ import java.util.List;
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class CompanyResource extends BaseResource {
+
+    private static final Logger LOG = Logger.getLogger(CompanyResource.class);
 
     @Inject
     CompanyService companyService;
@@ -31,9 +34,12 @@ public class CompanyResource extends BaseResource {
     @GET
     public Response getAllCompanies() {
         try {
+            LOG.info("Fetching all companies");
             List<Company> companies = Company.listAll();
+            LOG.info("Found " + companies.size() + " companies");
             return Response.ok(companies).build();
         } catch (Exception e) {
+            LOG.error("Error retrieving companies", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
@@ -44,6 +50,7 @@ public class CompanyResource extends BaseResource {
     @Path("/{id}")
     public Response getCompanyById(@PathParam("id") Long id) {
         try {
+            LOG.info("Fetching company by id: " + id);
             Company company = Company.findById(id);
             if (company != null) {
                 return Response.ok(company).build();
@@ -53,6 +60,7 @@ public class CompanyResource extends BaseResource {
                         .build();
             }
         } catch (Exception e) {
+            LOG.error("Error retrieving company by id: " + id, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
@@ -63,9 +71,11 @@ public class CompanyResource extends BaseResource {
     @Path("/search")
     public Response searchCompanies(@QueryParam("name") String name) {
         try {
+            LOG.info("Searching companies by name: " + name);
             List<Company> companies = companyService.findByNameContaining(name);
             return Response.ok(companies).build();
         } catch (Exception e) {
+            LOG.error("Error searching companies by name: " + name, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error searching companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
@@ -76,6 +86,7 @@ public class CompanyResource extends BaseResource {
     @RolesAllowed("admin")
     public Response createCompany(Company company) {
         try {
+            LOG.info("Creating company: " + company.getName());
             // Check if company with same name already exists
             if (company.getName() != null && !company.getName().isEmpty()) {
                 List<Company> existingCompanies = Company.find("name", company.getName()).list();
@@ -89,6 +100,7 @@ public class CompanyResource extends BaseResource {
             company = companyService.updateCompany(company);
             return Response.status(Response.Status.CREATED).entity(company).build();
         } catch (Exception e) {
+            LOG.error("Error creating company: " + company.getName(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error creating company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
@@ -100,6 +112,7 @@ public class CompanyResource extends BaseResource {
     @RolesAllowed("admin")
     public Response updateCompany(@PathParam("id") Long id, Company company) {
         try {
+            LOG.info("Updating company with id: " + id);
             Company existingCompany = Company.findById(id);
             if (existingCompany != null) {
                 // Set the ID to ensure we're updating the correct company
@@ -112,6 +125,7 @@ public class CompanyResource extends BaseResource {
                         .build();
             }
         } catch (Exception e) {
+            LOG.error("Error updating company with id: " + id, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error updating company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
@@ -123,6 +137,7 @@ public class CompanyResource extends BaseResource {
     @RolesAllowed("admin")
     public Response deleteCompany(@PathParam("id") Long id) {
         try {
+            LOG.info("Deleting company with id: " + id);
             Company company = Company.findById(id);
             if (company != null) {
                 companyService.deleteCompany(id);
@@ -133,6 +148,7 @@ public class CompanyResource extends BaseResource {
                         .build();
             }
         } catch (Exception e) {
+            LOG.error("Error deleting company with id: " + id, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error deleting company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
