@@ -32,7 +32,7 @@ public class CompanyService {
 //     */
 //    public Optional<Company> findByName(String name) {
 //        return companyRepository.findByName(name);
-//    }
+//     }
 
     /**
      * Find companies by name (partial match)
@@ -53,44 +53,67 @@ public class CompanyService {
         return companyRepository.findAllCompanies();
     }
 
-//    /**
-//     * Create a new company
-//     * @param company the company to create
-//     * @return the created company
-//     */
-//    @Transactional
-//    public Company createCompany(Company company) {
-//        // Check if company with same name already exists
-//        if (company.getName() != null && !company.getName().isEmpty()) {
-//            Optional<Company> existingCompany = companyRepository.findByName(company.getName());
-//            if (existingCompany.isPresent()) {
-//                throw new IllegalArgumentException("Company with this name already exists");
-//            }
-//        }
-//
-//        return companyRepository.createCompany(company);
-//    }
+    /**
+     * Create a new company
+     * @param company the company to create
+     * @return the created company
+     */
+    @Transactional
+    public Company createCompany(Company company) {
+        // Check if company with same name already exists
+        if (company.getName() != null && !company.getName().isEmpty()) {
+            List<Company> existingCompanies = companyRepository.findByNameContaining(company.getName());
+            if (!existingCompanies.isEmpty()) {
+                for (Company existingCompany : existingCompanies) {
+                    if (existingCompany.getName().equals(company.getName())) {
+                        throw new IllegalArgumentException("Company with this name already exists");
+                    }
+                }
+            }
+        }
+
+        return companyRepository.createCompany(company);
+    }
 
     /**
      * Update an existing company
      *
-     * @param company the company to update
-     * @return the updated company
+     * @param id the company ID
+     * @param company the company data to update
+     * @return Optional containing the updated company if found
      */
     @Transactional
-    public Company updateCompany(Company company) {
-        return companyRepository.updateCompany(company);
+    public Optional<Company> updateCompany(Long id, Company company) {
+        Optional<Company> existingCompany = findById(id);
+        if (existingCompany.isPresent()) {
+            Company companyToUpdate = existingCompany.get();
+            companyToUpdate.setName(company.getName());
+            companyToUpdate.setContactPhone(company.getContactPhone());
+            companyToUpdate.setContactEmail(company.getContactEmail());
+            companyToUpdate.setWebsite(company.getWebsite());
+            companyToUpdate.setAddress(company.getAddress());
+            companyToUpdate.setClaimProcess(company.getClaimProcess());
+            companyToUpdate.setClaimUrl(company.getClaimUrl());
+            companyToUpdate.setSupportHours(company.getSupportHours());
+            companyToUpdate.setReturnInstructions(company.getReturnInstructions());
+            return Optional.of(companyRepository.updateCompany(companyToUpdate));
+        }
+        return Optional.empty();
     }
 
     /**
      * Delete a company by ID
      *
      * @param id the company ID
-     * @return
+     * @return true if company was deleted, false if not found
      */
     @Transactional
     public boolean deleteCompany(Long id) {
-        companyRepository.deleteCompany(id);
+        Company company = companyRepository.findById(id);
+        if (company != null) {
+            companyRepository.deleteCompany(id);
+            return true;
+        }
         return false;
     }
 }
