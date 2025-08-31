@@ -8,7 +8,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Path("/company")
@@ -22,29 +21,26 @@ public class CompanyResource extends BaseResource {
     CompanyService companyService;
 
     @GET
-    public Response getAllCompanies() {
-        try {
+    public List<Company> getAllCompanies() {
+//        try {
             LOG.info("Fetching all companies");
 //            List<Company> companies = companyService.findAllCompanies();
             List<Company> companies = Company.findAll().list();
             LOG.info("Found " + companies.size() + " companies");
 
-            // Force initialization of all entities
-            for (Company company : companies) {
-                // Access a few fields to ensure they're loaded
-                LOG.info(company.getName());
-                company.getName();
-                company.getContactEmail();
+            for(Company company : companies){
+                LOG.info("Found company " + company.toString());
             }
 
+            return companies;
 
-            return Response.ok(companies).build();
-        } catch (Exception e) {
-            LOG.error("Error retrieving companies", e);
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorResponse("Error retrieving companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-                    .build();
-        }
+//            return Response.ok(companies).build();
+//        } catch (Exception e) {
+//            LOG.error("Error retrieving companies", e);
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                    .entity(createErrorResponse("Error retrieving companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+//                    .build();
+//        }
     }
 
     @GET
