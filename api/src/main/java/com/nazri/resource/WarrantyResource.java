@@ -28,11 +28,16 @@ public class WarrantyResource {
     @Inject
     JsonWebToken jwt;
 
+    // Helper method to get current user
+    private Optional<User> getCurrentUser() {
+        String firebaseUid = jwt.getSubject();
+        return userService.findByFirebaseUid(firebaseUid);
+    }
+
     @GET
     public Response getUserWarranties() {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
@@ -51,8 +56,7 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response getWarrantyById(@PathParam("id") Long id) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 Optional<Warranty> warranty = warrantyService.findById(id);
@@ -82,8 +86,7 @@ public class WarrantyResource {
     @Path("/status/{status}")
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
@@ -107,8 +110,7 @@ public class WarrantyResource {
     public Response getExpiringWarranties(
             @QueryParam("days") @DefaultValue("30") Integer days) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 LocalDate endDate = LocalDate.now().plusDays(days);
@@ -132,8 +134,7 @@ public class WarrantyResource {
     @POST
     public Response createWarranty(Warranty warranty) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 // Set the current user as the warranty owner
@@ -157,8 +158,7 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response updateWarranty(@PathParam("id") Long id, Warranty warranty) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 Optional<Warranty> existingWarranty = warrantyService.findById(id);
@@ -195,8 +195,7 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response deleteWarranty(@PathParam("id") Long id) {
         try {
-            String firebaseUid = jwt.getSubject();
-            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            Optional<User> user = getCurrentUser();
             
             if (user.isPresent()) {
                 Optional<Warranty> warranty = warrantyService.findById(id);
