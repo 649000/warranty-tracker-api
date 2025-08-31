@@ -40,14 +40,11 @@ public class CompanyResource extends BaseResource {
     public Response getCompanyById(@PathParam("id") Long id) {
         try {
             LOG.info("Fetching company by id: " + id);
-            Company company = Company.findById(id);
-            if (company != null) {
-                return Response.ok(company).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            return companyService.findById(id)
+                    .map(company -> Response.ok(company).build())
+                    .orElse(Response.status(Response.Status.NOT_FOUND)
+                            .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                            .build());
         } catch (Exception e) {
             LOG.error("Error retrieving company by id: " + id, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -62,12 +59,12 @@ public class CompanyResource extends BaseResource {
     public Response searchCompanies(@QueryParam("name") String name) {
         try {
             LOG.info("Searching companies by name: " + name);
+            List<Company> companies;
             if (name == null || name.trim().isEmpty()) {
-                List<Company> companies = Company.listAll();
-                return Response.ok(companies).build();
+                companies = companyService.findAllCompanies();
+            } else {
+                companies = companyService.findByNameContaining(name);
             }
-            
-            List<Company> companies = Company.find("name LIKE ?1", "%" + name + "%").list();
             return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error searching companies by name: " + name, e);
@@ -81,14 +78,8 @@ public class CompanyResource extends BaseResource {
     public Response createCompany(Company company) {
         try {
             LOG.info("Creating company: " + company.getName());
-            
-            // Set timestamps
-//            company.prePersist();
-            
-            // Persist the company
-            company.persist();
-            
-            return Response.status(Response.Status.CREATED).entity(company).build();
+            Company createdCompany = companyService.createCompany(company);
+            return Response.status(Response.Status.CREATED).entity(createdCompany).build();
         } catch (Exception e) {
             LOG.error("Error creating company: " + company.getName(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -102,31 +93,11 @@ public class CompanyResource extends BaseResource {
     public Response updateCompany(@PathParam("id") Long id, Company company) {
         try {
             LOG.info("Updating company with id: " + id);
-            Company existingCompany = Company.findById(id);
-            if (existingCompany != null) {
-                // Update the fields
-                existingCompany.setName(company.getName());
-                existingCompany.setContactPhone(company.getContactPhone());
-                existingCompany.setContactEmail(company.getContactEmail());
-                existingCompany.setWebsite(company.getWebsite());
-                existingCompany.setAddress(company.getAddress());
-                existingCompany.setClaimProcess(company.getClaimProcess());
-                existingCompany.setClaimUrl(company.getClaimUrl());
-                existingCompany.setSupportHours(company.getSupportHours());
-                existingCompany.setReturnInstructions(company.getReturnInstructions());
-                
-                // Update timestamp
-//                existingCompany.preUpdate();
-                
-                // Merge changes
-                existingCompany.persist();
-                
-                return Response.ok(existingCompany).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            return companyService.updateCompany(id, company)
+                    .map(updatedCompany -> Response.ok(updatedCompany).build())
+                    .orElse(Response.status(Response.Status.NOT_FOUND)
+                            .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                            .build());
         } catch (Exception e) {
             LOG.error("Error updating company with id: " + id, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -140,9 +111,7 @@ public class CompanyResource extends BaseResource {
     public Response deleteCompany(@PathParam("id") Long id) {
         try {
             LOG.info("Deleting company with id: " + id);
-            Company company = Company.findById(id);
-            if (company != null) {
-                company.delete();
+            if (companyService.deleteCompany(id)) {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
