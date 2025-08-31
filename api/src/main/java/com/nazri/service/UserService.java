@@ -49,8 +49,8 @@ public class UserService {
      * @return the created user
      */
     @Transactional
-    public User createUser(String firebaseUid, String email, String displayName, String photoUrl) {
-        User user = new User(firebaseUid, email, displayName, photoUrl);
+    public User createUser(String firebaseUid, String email, String displayName) {
+        User user = new User(firebaseUid, email, displayName);
         return userRepository.createUser(user);
     }
     

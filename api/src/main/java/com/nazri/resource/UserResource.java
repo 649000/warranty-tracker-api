@@ -2,14 +2,16 @@ package com.nazri.resource;
 
 import com.nazri.model.User;
 import com.nazri.service.UserService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.List;
+import org.eclipse.microprofile.jwt.JsonWebToken;
+
 import java.util.Optional;
 
-@Path("/api/users")
+@Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserResource {
@@ -17,7 +19,11 @@ public class UserResource {
     @Inject
     UserService userService;
 
+    @Inject
+    JsonWebToken jwt;
+
     @GET
+    @RolesAllowed("admin")
     public Response getAllUsers() {
         try {
             // Since there's no findAllUsers in UserService, we'll need to implement this
@@ -32,6 +38,7 @@ public class UserResource {
 
     @GET
     @Path("/{id}")
+    @RolesAllowed("admin")
     public Response getUserById(@PathParam("id") Long id) {
         try {
             // Since there's no findById in UserService, we'll need to implement this
@@ -62,19 +69,19 @@ public class UserResource {
     }
 
     @POST
-    public Response createUser(User userData) {
+    public Response createUser() {
+
         try {
             // Check if user already exists
-            if (userService.existsByFirebaseUid(userData.getFirebaseUid())) {
+            if (userService.existsByFirebaseUid(jwt.getSubject())) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("User already exists with firebase UID: " + userData.getFirebaseUid()).build();
+                        .entity("User already exists with firebase UID: " + jwt.getSubject()).build();
             }
-            
+
             User createdUser = userService.createUser(
-                    userData.getFirebaseUid(),
-                    userData.getEmail(),
-                    userData.getDisplayName(),
-                    userData.getPhotoUrl()
+                    jwt.getSubject(),
+                    jwt.getClaim("email"),
+                    jwt.getClaim("preferredUsername")
             );
             return Response.status(Response.Status.CREATED).entity(createdUser).build();
         } catch (Exception e) {

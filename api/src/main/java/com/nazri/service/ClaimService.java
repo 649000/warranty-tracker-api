@@ -26,9 +26,9 @@ public class ClaimService {
      * @return Optional containing the claim if found
      */
     public Optional<Claim> findById(Long id) {
-        return claimRepository.findById(id);
+        return Optional.ofNullable(claimRepository.findById(id));
     }
-    
+
     /**
      * Find all claims for a specific warranty
      * @param warrantyId the warranty ID

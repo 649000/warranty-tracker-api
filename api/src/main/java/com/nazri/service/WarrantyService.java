@@ -36,9 +36,9 @@ public class WarrantyService {
      * @return Optional containing the warranty if found
      */
     public Optional<Warranty> findById(Long id) {
-        return warrantyRepository.findById(id);
+        return Optional.ofNullable(warrantyRepository.findById(id));
     }
-    
+
     /**
      * Find all warranties for a specific user
      * @param userId the user ID

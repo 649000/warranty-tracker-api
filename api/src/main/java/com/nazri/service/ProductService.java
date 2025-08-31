@@ -20,17 +20,17 @@ public class ProductService {
      * @return Optional containing the product if found
      */
     public Optional<Product> findById(Long id) {
-        return productRepository.findById(id);
+        return Optional.ofNullable(productRepository.findById(id));
     }
-    
-    /**
-     * Find a product by serial number
-     * @param serialNumber the product serial number
-     * @return Optional containing the product if found
-     */
-    public Optional<Product> findBySerialNumber(String serialNumber) {
-        return productRepository.findBySerialNumber(serialNumber);
-    }
+//
+//    /**
+//     * Find a product by serial number
+//     * @param serialNumber the product serial number
+//     * @return Optional containing the product if found
+//     */
+//    public Optional<Product> findBySerialNumber(String serialNumber) {
+//        return productRepository.findBySerialNumber(serialNumber);
+//    }
     
     /**
      * Find products by name (partial match)
@@ -59,23 +59,23 @@ public class ProductService {
         return productRepository.findByModelNumberContaining(modelNumber);
     }
     
-    /**
-     * Create a new product
-     * @param product the product to create
-     * @return the created product
-     */
-    @Transactional
-    public Product createProduct(Product product) {
-        // Check if product with same serial number already exists
-        if (product.getSerialNumber() != null && !product.getSerialNumber().isEmpty()) {
-            Optional<Product> existingProduct = productRepository.findBySerialNumber(product.getSerialNumber());
-            if (existingProduct.isPresent()) {
-                throw new IllegalArgumentException("Product with this serial number already exists");
-            }
-        }
-        
-        return productRepository.createProduct(product);
-    }
+//    /**
+//     * Create a new product
+//     * @param product the product to create
+//     * @return the created product
+//     */
+//    @Transactional
+//    public Product createProduct(Product product) {
+//        // Check if product with same serial number already exists
+//        if (product.getSerialNumber() != null && !product.getSerialNumber().isEmpty()) {
+//            Optional<Product> existingProduct = productRepository.findBySerialNumber(product.getSerialNumber());
+//            if (existingProduct.isPresent()) {
+//                throw new IllegalArgumentException("Product with this serial number already exists");
+//            }
+//        }
+//
+//        return productRepository.createProduct(product);
+//    }
     
     /**
      * Update an existing product

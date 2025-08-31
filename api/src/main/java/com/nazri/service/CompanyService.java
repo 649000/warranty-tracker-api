@@ -20,17 +20,17 @@ public class CompanyService {
      * @return Optional containing the company if found
      */
     public Optional<Company> findById(Long id) {
-        return companyRepository.findById(id);
+        return Optional.ofNullable(companyRepository.findById(id));
     }
-    
-    /**
-     * Find a company by name
-     * @param name the company name
-     * @return Optional containing the company if found
-     */
-    public Optional<Company> findByName(String name) {
-        return companyRepository.findByName(name);
-    }
+//
+//    /**
+//     * Find a company by name
+//     * @param name the company name
+//     * @return Optional containing the company if found
+//     */
+//    public Optional<Company> findByName(String name) {
+//        return companyRepository.findByName(name);
+//    }
     
     /**
      * Find companies by name (partial match)
@@ -49,23 +49,23 @@ public class CompanyService {
         return companyRepository.findAllCompanies();
     }
     
-    /**
-     * Create a new company
-     * @param company the company to create
-     * @return the created company
-     */
-    @Transactional
-    public Company createCompany(Company company) {
-        // Check if company with same name already exists
-        if (company.getName() != null && !company.getName().isEmpty()) {
-            Optional<Company> existingCompany = companyRepository.findByName(company.getName());
-            if (existingCompany.isPresent()) {
-                throw new IllegalArgumentException("Company with this name already exists");
-            }
-        }
-        
-        return companyRepository.createCompany(company);
-    }
+//    /**
+//     * Create a new company
+//     * @param company the company to create
+//     * @return the created company
+//     */
+//    @Transactional
+//    public Company createCompany(Company company) {
+//        // Check if company with same name already exists
+//        if (company.getName() != null && !company.getName().isEmpty()) {
+//            Optional<Company> existingCompany = companyRepository.findByName(company.getName());
+//            if (existingCompany.isPresent()) {
+//                throw new IllegalArgumentException("Company with this name already exists");
+//            }
+//        }
+//
+//        return companyRepository.createCompany(company);
+//    }
     
     /**
      * Update an existing company

@@ -48,10 +48,9 @@ public class User extends PanacheEntityBase {
     }
     
     // Constructor with all fields
-    public User(String firebaseUid, String email, String displayName, String photoUrl) {
+    public User(String firebaseUid, String email, String displayName) {
         this(firebaseUid, email);
         this.displayName = displayName;
-        this.photoUrl = photoUrl;
     }
     
     // Getters
