@@ -63,13 +63,13 @@ public class UserResource {
     }
 
     @POST
-    public Response createUser(User user) {
+    public Response createUser(User userData) {
         try {
             User createdUser = userService.createUser(
-                    user.getFirebaseUid(),
-                    user.getEmail(),
-                    user.getDisplayName(),
-                    user.getPhotoUrl()
+                    userData.getFirebaseUid(),
+                    userData.getEmail(),
+                    userData.getDisplayName(),
+                    userData.getPhotoUrl()
             );
             return Response.status(Response.Status.CREATED).entity(createdUser).build();
         } catch (Exception e) {
@@ -80,12 +80,13 @@ public class UserResource {
 
     @PUT
     @Path("/{id}")
-    public Response updateUser(@PathParam("id") Long id, User user) {
+    public Response updateUser(@PathParam("id") Long id, User userData) {
         try {
             Optional<User> existingUser = userService.findById(id);
             if (existingUser.isPresent()) {
-                user.setId(id);
-                User updatedUser = userService.updateUser(user);
+                // Set the ID to ensure we're updating the correct user
+                userData.setId(id);
+                User updatedUser = userService.updateUser(userData);
                 return Response.ok(updatedUser).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
