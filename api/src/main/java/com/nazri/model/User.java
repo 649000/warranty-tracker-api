@@ -1,5 +1,6 @@
 package com.nazri.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -12,11 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users", schema = "warranty_tracker")
-public class User extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class User extends PanacheEntity {
     
     @Column(unique = true, nullable = false)
     private String firebaseUid;
@@ -51,10 +48,6 @@ public class User extends PanacheEntityBase {
     }
     
     // Getters
-    public Long getId() {
-        return id;
-    }
-    
     public String getFirebaseUid() {
         return firebaseUid;
     }
@@ -76,10 +69,6 @@ public class User extends PanacheEntityBase {
     }
     
     // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public void setFirebaseUid(String firebaseUid) {
         this.firebaseUid = firebaseUid;
     }

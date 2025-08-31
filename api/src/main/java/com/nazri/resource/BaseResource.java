@@ -51,7 +51,7 @@ public abstract class BaseResource {
      * @throws WebApplicationException if user doesn't own the warranty
      */
     protected void validateWarrantyOwnership(com.nazri.model.Warranty warranty, User user) {
-        if (!warranty.getUser().getId().equals(user.getId())) {
+        if (!warranty.getUser().id.equals(user.id)) {
             throw new WebApplicationException(
                 Response.status(Response.Status.FORBIDDEN)
                     .entity(createErrorResponse("Access denied: Warranty does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
@@ -66,7 +66,7 @@ public abstract class BaseResource {
      * @throws WebApplicationException if user doesn't own the user product
      */
     protected void validateUserProductOwnership(com.nazri.model.UserProduct userProduct, User user) {
-        if (!userProduct.getUser().getId().equals(user.getId())) {
+        if (!userProduct.getUser().id.equals(user.id)) {
             throw new WebApplicationException(
                 Response.status(Response.Status.FORBIDDEN)
                     .entity(createErrorResponse("Access denied: User product does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
@@ -81,7 +81,7 @@ public abstract class BaseResource {
      * @throws WebApplicationException if user doesn't own the claim
      */
     protected void validateClaimOwnership(com.nazri.model.Claim claim, User user) {
-        if (!claim.getWarranty().getUser().getId().equals(user.getId())) {
+        if (!claim.getWarranty().getUser().id.equals(user.id)) {
             throw new WebApplicationException(
                 Response.status(Response.Status.FORBIDDEN)
                     .entity(createErrorResponse("Access denied: Claim does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))

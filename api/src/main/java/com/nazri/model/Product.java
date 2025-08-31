@@ -1,5 +1,6 @@
 package com.nazri.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
@@ -8,12 +9,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "products", schema = "warranty_tracker")
-public class Product extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+public class Product extends PanacheEntity {
+
     @Column(name = "name", nullable = false)
     private String name;
     
@@ -40,10 +37,6 @@ public class Product extends PanacheEntityBase {
     public Product() {}
     
     // Getters
-    public Long getId() {
-        return id;
-    }
-    
     public String getName() {
         return name;
     }
@@ -73,10 +66,6 @@ public class Product extends PanacheEntityBase {
     }
     
     // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public void setName(String name) {
         this.name = name;
     }

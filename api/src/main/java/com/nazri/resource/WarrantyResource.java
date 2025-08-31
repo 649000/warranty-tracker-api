@@ -14,7 +14,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/api/warranties")
+@Path("/warranty")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class WarrantyResource extends BaseResource {
@@ -32,7 +32,7 @@ public class WarrantyResource extends BaseResource {
     public Response getUserWarranties() {
         try {
             User user = validateCurrentUser();
-            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            List<Warranty> warranties = warrantyService.findByUserId(user.id);
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -67,7 +67,7 @@ public class WarrantyResource extends BaseResource {
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
             User user = validateCurrentUser();
-            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            List<Warranty> warranties = warrantyService.findByUserId(user.id);
             // Filter by status
             List<Warranty> filteredWarranties = warranties.stream()
                     .filter(w -> w.getStatus().equals(status))
@@ -87,7 +87,7 @@ public class WarrantyResource extends BaseResource {
         try {
             User user = validateCurrentUser();
             LocalDate endDate = LocalDate.now().plusDays(days);
-            List<Warranty> warranties = warrantyService.findByUserId(user.getId());
+            List<Warranty> warranties = warrantyService.findByUserId(user.id);
             // Filter expiring warranties
             List<Warranty> expiringWarranties = warranties.stream()
                     .filter(w -> w.getEndDate().isAfter(LocalDate.now()) && 
@@ -129,7 +129,7 @@ public class WarrantyResource extends BaseResource {
             if (existingWarranty.isPresent()) {
                 validateWarrantyOwnership(existingWarranty.get(), user);
                 // Set the ID and user to ensure we're updating the correct warranty
-                warranty.setId(id);
+                warranty.id = id;
                 warranty.setUser(user);
                 Warranty updatedWarranty = warrantyService.updateWarranty(warranty);
                 return Response.ok(updatedWarranty).build();

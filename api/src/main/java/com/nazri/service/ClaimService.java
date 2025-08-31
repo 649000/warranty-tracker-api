@@ -84,11 +84,11 @@ public class ClaimService {
     @Transactional
     public Claim createClaim(Claim claim) {
         // Validate warranty exists
-        if (claim.getWarranty() == null || claim.getWarranty().getId() == null) {
+        if (claim.getWarranty() == null || claim.getWarranty().id == null) {
             throw new IllegalArgumentException("Warranty is required");
         }
         
-        Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().getId());
+        Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().id);
         if (warranty.isEmpty()) {
             throw new IllegalArgumentException("Warranty not found");
         }
@@ -115,8 +115,8 @@ public class ClaimService {
     @Transactional
     public Claim updateClaim(Claim claim) {
         // Validate warranty exists if being updated
-        if (claim.getWarranty() != null && claim.getWarranty().getId() != null) {
-            Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().getId());
+        if (claim.getWarranty() != null && claim.getWarranty().id != null) {
+            Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().id);
             if (warranty.isEmpty()) {
                 throw new IllegalArgumentException("Warranty not found");
             }

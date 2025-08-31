@@ -101,33 +101,33 @@ public class WarrantyService {
     @Transactional
     public Warranty createWarranty(Warranty warranty) {
         // Validate user exists
-        if (warranty.getUser() == null || warranty.getUser().getId() == null) {
+        if (warranty.getUser() == null || warranty.getUser().id == null) {
             throw new IllegalArgumentException("User is required");
         }
         
-        Optional<User> user = userRepository.findByIdOptional(warranty.getUser().getId());
+        Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User not found");
         }
         warranty.setUser(user.get());
         
         // Validate company exists
-        if (warranty.getCompany() == null || warranty.getCompany().getId() == null) {
+        if (warranty.getCompany() == null || warranty.getCompany().id == null) {
             throw new IllegalArgumentException("Company is required");
         }
         
-        Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().getId());
+        Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
         if (company.isEmpty()) {
             throw new IllegalArgumentException("Company not found");
         }
         warranty.setCompany(company.get());
         
         // Validate product exists
-        if (warranty.getProduct() == null || warranty.getProduct().getId() == null) {
+        if (warranty.getProduct() == null || warranty.getProduct().id == null) {
             throw new IllegalArgumentException("Product is required");
         }
         
-        Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().getId());
+        Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().id);
         if (product.isEmpty()) {
             throw new IllegalArgumentException("Product not found");
         }
@@ -149,8 +149,8 @@ public class WarrantyService {
     @Transactional
     public Warranty updateWarranty(Warranty warranty) {
         // Validate user exists if being updated
-        if (warranty.getUser() != null && warranty.getUser().getId() != null) {
-            Optional<User> user = userRepository.findByIdOptional(warranty.getUser().getId());
+        if (warranty.getUser() != null && warranty.getUser().id != null) {
+            Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
             if (user.isEmpty()) {
                 throw new IllegalArgumentException("User not found");
             }
@@ -158,8 +158,8 @@ public class WarrantyService {
         }
         
         // Validate company exists if being updated
-        if (warranty.getCompany() != null && warranty.getCompany().getId() != null) {
-            Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().getId());
+        if (warranty.getCompany() != null && warranty.getCompany().id != null) {
+            Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
             if (company.isEmpty()) {
                 throw new IllegalArgumentException("Company not found");
             }
@@ -167,8 +167,8 @@ public class WarrantyService {
         }
         
         // Validate product exists if being updated
-        if (warranty.getProduct() != null && warranty.getProduct().getId() != null) {
-            Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().getId());
+        if (warranty.getProduct() != null && warranty.getProduct().id != null) {
+            Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().id);
             if (product.isEmpty()) {
                 throw new IllegalArgumentException("Product not found");
             }

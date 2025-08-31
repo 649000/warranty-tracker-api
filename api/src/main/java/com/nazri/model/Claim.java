@@ -1,17 +1,14 @@
 package com.nazri.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "claims", schema = "warranty_tracker")
-public class Claim extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+public class Claim extends PanacheEntity {
+
     @Column(name = "claim_date", nullable = false)
     private LocalDateTime claimDate;
     
@@ -42,10 +39,6 @@ public class Claim extends PanacheEntityBase {
     public Claim() {}
     
     // Getters
-    public Long getId() {
-        return id;
-    }
-    
     public LocalDateTime getClaimDate() {
         return claimDate;
     }
@@ -79,10 +72,6 @@ public class Claim extends PanacheEntityBase {
     }
     
     // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public void setClaimDate(LocalDateTime claimDate) {
         this.claimDate = claimDate;
     }

@@ -1,5 +1,6 @@
 package com.nazri.model;
 
+import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
@@ -9,12 +10,8 @@ import java.util.List;
 
 @Entity
 @Table(name = "warranties", schema = "warranty_tracker")
-public class Warranty extends PanacheEntityBase {
-    
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    
+public class Warranty extends PanacheEntity {
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
     
@@ -63,10 +60,6 @@ public class Warranty extends PanacheEntityBase {
     public Warranty() {}
     
     // Getters
-    public Long getId() {
-        return id;
-    }
-    
     public LocalDate getStartDate() {
         return startDate;
     }
@@ -120,10 +113,6 @@ public class Warranty extends PanacheEntityBase {
     }
     
     // Setters
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }

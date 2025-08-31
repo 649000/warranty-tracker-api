@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-@Path("/api/claims")
+@Path("/claim")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class ClaimResource extends BaseResource {
@@ -30,22 +30,23 @@ public class ClaimResource extends BaseResource {
 
     @GET
     public Response getUserClaims() {
-        try {
-            User user = validateCurrentUser();
-            // Get all warranties for the user first
-            List<Warranty> userWarranties = Warranty.list("user.id", user.getId());
-            // Extract warranty IDs
-            List<Long> warrantyIds = userWarranties.stream()
-                    .map(Warranty::getId)
-                    .collect(Collectors.toList());
-            // Get claims for those warranties
-            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
-            return Response.ok(claims).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-                    .build();
-        }
+        return null;
+//        try {
+//            User user = validateCurrentUser();
+//            // Get all warranties for the user first
+//            List<Warranty> userWarranties = Warranty.list("user.id", user.id);
+//            // Extract warranty IDs
+//            List<Long> warrantyIds = userWarranties.stream()
+//                    .map(Warranty::getId)
+//                    .collect(Collectors.toList());
+//            // Get claims for those warranties
+//            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
+//            return Response.ok(claims).build();
+//        } catch (Exception e) {
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+//                    .build();
+//        }
     }
 
     @GET
@@ -76,7 +77,7 @@ public class ClaimResource extends BaseResource {
             User user = validateCurrentUser();
             // Check if warranty belongs to the current user
             Warranty warranty = Warranty.findById(warrantyId);
-            if (warranty != null && warranty.getUser().getId().equals(user.getId())) {
+            if (warranty != null && warranty.getUser().id.equals(user.id)) {
                 List<Claim> claims = claimService.findByWarrantyId(warrantyId);
                 return Response.ok(claims).build();
             } else if (warranty == null) {
@@ -98,22 +99,23 @@ public class ClaimResource extends BaseResource {
     @GET
     @Path("/status/{status}")
     public Response getClaimsByStatus(@PathParam("status") String status) {
-        try {
-            User user = validateCurrentUser();
-            // Get all warranties for the user first
-            List<Warranty> userWarranties = Warranty.list("user.id", user.getId());
-            // Extract warranty IDs
-            List<Long> warrantyIds = userWarranties.stream()
-                    .map(Warranty::getId)
-                    .collect(Collectors.toList());
-            // Get claims for those warranties with the specified status
-            List<Claim> claims = claimService.findByWarrantyIdsAndStatus(warrantyIds, status);
-            return Response.ok(claims).build();
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-                    .build();
-        }
+        return null;
+//        try {
+//            User user = validateCurrentUser();
+//            // Get all warranties for the user first
+//            List<Warranty> userWarranties = Warranty.list("user.id", user.id);
+//            // Extract warranty IDs
+//            List<Long> warrantyIds = userWarranties.stream()
+//                    .map(Warranty::getId)
+//                    .collect(Collectors.toList());
+//            // Get claims for those warranties with the specified status
+//            List<Claim> claims = claimService.findByWarrantyIdsAndStatus(warrantyIds, status);
+//            return Response.ok(claims).build();
+//        } catch (Exception e) {
+//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+//                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+//                    .build();
+//        }
     }
 
     @POST
@@ -123,7 +125,7 @@ public class ClaimResource extends BaseResource {
             // Check if warranty belongs to the current user
             if (claim.getWarranty() != null) {
                 Warranty warranty = claim.getWarranty();
-                if (warranty.getUser().getId().equals(user.getId())) {
+                if (warranty.getUser().id.equals(user.id)) {
                     Claim createdClaim = claimService.createClaim(claim);
                     return Response.status(Response.Status.CREATED).entity(createdClaim).build();
                 } else {
@@ -156,7 +158,7 @@ public class ClaimResource extends BaseResource {
             if (existingClaim.isPresent()) {
                 validateClaimOwnership(existingClaim.get(), user);
                 // Set the ID to ensure we're updating the correct claim
-                claim.setId(id);
+                claim.id = id;
                 Claim updatedClaim = claimService.updateClaim(claim);
                 return Response.ok(updatedClaim).build();
             } else {

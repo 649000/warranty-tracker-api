@@ -12,7 +12,7 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 import java.util.List;
 import java.util.Optional;
 
-@Path("/api/user-products")
+@Path("/user-product")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public class UserProductResource extends BaseResource {
@@ -30,7 +30,7 @@ public class UserProductResource extends BaseResource {
     public Response getUserProducts() {
         try {
             User user = validateCurrentUser();
-            List<UserProduct> userProducts = userProductService.findByUserId(user.getId());
+            List<UserProduct> userProducts = userProductService.findByUserId(user.id);
             return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -66,7 +66,7 @@ public class UserProductResource extends BaseResource {
         try {
             User user = validateCurrentUser();
             List<UserProduct> userProducts = userProductService.findByUserIdAndProductId(
-                user.getId(), productId);
+                user.id, productId);
             return Response.ok(userProducts).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -82,7 +82,7 @@ public class UserProductResource extends BaseResource {
             
             // Check if a user product with the same serial number already exists for this user
             if (userProduct.getSerialNumber() != null && 
-                userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
+                userProductService.existsByUserIdAndSerialNumber(user.id, userProduct.getSerialNumber())) {
                 return Response.status(Response.Status.CONFLICT)
                         .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
                         .build();
@@ -111,14 +111,14 @@ public class UserProductResource extends BaseResource {
                 // Check if changing to a serial number that already exists for this user
                 if (userProduct.getSerialNumber() != null && 
                     !userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
-                    userProductService.existsByUserIdAndSerialNumber(user.getId(), userProduct.getSerialNumber())) {
+                    userProductService.existsByUserIdAndSerialNumber(user.id, userProduct.getSerialNumber())) {
                     return Response.status(Response.Status.CONFLICT)
                             .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
                             .build();
                 }
                 
                 // Set the ID and user to ensure we're updating the correct user product
-                userProduct.setId(id);
+                userProduct.id = id;
                 userProduct.setUser(user);
                 UserProduct updatedUserProduct = userProductService.updateUserProduct(userProduct);
                 return Response.ok(updatedUserProduct).build();
