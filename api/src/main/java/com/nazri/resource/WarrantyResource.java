@@ -2,6 +2,8 @@ package com.nazri.resource;
 
 import com.nazri.model.Warranty;
 import com.nazri.service.WarrantyService;
+import com.nazri.service.UserService;
+import com.nazri.model.User;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -19,6 +21,9 @@ public class WarrantyResource {
 
     @Inject
     WarrantyService warrantyService;
+    
+    @Inject
+    UserService userService;
 
     @Inject
     JsonWebToken jwt;
@@ -26,10 +31,16 @@ public class WarrantyResource {
     @GET
     public Response getUserWarranties() {
         try {
-            // This would require a way to get the user ID from Firebase UID
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
+                return Response.ok(warranties).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -40,12 +51,26 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response getWarrantyById(@PathParam("id") Long id) {
         try {
-            Optional<Warranty> warranty = warrantyService.findById(id);
-            if (warranty.isPresent()) {
-                return Response.ok(warranty.get()).build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                Optional<Warranty> warranty = warrantyService.findById(id);
+                if (warranty.isPresent()) {
+                    // Check if warranty belongs to the current user
+                    if (warranty.get().getUser().getId().equals(user.get().getId())) {
+                        return Response.ok(warranty.get()).build();
+                    } else {
+                        return Response.status(Response.Status.FORBIDDEN)
+                                .entity("Access denied: Warranty does not belong to user").build();
+                    }
+                } else {
+                    return Response.status(Response.Status.NOT_FOUND)
+                            .entity("Warranty not found with id: " + id).build();
+                }
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Warranty not found with id: " + id).build();
+                        .entity("User not found").build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -57,10 +82,20 @@ public class WarrantyResource {
     @Path("/status/{status}")
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
-            // This would require getting the current user's ID
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
+                // Filter by status
+                List<Warranty> filteredWarranties = warranties.stream()
+                        .filter(w -> w.getStatus().equals(status))
+                        .toList();
+                return Response.ok(filteredWarranties).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -72,10 +107,22 @@ public class WarrantyResource {
     public Response getExpiringWarranties(
             @QueryParam("days") @DefaultValue("30") Integer days) {
         try {
-            // This would require getting the current user's ID
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                LocalDate endDate = LocalDate.now().plusDays(days);
+                List<Warranty> warranties = warrantyService.findByUserId(user.get().getId());
+                // Filter expiring warranties
+                List<Warranty> expiringWarranties = warranties.stream()
+                        .filter(w -> w.getEndDate().isAfter(LocalDate.now()) && 
+                                w.getEndDate().isBefore(endDate))
+                        .toList();
+                return Response.ok(expiringWarranties).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
@@ -85,10 +132,21 @@ public class WarrantyResource {
     @POST
     public Response createWarranty(Warranty warranty) {
         try {
-            // This would require setting the current user ID
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                // Set the current user as the warranty owner
+                warranty.setUser(user.get());
+                Warranty createdWarranty = warrantyService.createWarranty(warranty);
+                return Response.status(Response.Status.CREATED).entity(createdWarranty).build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error creating warranty: " + e.getMessage()).build();
@@ -99,10 +157,34 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response updateWarranty(@PathParam("id") Long id, Warranty warranty) {
         try {
-            // This would require checking if the warranty belongs to the current user
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                Optional<Warranty> existingWarranty = warrantyService.findById(id);
+                if (existingWarranty.isPresent()) {
+                    // Check if warranty belongs to the current user
+                    if (existingWarranty.get().getUser().getId().equals(user.get().getId())) {
+                        // Set the ID and user to ensure we're updating the correct warranty
+                        warranty.setId(id);
+                        warranty.setUser(user.get());
+                        Warranty updatedWarranty = warrantyService.updateWarranty(warranty);
+                        return Response.ok(updatedWarranty).build();
+                    } else {
+                        return Response.status(Response.Status.FORBIDDEN)
+                                .entity("Access denied: Warranty does not belong to user").build();
+                    }
+                } else {
+                    return Response.status(Response.Status.NOT_FOUND)
+                            .entity("Warranty not found with id: " + id).build();
+                }
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(e.getMessage()).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error updating warranty: " + e.getMessage()).build();
@@ -113,10 +195,28 @@ public class WarrantyResource {
     @Path("/{id}")
     public Response deleteWarranty(@PathParam("id") Long id) {
         try {
-            // This would require checking if the warranty belongs to the current user
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented - requires user ID mapping").build();
+            String firebaseUid = jwt.getSubject();
+            Optional<User> user = userService.findByFirebaseUid(firebaseUid);
+            
+            if (user.isPresent()) {
+                Optional<Warranty> warranty = warrantyService.findById(id);
+                if (warranty.isPresent()) {
+                    // Check if warranty belongs to the current user
+                    if (warranty.get().getUser().getId().equals(user.get().getId())) {
+                        warrantyService.deleteWarranty(id);
+                        return Response.noContent().build();
+                    } else {
+                        return Response.status(Response.Status.FORBIDDEN)
+                                .entity("Access denied: Warranty does not belong to user").build();
+                    }
+                } else {
+                    return Response.status(Response.Status.NOT_FOUND)
+                            .entity("Warranty not found with id: " + id).build();
+                }
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("User not found").build();
+            }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error deleting warranty: " + e.getMessage()).build();
@@ -129,10 +229,9 @@ public class WarrantyResource {
     @RolesAllowed("admin")
     public Response getAllWarranties() {
         try {
-            // This would require a method to get all warranties
-            // For now, returning not implemented
-            return Response.status(Response.Status.NOT_IMPLEMENTED)
-                    .entity("Not implemented").build();
+            // Admin can see all warranties
+            List<Warranty> warranties = Warranty.listAll();
+            return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Error retrieving warranties: " + e.getMessage()).build();
