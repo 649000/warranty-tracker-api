@@ -24,15 +24,6 @@ public class CompanyService {
     public Optional<Company> findById(Long id) {
         return Optional.ofNullable(companyRepository.findById(id));
     }
-//
-//    /**
-//     * Find a company by name
-//     * @param name the company name
-//     * @return Optional containing the company if found
-//     */
-//    public Optional<Company> findByName(String name) {
-//        return companyRepository.findByName(name);
-//     }
 
     /**
      * Find companies by name (partial match)
@@ -109,11 +100,6 @@ public class CompanyService {
      */
     @Transactional
     public boolean deleteCompany(Long id) {
-        Company company = companyRepository.findById(id);
-        if (company != null) {
-            companyRepository.deleteCompany(id);
-            return true;
-        }
-        return false;
+        return companyRepository.deleteById(id);
     }
 }
