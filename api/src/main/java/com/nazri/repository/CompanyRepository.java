@@ -14,7 +14,7 @@ public class CompanyRepository implements PanacheRepository<Company> {
      * Find a company by name
      *
      * @param name the company name
-     * @return Optional containing the company if found
+     * @return list of companies with matching name
      */
     public List<Company> findByName(String name) {
         return find("name", name).list();
