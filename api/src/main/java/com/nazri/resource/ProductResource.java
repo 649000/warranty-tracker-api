@@ -8,12 +8,11 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.List;
-import java.util.Optional;
 
 @Path("/api/products")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class ProductResource {
+public class ProductResource extends BaseResource {
 
     @Inject
     ProductService productService;
@@ -25,7 +24,8 @@ public class ProductResource {
             return Response.ok(products).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving products: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving products: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -38,11 +38,13 @@ public class ProductResource {
                 return Response.ok(product).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Product not found with id: " + id).build();
+                        .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -66,7 +68,8 @@ public class ProductResource {
             return Response.ok(products).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error searching products: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error searching products: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -82,14 +85,16 @@ public class ProductResource {
             
             if (!existingProducts.isEmpty()) {
                 return Response.status(Response.Status.CONFLICT)
-                        .entity("Product with this name and model number already exists").build();
+                        .entity(createErrorResponse("Product with this name and model number already exists", "PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
+                        .build();
             }
 
             product = productService.updateProduct(product);
             return Response.status(Response.Status.CREATED).entity(product).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -106,11 +111,13 @@ public class ProductResource {
                 return Response.ok(product).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Product not found with id: " + id).build();
+                        .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -125,11 +132,13 @@ public class ProductResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Product not found with id: " + id).build();
+                        .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting product: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }
