@@ -53,8 +53,8 @@ public class Warranty extends PanacheEntityBase {
     private Product product;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_details_id", nullable = false)
-    private ProductDetails productDetails;
+    @JoinColumn(name = "user_product_id", nullable = false)
+    private UserProduct userProduct;
     
     @OneToMany(mappedBy = "warranty", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Claim> claims;
@@ -111,8 +111,8 @@ public class Warranty extends PanacheEntityBase {
         return product;
     }
     
-    public ProductDetails getProductDetails() {
-        return productDetails;
+    public UserProduct getUserProduct() {
+        return userProduct;
     }
     
     public List<Claim> getClaims() {
@@ -168,8 +168,8 @@ public class Warranty extends PanacheEntityBase {
         this.product = product;
     }
     
-    public void setProductDetails(ProductDetails productDetails) {
-        this.productDetails = productDetails;
+    public void setUserProduct(UserProduct userProduct) {
+        this.userProduct = userProduct;
     }
     
     public void setClaims(List<Claim> claims) {

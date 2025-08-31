@@ -31,7 +31,7 @@ public class Product extends PanacheEntityBase {
     
     // Relationships
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ProductDetails> productDetails;
+    private List<UserProduct> userProducts;
     
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Warranty> warranties;
@@ -64,8 +64,8 @@ public class Product extends PanacheEntityBase {
         return updatedAt;
     }
     
-    public List<ProductDetails> getProductDetails() {
-        return productDetails;
+    public List<UserProduct> getUserProducts() {
+        return userProducts;
     }
     
     public List<Warranty> getWarranties() {
@@ -97,8 +97,8 @@ public class Product extends PanacheEntityBase {
         this.updatedAt = updatedAt;
     }
     
-    public void setProductDetails(List<ProductDetails> productDetails) {
-        this.productDetails = productDetails;
+    public void setUserProducts(List<UserProduct> userProducts) {
+        this.userProducts = userProducts;
     }
     
     public void setWarranties(List<Warranty> warranties) {
