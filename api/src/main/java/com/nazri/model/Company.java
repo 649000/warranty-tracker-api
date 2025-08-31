@@ -3,7 +3,6 @@ package com.nazri.model;
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "companies", schema = "warranty_tracker")
@@ -45,10 +44,6 @@ public class Company extends PanacheEntityBase {
     
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
-    
-    // Relationships
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Warranty> warranties;
     
     // Constructors
     public Company() {}
@@ -102,10 +97,6 @@ public class Company extends PanacheEntityBase {
         return updatedAt;
     }
     
-    public List<Warranty> getWarranties() {
-        return warranties;
-    }
-    
     // Setters
     public void setId(Long id) {
         this.id = id;
@@ -153,10 +144,6 @@ public class Company extends PanacheEntityBase {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
-    }
-    
-    public void setWarranties(List<Warranty> warranties) {
-        this.warranties = warranties;
     }
     
     @PrePersist
