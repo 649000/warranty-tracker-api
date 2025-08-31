@@ -19,6 +19,25 @@ public class ClaimRepository implements PanacheRepository<Claim> {
     }
     
     /**
+     * Find all claims for a list of warranty IDs
+     * @param warrantyIds list of warranty IDs
+     * @return list of claims
+     */
+    public List<Claim> findByWarrantyIds(List<Long> warrantyIds) {
+        return find("warranty.id in ?1", warrantyIds).list();
+    }
+    
+    /**
+     * Find claims by warranty IDs and status
+     * @param warrantyIds list of warranty IDs
+     * @param status the claim status
+     * @return list of claims
+     */
+    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
+        return find("warranty.id in ?1 and status = ?2", warrantyIds, status).list();
+    }
+    
+    /**
      * Find claims by status
      * @param status the claim status
      * @return list of claims
