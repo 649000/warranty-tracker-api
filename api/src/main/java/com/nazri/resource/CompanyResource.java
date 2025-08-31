@@ -1,6 +1,8 @@
 package com.nazri.resource;
 
 import com.nazri.model.Company;
+import com.nazri.service.CompanyService;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -15,11 +17,14 @@ public class CompanyResource extends BaseResource {
 
     private static final Logger LOG = Logger.getLogger(CompanyResource.class);
 
+    @Inject
+    CompanyService companyService;
+
     @GET
     public Response getAllCompanies() {
         try {
             LOG.info("Fetching all companies");
-            List<Company> companies = Company.listAll();
+            List<Company> companies = companyService.findAllCompanies();
             LOG.info("Found " + companies.size() + " companies");
             return Response.ok(companies).build();
         } catch (Exception e) {
@@ -78,7 +83,7 @@ public class CompanyResource extends BaseResource {
             LOG.info("Creating company: " + company.getName());
             
             // Set timestamps
-            company.prePersist();
+//            company.prePersist();
             
             // Persist the company
             company.persist();
@@ -111,7 +116,7 @@ public class CompanyResource extends BaseResource {
                 existingCompany.setReturnInstructions(company.getReturnInstructions());
                 
                 // Update timestamp
-                existingCompany.preUpdate();
+//                existingCompany.preUpdate();
                 
                 // Merge changes
                 existingCompany.persist();
