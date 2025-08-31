@@ -5,17 +5,19 @@ import com.nazri.repository.CompanyRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
 public class CompanyService {
-    
+
     @Inject
     CompanyRepository companyRepository;
-    
+
     /**
      * Find a company by its ID
+     *
      * @param id the company ID
      * @return Optional containing the company if found
      */
@@ -31,24 +33,26 @@ public class CompanyService {
 //    public Optional<Company> findByName(String name) {
 //        return companyRepository.findByName(name);
 //    }
-    
+
     /**
      * Find companies by name (partial match)
+     *
      * @param name the company name to search for
      * @return list of companies
      */
     public List<Company> findByNameContaining(String name) {
         return companyRepository.findByNameContaining(name);
     }
-    
+
     /**
      * Get all companies
+     *
      * @return list of all companies
      */
     public List<Company> findAllCompanies() {
         return companyRepository.findAllCompanies();
     }
-    
+
 //    /**
 //     * Create a new company
 //     * @param company the company to create
@@ -66,9 +70,10 @@ public class CompanyService {
 //
 //        return companyRepository.createCompany(company);
 //    }
-    
+
     /**
      * Update an existing company
+     *
      * @param company the company to update
      * @return the updated company
      */
@@ -76,13 +81,16 @@ public class CompanyService {
     public Company updateCompany(Company company) {
         return companyRepository.updateCompany(company);
     }
-    
+
     /**
      * Delete a company by ID
+     *
      * @param id the company ID
+     * @return
      */
     @Transactional
-    public void deleteCompany(Long id) {
+    public boolean deleteCompany(Long id) {
         companyRepository.deleteCompany(id);
+        return false;
     }
 }
