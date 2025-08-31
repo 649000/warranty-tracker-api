@@ -17,7 +17,7 @@ import java.util.List;
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
-public class CompanyResource {
+public class CompanyResource extends BaseResource {
 
     @Inject
     CompanyService companyService;
@@ -35,7 +35,8 @@ public class CompanyResource {
             return Response.ok(companies).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving companies: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -48,11 +49,13 @@ public class CompanyResource {
                 return Response.ok(company).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Company not found with id: " + id).build();
+                        .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error retrieving company: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error retrieving company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -64,7 +67,8 @@ public class CompanyResource {
             return Response.ok(companies).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error searching companies: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error searching companies: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -77,7 +81,8 @@ public class CompanyResource {
                 List<Company> existingCompanies = Company.find("name", company.getName()).list();
                 if (!existingCompanies.isEmpty()) {
                     return Response.status(Response.Status.CONFLICT)
-                            .entity("Company with this name already exists").build();
+                            .entity(createErrorResponse("Company with this name already exists", "COMPANY_EXISTS", Response.Status.CONFLICT.getStatusCode()))
+                            .build();
                 }
             }
 
@@ -85,7 +90,8 @@ public class CompanyResource {
             return Response.status(Response.Status.CREATED).entity(company).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error creating company: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error creating company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -102,11 +108,13 @@ public class CompanyResource {
                 return Response.ok(company).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Company not found with id: " + id).build();
+                        .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error updating company: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error updating company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 
@@ -121,11 +129,13 @@ public class CompanyResource {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity("Company not found with id: " + id).build();
+                        .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
             }
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Error deleting company: " + e.getMessage()).build();
+                    .entity(createErrorResponse("Error deleting company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
         }
     }
 }
