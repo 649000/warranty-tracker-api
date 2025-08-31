@@ -25,7 +25,7 @@ public class UserResource extends BaseResource {
     JsonWebToken jwt;
 
     @GET
-    public Response getCurrentUser() {
+    public Response getJwtUser() {
         try {
             User user = validateCurrentUser();
             return Response.ok(user).build();
