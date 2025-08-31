@@ -31,7 +31,7 @@ public class CompanyResource extends BaseResource {
     @GET
     public Response getAllCompanies() {
         try {
-            List<Company> companies = companyService.findAllCompanies();
+            List<Company> companies = Company.listAll();
             return Response.ok(companies).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
