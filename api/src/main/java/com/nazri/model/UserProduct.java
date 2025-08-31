@@ -2,7 +2,6 @@ package com.nazri.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -95,8 +94,11 @@ public class UserProduct extends PanacheEntity {
         return user;
     }
     
+    public List<Warranty> getWarranties() {
+        return warranties;
+    }
+    
     // Setters
-
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
     }
@@ -135,6 +137,10 @@ public class UserProduct extends PanacheEntity {
     
     public void setUser(User user) {
         this.user = user;
+    }
+    
+    public void setWarranties(List<Warranty> warranties) {
+        this.warranties = warranties;
     }
     
     @Override
