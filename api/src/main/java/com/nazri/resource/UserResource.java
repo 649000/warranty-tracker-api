@@ -25,14 +25,14 @@ public class UserResource {
     JsonWebToken jwt;
 
     // Helper method to get current user
-    private Optional<User> getCurrentUser() {
+    private Optional<User> geJWTUser() {
         String firebaseUid = jwt.getSubject();
         return userService.findByFirebaseUid(firebaseUid);
     }
     
     // Helper method to validate current user
     private User validateCurrentUser() {
-        return getCurrentUser()
+        return geJWTUser()
             .orElseThrow(() -> new WebApplicationException(
                 Response.status(Response.Status.NOT_FOUND)
                     .entity("User not found").build()));
