@@ -63,13 +63,4 @@ public class CompanyRepository implements PanacheRepository<Company> {
         getEntityManager().merge(company);
         return company;
     }
-
-    /**
-     * Delete a company by ID
-     *
-     * @param id the company ID
-     */
-    public void deleteCompany(Long id) {
-        deleteById(id);
-    }
 }
