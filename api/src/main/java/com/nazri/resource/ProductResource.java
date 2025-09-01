@@ -79,15 +79,6 @@ public class ProductResource extends BaseResource {
     @RolesAllowed("admin")
     public Response createProduct(Product product) {
         try {
-            // Check if product with same name and model number already exists
-            List<Product> existingProducts = productService.findByNameAndModelNumber(product.getName(), product.getModelNumber());
-
-            if (!existingProducts.isEmpty()) {
-                return Response.status(Response.Status.CONFLICT)
-                        .entity(createErrorResponse("Product with this name and model number already exists", "PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
-                        .build();
-            }
-
             Product createdProduct = productService.createProduct(product);
             return Response.status(Response.Status.CREATED).entity(createdProduct).build();
         } catch (IllegalArgumentException e) {
