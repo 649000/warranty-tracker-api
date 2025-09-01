@@ -82,17 +82,16 @@ public class ProductService {
      * Create a new product
      * @param product the product to create
      * @return the created product
+     * @throws IllegalArgumentException if a product with the same serial number already exists
      */
     @Transactional
     public Product createProduct(Product product) {
         // Check if product with same serial number already exists
         if (product.getSerialNumber() != null && !product.getSerialNumber().isEmpty()) {
-            // Note: This check is commented out in the repository as well
-            // Uncomment both when serial number functionality is needed
-            // Optional<Product> existingProduct = productRepository.findBySerialNumber(product.getSerialNumber());
-            // if (existingProduct.isPresent()) {
-            //     throw new IllegalArgumentException("Product with this serial number already exists");
-            // }
+            Optional<Product> existingProduct = findBySerialNumber(product.getSerialNumber());
+            if (existingProduct.isPresent()) {
+                throw new IllegalArgumentException("Product with this serial number already exists");
+            }
         }
 
         return productRepository.createProduct(product);
