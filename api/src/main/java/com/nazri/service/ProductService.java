@@ -32,12 +32,12 @@ public class ProductService {
     }
 
     /**
-     * Find a product by serial number
-     * @param serialNumber the product serial number
+     * Find a product by model number
+     * @param modelNumber the product model number
      * @return Optional containing the product if found
      */
-    public Optional<Product> findBySerialNumber(String serialNumber) {
-        List<Product> products = productRepository.findBySerialNumber(serialNumber);
+    public Optional<Product> findByModelNumber(String modelNumber) {
+        List<Product> products = productRepository.findByModelNumber(modelNumber);
         return products.isEmpty() ? Optional.empty() : Optional.of(products.get(0));
     }
     
@@ -82,15 +82,15 @@ public class ProductService {
      * Create a new product
      * @param product the product to create
      * @return the created product
-     * @throws IllegalArgumentException if a product with the same serial number already exists
+     * @throws IllegalArgumentException if a product with the same model number already exists
      */
     @Transactional
     public Product createProduct(Product product) {
-        // Check if product with same serial number already exists
-        if (product.getSerialNumber() != null && !product.getSerialNumber().isEmpty()) {
-            Optional<Product> existingProduct = findBySerialNumber(product.getSerialNumber());
+        // Check if product with same model number already exists
+        if (product.getModelNumber() != null && !product.getModelNumber().isEmpty()) {
+            Optional<Product> existingProduct = findByModelNumber(product.getModelNumber());
             if (existingProduct.isPresent()) {
-                throw new IllegalArgumentException("Product with this serial number already exists");
+                throw new IllegalArgumentException("Product with this model number already exists");
             }
         }
 

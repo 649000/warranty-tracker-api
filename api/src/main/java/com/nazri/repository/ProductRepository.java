@@ -10,12 +10,12 @@ import java.util.List;
 public class ProductRepository implements PanacheRepository<Product> {
     
     /**
-     * Find a product by serial number
-     * @param serialNumber the product serial number
+     * Find products by model number (exact match)
+     * @param modelNumber the product model number
      * @return list containing the product if found
      */
-    public List<Product> findBySerialNumber(String serialNumber) {
-        return find("serialNumber", serialNumber).list();
+    public List<Product> findByModelNumber(String modelNumber) {
+        return find("modelNumber", modelNumber).list();
     }
     
     /**

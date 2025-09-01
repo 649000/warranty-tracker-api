@@ -90,6 +90,10 @@ public class ProductResource extends BaseResource {
 
             Product createdProduct = productService.createProduct(product);
             return Response.status(Response.Status.CREATED).entity(createdProduct).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error creating product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
