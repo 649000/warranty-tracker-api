@@ -11,6 +11,7 @@ import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/user-product")
 @Produces(MediaType.APPLICATION_JSON)
@@ -44,8 +45,9 @@ public class UserProductResource extends BaseResource {
     public Response getUserProductById(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            UserProduct userProduct = UserProduct.findById(id);
-            if (userProduct != null) {
+            Optional<UserProduct> userProductOpt = userProductService.findById(id);
+            if (userProductOpt.isPresent()) {
+                UserProduct userProduct = userProductOpt.get();
                 validateUserProductOwnership(userProduct, user);
                 return Response.ok(userProduct).build();
             } else {
@@ -104,8 +106,9 @@ public class UserProductResource extends BaseResource {
     public Response updateUserProduct(@PathParam("id") Long id, UserProduct userProduct) {
         try {
             User user = validateCurrentUser();
-            UserProduct existingUserProduct = UserProduct.findById(id);
-            if (existingUserProduct != null) {
+            Optional<UserProduct> existingUserProductOpt = userProductService.findById(id);
+            if (existingUserProductOpt.isPresent()) {
+                UserProduct existingUserProduct = existingUserProductOpt.get();
                 validateUserProductOwnership(existingUserProduct, user);
 
                 // Check if changing to a serial number that already exists for this user
@@ -139,8 +142,9 @@ public class UserProductResource extends BaseResource {
     public Response deleteUserProduct(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            UserProduct userProduct = UserProduct.findById(id);
-            if (userProduct != null) {
+            Optional<UserProduct> userProductOpt = userProductService.findById(id);
+            if (userProductOpt.isPresent()) {
+                UserProduct userProduct = userProductOpt.get();
                 validateUserProductOwnership(userProduct, user);
                 userProductService.deleteUserProduct(id);
                 return Response.noContent().build();

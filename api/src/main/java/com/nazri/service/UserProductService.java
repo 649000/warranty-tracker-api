@@ -16,6 +16,15 @@ public class UserProductService {
     UserProductRepository userProductRepository;
     
     /**
+     * Find a user product by its ID
+     * @param id the user product ID
+     * @return Optional containing the user product if found
+     */
+    public Optional<UserProduct> findById(Long id) {
+        return Optional.ofNullable(UserProduct.findById(id));
+    }
+    
+    /**
      * Find all user products for a specific user
      * @param userId the user ID
      * @return list of user products
