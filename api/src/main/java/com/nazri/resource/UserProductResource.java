@@ -74,18 +74,14 @@ public class UserProductResource extends BaseResource {
         try {
             User user = validateCurrentUser();
 
-            // Check if a user product with the same serial number already exists for this user
-            if (userProduct.getSerialNumber() != null &&
-                    userProductService.existsByUserIdAndSerialNumber(user.id, userProduct.getSerialNumber())) {
-                return Response.status(Response.Status.CONFLICT)
-                        .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
-                        .build();
-            }
-
             // Set the current user as the owner
             userProduct.setUser(user);
             UserProduct createdUserProduct = userProductService.createUserProduct(userProduct);
             return Response.status(Response.Status.CREATED).entity(createdUserProduct).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error creating user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
@@ -103,15 +99,6 @@ public class UserProductResource extends BaseResource {
                 UserProduct existingUserProduct = existingUserProductOpt.get();
                 validateUserProductOwnership(existingUserProduct, user);
 
-                // Check if changing to a serial number that already exists for this user
-                if (userProduct.getSerialNumber() != null &&
-                        !userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
-                        userProductService.existsByUserIdAndSerialNumber(user.id, userProduct.getSerialNumber())) {
-                    return Response.status(Response.Status.CONFLICT)
-                            .entity(createErrorResponse("User product with this serial number already exists for this user", "USER_PRODUCT_EXISTS", Response.Status.CONFLICT.getStatusCode()))
-                            .build();
-                }
-
                 // Set the ID and user to ensure we're updating the correct user product
                 userProduct.id = id;
                 userProduct.setUser(user);
@@ -122,6 +109,10 @@ public class UserProductResource extends BaseResource {
                         .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
                         .build();
             }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error updating user product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))

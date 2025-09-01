@@ -64,9 +64,16 @@ public class UserProductService {
      * Create a new user product
      * @param userProduct the user product to create
      * @return the created user product
+     * @throws IllegalArgumentException if a user product with the same serial number already exists for this user
      */
     @Transactional
     public UserProduct createUserProduct(UserProduct userProduct) {
+        // Check if a user product with the same serial number already exists for this user
+        if (userProduct.getSerialNumber() != null &&
+                existsByUserIdAndSerialNumber(userProduct.getUser().id, userProduct.getSerialNumber())) {
+            throw new IllegalArgumentException("User product with this serial number already exists for this user");
+        }
+
         return userProductRepository.createUserProduct(userProduct);
     }
     
@@ -74,9 +81,22 @@ public class UserProductService {
      * Update an existing user product
      * @param userProduct the user product to update
      * @return the updated user product
+     * @throws IllegalArgumentException if changing to a serial number that already exists for this user
      */
     @Transactional
     public UserProduct updateUserProduct(UserProduct userProduct) {
+        // Check if changing to a serial number that already exists for this user
+        if (userProduct.getSerialNumber() != null) {
+            Optional<UserProduct> existingUserProductOpt = findById(userProduct.id);
+            if (existingUserProductOpt.isPresent()) {
+                UserProduct existingUserProduct = existingUserProductOpt.get();
+                if (!userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
+                        existsByUserIdAndSerialNumber(userProduct.getUser().id, userProduct.getSerialNumber())) {
+                    throw new IllegalArgumentException("User product with this serial number already exists for this user");
+                }
+            }
+        }
+
         return userProductRepository.updateUserProduct(userProduct);
     }
     
