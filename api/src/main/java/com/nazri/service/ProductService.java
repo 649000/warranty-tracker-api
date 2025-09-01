@@ -36,9 +36,9 @@ public class ProductService {
      * @param serialNumber the product serial number
      * @return Optional containing the product if found
      */
-//    public Optional<Product> findBySerialNumber(String serialNumber) {
-//        return productRepository.findBySerialNumber(serialNumber);
-//    }
+    public Optional<Product> findBySerialNumber(String serialNumber) {
+        return productRepository.findBySerialNumber(serialNumber);
+    }
     
     /**
      * Find products by name (partial match)
