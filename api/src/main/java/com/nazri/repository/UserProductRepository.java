@@ -10,6 +10,15 @@ import java.util.Optional;
 @ApplicationScoped
 public class UserProductRepository implements PanacheRepository<UserProduct> {
     
+    /**
+     * Find a user product by its ID
+     * @param id the user product ID
+     * @return the user product if found, null otherwise
+     */
+    public UserProduct findById(Long id) {
+        return find("id", id).firstResult();
+    }
+    
     public List<UserProduct> findByUserId(Long userId) {
         return find("user.id", userId).list();
     }

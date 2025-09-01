@@ -5,7 +5,6 @@ import com.nazri.repository.UserProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +20,7 @@ public class UserProductService {
      * @return Optional containing the user product if found
      */
     public Optional<UserProduct> findById(Long id) {
-        return Optional.ofNullable(UserProduct.findById(id));
+        return userProductRepository.findById(id);
     }
     
     /**
@@ -68,8 +67,6 @@ public class UserProductService {
      */
     @Transactional
     public UserProduct createUserProduct(UserProduct userProduct) {
-        userProduct.setCreatedAt(LocalDateTime.now());
-        userProduct.setUpdatedAt(LocalDateTime.now());
         return userProductRepository.createUserProduct(userProduct);
     }
     
@@ -80,7 +77,6 @@ public class UserProductService {
      */
     @Transactional
     public UserProduct updateUserProduct(UserProduct userProduct) {
-        userProduct.setUpdatedAt(LocalDateTime.now());
         return userProductRepository.updateUserProduct(userProduct);
     }
     
