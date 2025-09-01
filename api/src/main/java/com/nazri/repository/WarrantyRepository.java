@@ -17,7 +17,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return Optional containing the warranty if found
      */
     public Optional<Warranty> findByIdOptional(Long id) {
-        return find("id", id).firstResultOptional();
+        return findById(id);
     }
 
     /**
@@ -26,7 +26,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findByUserId(Long userId) {
-        return find("user.id", userId).list();
+        return list("user.id", userId);
     }
 
     /**
@@ -35,7 +35,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findByCompanyId(Long companyId) {
-        return find("company.id", companyId).list();
+        return list("company.id", companyId);
     }
 
     /**
@@ -44,7 +44,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findByStatus(String status) {
-        return find("status", status).list();
+        return list("status", status);
     }
 
     /**
@@ -54,7 +54,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findByUserIdAndStatus(Long userId, String status) {
-        return find("user.id = ?1 and status = ?2", userId, status).list();
+        return list("user.id = ?1 and status = ?2", userId, status);
     }
 
     /**
@@ -64,7 +64,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findExpiringBetween(LocalDate startDate, LocalDate endDate) {
-        return find("endDate >= ?1 and endDate <= ?2", startDate, endDate).list();
+        return list("endDate >= ?1 and endDate <= ?2", startDate, endDate);
     }
 
     /**
@@ -75,8 +75,8 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findExpiringWarranties(Long userId, LocalDate startDate, LocalDate endDate) {
-        return find("user.id = ?1 and endDate >= ?2 and endDate <= ?3 and status = ?4", 
-                   userId, startDate, endDate, "ACTIVE").list();
+        return list("user.id = ?1 and endDate >= ?2 and endDate <= ?3 and status = ?4", 
+                   userId, startDate, endDate, "ACTIVE");
     }
 
     /**
@@ -84,7 +84,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of expired warranties
      */
     public List<Warranty> findExpiredWarranties() {
-        return find("endDate < ?1 and status = ?2", LocalDate.now(), "ACTIVE").list();
+        return list("endDate < ?1 and status = ?2", LocalDate.now(), "ACTIVE");
     }
 
     /**
@@ -101,7 +101,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of warranties
      */
     public List<Warranty> findByUserProductId(Long userProductId) {
-        return find("userProduct.id", userProductId).list();
+        return list("userProduct.id", userProductId);
     }
 
     /**
