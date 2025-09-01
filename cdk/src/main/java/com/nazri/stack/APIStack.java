@@ -36,6 +36,8 @@ public class APIStack extends Stack {
         }
 
         addHealthRoute(httpApi);
+        addUserRoute(httpApi);
+        addCompanyRoute(httpApi);
         TagUtil.addTags(this.apiFunction, stackConfig);
     }
 
@@ -157,5 +159,71 @@ public class APIStack extends Stack {
 //                        .create("quarkus-openapi", apiFunction)
 //                        .build())
 //                .build());
+    }
+    private void addUserRoute(HttpApi httpApi) {
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/user")
+                .methods(List.of(HttpMethod.POST))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("user-post-integration", apiFunction)
+                        .build())
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/user")
+                .methods(List.of(HttpMethod.PUT))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("user-put-integration", apiFunction)
+                        .build())
+                .build());
+    }
+
+    private void addCompanyRoute(HttpApi httpApi) {
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company")
+                .methods(List.of(HttpMethod.GET))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-get-integration", apiFunction)
+                        .build())
+                .build());
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company/{id}")
+                .methods(List.of(HttpMethod.GET))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-get-one-integration", apiFunction)
+                        .build())
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company/search")
+                .methods(List.of(HttpMethod.GET))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-search-integration", apiFunction)
+                        .build())
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company")
+                .methods(List.of(HttpMethod.POST))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-post-integration", apiFunction)
+                        .build())
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company/{id}")
+                .methods(List.of(HttpMethod.PUT))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-put-integration", apiFunction)
+                        .build())
+                .build());
+
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/company/{id}")
+                .methods(List.of(HttpMethod.DELETE))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("company-delete-integration", apiFunction)
+                        .build())
+                .build());
     }
 }
