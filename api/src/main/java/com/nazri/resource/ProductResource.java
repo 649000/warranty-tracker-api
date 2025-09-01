@@ -9,6 +9,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 import java.util.List;
+import java.util.Optional;
 
 @Path("/product")
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,7 +22,7 @@ public class ProductResource extends BaseResource {
     @GET
     public Response getAllProducts() {
         try {
-            List<Product> products = Product.listAll();
+            List<Product> products = productService.findAllProducts();
             return Response.ok(products).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -34,9 +35,9 @@ public class ProductResource extends BaseResource {
     @Path("/{id}")
     public Response getProductById(@PathParam("id") Long id) {
         try {
-            Product product = Product.findById(id);
-            if (product != null) {
-                return Response.ok(product).build();
+            Optional<Product> product = productService.findById(id);
+            if (product.isPresent()) {
+                return Response.ok(product.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
@@ -64,7 +65,7 @@ public class ProductResource extends BaseResource {
             } else if (modelNumber != null && !modelNumber.isEmpty()) {
                 products = productService.findByModelNumberContaining(modelNumber);
             } else {
-                products = Product.listAll();
+                products = productService.findAllProducts();
             }
             return Response.ok(products).build();
         } catch (Exception e) {
@@ -79,10 +80,7 @@ public class ProductResource extends BaseResource {
     public Response createProduct(Product product) {
         try {
             // Check if product with same name and model number already exists
-            List<Product> existingProducts = Product.find(
-                    "name = ?1 and modelNumber = ?2",
-                    product.getName(),
-                    product.getModelNumber()).list();
+            List<Product> existingProducts = productService.findByNameAndModelNumber(product.getName(), product.getModelNumber());
 
             if (!existingProducts.isEmpty()) {
                 return Response.status(Response.Status.CONFLICT)
@@ -90,8 +88,8 @@ public class ProductResource extends BaseResource {
                         .build();
             }
 
-            product = productService.updateProduct(product);
-            return Response.status(Response.Status.CREATED).entity(product).build();
+            Product createdProduct = productService.createProduct(product);
+            return Response.status(Response.Status.CREATED).entity(createdProduct).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error creating product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
@@ -104,12 +102,12 @@ public class ProductResource extends BaseResource {
     @RolesAllowed("admin")
     public Response updateProduct(@PathParam("id") Long id, Product product) {
         try {
-            Product existingProduct = Product.findById(id);
-            if (existingProduct != null) {
+            Optional<Product> existingProduct = productService.findById(id);
+            if (existingProduct.isPresent()) {
                 // Set the ID to ensure we're updating the correct product
                 product.id = id;
-                product = productService.updateProduct(product);
-                return Response.ok(product).build();
+                Product updatedProduct = productService.updateProduct(product);
+                return Response.ok(updatedProduct).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
@@ -127,8 +125,8 @@ public class ProductResource extends BaseResource {
     @RolesAllowed("admin")
     public Response deleteProduct(@PathParam("id") Long id) {
         try {
-            Product product = Product.findById(id);
-            if (product != null) {
+            Optional<Product> product = productService.findById(id);
+            if (product.isPresent()) {
                 productService.deleteProduct(id);
                 return Response.noContent().build();
             } else {
