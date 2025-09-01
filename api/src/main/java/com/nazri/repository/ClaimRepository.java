@@ -16,7 +16,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return Optional containing the claim if found
      */
     public Optional<Claim> findByIdOptional(Long id) {
-        return findById(id);
+        return Optional.ofNullable(findById(id));
     }
     
     /**
