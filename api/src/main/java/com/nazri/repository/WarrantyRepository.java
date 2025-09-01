@@ -6,9 +6,19 @@ import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class WarrantyRepository implements PanacheRepository<Warranty> {
+
+    /**
+     * Find a warranty by its ID
+     * @param id the warranty ID
+     * @return Optional containing the warranty if found
+     */
+    public Optional<Warranty> findById(Long id) {
+        return find("id", id).firstResultOptional();
+    }
 
     /**
      * Find all warranties for a specific user
@@ -38,6 +48,16 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
+     * Find warranties by user ID and status
+     * @param userId the user ID
+     * @param status the warranty status
+     * @return list of warranties
+     */
+    public List<Warranty> findByUserIdAndStatus(Long userId, String status) {
+        return find("user.id = ?1 and status = ?2", userId, status).list();
+    }
+
+    /**
      * Find warranties expiring within a date range
      * @param startDate start date
      * @param endDate end date
@@ -48,11 +68,31 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
+     * Find expiring warranties for a user within a date range
+     * @param userId the user ID
+     * @param startDate start date
+     * @param endDate end date
+     * @return list of warranties
+     */
+    public List<Warranty> findExpiringWarranties(Long userId, LocalDate startDate, LocalDate endDate) {
+        return find("user.id = ?1 and endDate >= ?2 and endDate <= ?3 and status = ?4", 
+                   userId, startDate, endDate, "ACTIVE").list();
+    }
+
+    /**
      * Find expired warranties
      * @return list of expired warranties
      */
     public List<Warranty> findExpiredWarranties() {
         return find("endDate < ?1 and status = ?2", LocalDate.now(), "ACTIVE").list();
+    }
+
+    /**
+     * Find all warranties
+     * @return list of all warranties
+     */
+    public List<Warranty> findAllWarranties() {
+        return findAll().list();
     }
 
     /**

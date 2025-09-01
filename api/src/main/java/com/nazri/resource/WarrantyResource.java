@@ -68,12 +68,8 @@ public class WarrantyResource extends BaseResource {
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
             User user = validateCurrentUser();
-            List<Warranty> warranties = warrantyService.findByUserId(user.id);
-            // Filter by status
-            List<Warranty> filteredWarranties = warranties.stream()
-                    .filter(w -> w.getStatus().equals(status))
-                    .toList();
-            return Response.ok(filteredWarranties).build();
+            List<Warranty> warranties = warrantyService.findByUserIdAndStatus(user.id, status);
+            return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
@@ -88,13 +84,8 @@ public class WarrantyResource extends BaseResource {
         try {
             User user = validateCurrentUser();
             LocalDate endDate = LocalDate.now().plusDays(days);
-            List<Warranty> warranties = warrantyService.findByUserId(user.id);
-            // Filter expiring warranties
-            List<Warranty> expiringWarranties = warranties.stream()
-                    .filter(w -> w.getEndDate().isAfter(LocalDate.now()) &&
-                            w.getEndDate().isBefore(endDate))
-                    .toList();
-            return Response.ok(expiringWarranties).build();
+            List<Warranty> warranties = warrantyService.findExpiringWarranties(user.id, LocalDate.now(), endDate);
+            return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
@@ -179,7 +170,7 @@ public class WarrantyResource extends BaseResource {
     public Response getAllWarranties() {
         try {
             // Admin can see all warranties
-            List<Warranty> warranties = Warranty.listAll();
+            List<Warranty> warranties = warrantyService.findAllWarranties();
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
