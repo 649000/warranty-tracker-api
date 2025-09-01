@@ -36,7 +36,7 @@ public class ClaimResource extends BaseResource {
             List<Warranty> userWarranties = Warranty.list("user.id", user.id);
             // Extract warranty IDs
             List<Long> warrantyIds = userWarranties.stream()
-                    .map(Warranty::getId)
+                    .map(warranty -> warranty.id)
                     .collect(Collectors.toList());
             // Get claims for those warranties
             List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
