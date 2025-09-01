@@ -12,7 +12,7 @@ public class ProductRepository implements PanacheRepository<Product> {
     /**
      * Find a product by serial number
      * @param serialNumber the product serial number
-     * @return Optional containing the product if found
+     * @return list containing the product if found
      */
     public List<Product> findBySerialNumber(String serialNumber) {
         return find("serialNumber", serialNumber).list();
@@ -46,6 +46,16 @@ public class ProductRepository implements PanacheRepository<Product> {
     }
     
     /**
+     * Find products by name and model number
+     * @param name the product name
+     * @param modelNumber the model number
+     * @return list of products
+     */
+    public List<Product> findByNameAndModelNumber(String name, String modelNumber) {
+        return find("name = ?1 and modelNumber = ?2", name, modelNumber).list();
+    }
+    
+    /**
      * Create a new product
      * @param product the product to create
      * @return the created product
@@ -74,5 +84,22 @@ public class ProductRepository implements PanacheRepository<Product> {
      */
     public void deleteProduct(Long id) {
         deleteById(id);
+    }
+    
+    /**
+     * Find all products
+     * @return list of all products
+     */
+    public List<Product> listAll() {
+        return findAll().list();
+    }
+    
+    /**
+     * Find a product by ID
+     * @param id the product ID
+     * @return the product if found, null otherwise
+     */
+    public Product findById(Long id) {
+        return find("id", id).firstResult();
     }
 }
