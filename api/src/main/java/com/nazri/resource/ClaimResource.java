@@ -98,7 +98,6 @@ public class ClaimResource extends BaseResource {
     @GET
     @Path("/status/{status}")
     public Response getClaimsByStatus(@PathParam("status") String status) {
-        return null;
         try {
             User user = validateCurrentUser();
             // Get all warranties for the user first
