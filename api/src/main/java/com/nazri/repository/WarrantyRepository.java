@@ -96,12 +96,12 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
-     * Find warranties by product ID
-     * @param productId the product ID
+     * Find warranties by user product ID
+     * @param userProductId the user product ID
      * @return list of warranties
      */
-    public List<Warranty> findByProductId(Long productId) {
-        return find("product.id", productId).list();
+    public List<Warranty> findByUserProductId(Long userProductId) {
+        return find("userProduct.id", userProductId).list();
     }
 
     /**
