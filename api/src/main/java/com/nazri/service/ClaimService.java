@@ -24,9 +24,6 @@ public class ClaimService {
     @Inject
     WarrantyRepository warrantyRepository;
 
-    @Inject
-    UserRepository userRepository;
-
     // Valid claim statuses
     private static final Set<String> VALID_STATUSES = new HashSet<>();
     static {
