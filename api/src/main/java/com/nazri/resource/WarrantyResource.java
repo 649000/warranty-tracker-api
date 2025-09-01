@@ -1,15 +1,16 @@
 package com.nazri.resource;
 
-import com.nazri.model.Warranty;
-import com.nazri.service.WarrantyService;
-import com.nazri.service.UserService;
 import com.nazri.model.User;
+import com.nazri.model.Warranty;
+import com.nazri.service.UserService;
+import com.nazri.service.WarrantyService;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.eclipse.microprofile.jwt.JsonWebToken;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +22,7 @@ public class WarrantyResource extends BaseResource {
 
     @Inject
     WarrantyService warrantyService;
-    
+
     @Inject
     UserService userService;
 
@@ -90,7 +91,7 @@ public class WarrantyResource extends BaseResource {
             List<Warranty> warranties = warrantyService.findByUserId(user.id);
             // Filter expiring warranties
             List<Warranty> expiringWarranties = warranties.stream()
-                    .filter(w -> w.getEndDate().isAfter(LocalDate.now()) && 
+                    .filter(w -> w.getEndDate().isAfter(LocalDate.now()) &&
                             w.getEndDate().isBefore(endDate))
                     .toList();
             return Response.ok(expiringWarranties).build();
@@ -238,7 +239,7 @@ public class WarrantyResource extends BaseResource {
         try {
             LocalDate startDate = startDateStr != null ? LocalDate.parse(startDateStr) : LocalDate.now();
             LocalDate endDate = endDateStr != null ? LocalDate.parse(endDateStr) : LocalDate.now().plusDays(30);
-            
+
             List<Warranty> warranties = warrantyService.findExpiringBetween(startDate, endDate);
             return Response.ok(warranties).build();
         } catch (Exception e) {

@@ -17,19 +17,19 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class WarrantyService {
-    
+
     @Inject
     WarrantyRepository warrantyRepository;
-    
+
     @Inject
     UserRepository userRepository;
-    
+
     @Inject
     CompanyRepository companyRepository;
-    
+
     @Inject
     ProductRepository productRepository;
-    
+
     /**
      * Find a warranty by its ID
      * @param id the warranty ID
@@ -47,7 +47,7 @@ public class WarrantyService {
     public List<Warranty> findByUserId(Long userId) {
         return warrantyRepository.findByUserId(userId);
     }
-    
+
     /**
      * Find warranties by company
      * @param companyId the company ID
@@ -56,7 +56,7 @@ public class WarrantyService {
     public List<Warranty> findByCompanyId(Long companyId) {
         return warrantyRepository.findByCompanyId(companyId);
     }
-    
+
     /**
      * Find warranties by status
      * @param status the warranty status
@@ -65,7 +65,7 @@ public class WarrantyService {
     public List<Warranty> findByStatus(String status) {
         return warrantyRepository.findByStatus(status);
     }
-    
+
     /**
      * Find warranties expiring within a date range
      * @param startDate start date
@@ -75,7 +75,7 @@ public class WarrantyService {
     public List<Warranty> findExpiringBetween(LocalDate startDate, LocalDate endDate) {
         return warrantyRepository.findExpiringBetween(startDate, endDate);
     }
-    
+
     /**
      * Find expired warranties
      * @return list of expired warranties
@@ -83,7 +83,7 @@ public class WarrantyService {
     public List<Warranty> findExpiredWarranties() {
         return warrantyRepository.findExpiredWarranties();
     }
-    
+
     /**
      * Find warranties by product ID
      * @param productId the product ID
@@ -92,7 +92,7 @@ public class WarrantyService {
     public List<Warranty> findByProductId(Long productId) {
         return warrantyRepository.findByProductId(productId);
     }
-    
+
     /**
      * Create a new warranty
      * @param warranty the warranty to create
@@ -104,43 +104,32 @@ public class WarrantyService {
         if (warranty.getUser() == null || warranty.getUser().id == null) {
             throw new IllegalArgumentException("User is required");
         }
-        
+
         Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User not found");
         }
         warranty.setUser(user.get());
-        
+
         // Validate company exists
         if (warranty.getCompany() == null || warranty.getCompany().id == null) {
             throw new IllegalArgumentException("Company is required");
         }
-        
+
         Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
         if (company.isEmpty()) {
             throw new IllegalArgumentException("Company not found");
         }
         warranty.setCompany(company.get());
-        
-        // Validate product exists
-        if (warranty.getProduct() == null || warranty.getProduct().id == null) {
-            throw new IllegalArgumentException("Product is required");
-        }
-        
-        Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().id);
-        if (product.isEmpty()) {
-            throw new IllegalArgumentException("Product not found");
-        }
-        warranty.setProduct(product.get());
-        
+
         // Set default status if not provided
         if (warranty.getStatus() == null || warranty.getStatus().isEmpty()) {
             warranty.setStatus("ACTIVE");
         }
-        
+
         return warrantyRepository.createWarranty(warranty);
     }
-    
+
     /**
      * Update an existing warranty
      * @param warranty the warranty to update
@@ -156,8 +145,8 @@ public class WarrantyService {
             }
             warranty.setUser(user.get());
         }
-        
-        // Validate company exists if being updated
+
+//         Validate company exists if being updated
         if (warranty.getCompany() != null && warranty.getCompany().id != null) {
             Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
             if (company.isEmpty()) {
@@ -165,19 +154,12 @@ public class WarrantyService {
             }
             warranty.setCompany(company.get());
         }
-        
-        // Validate product exists if being updated
-        if (warranty.getProduct() != null && warranty.getProduct().id != null) {
-            Optional<Product> product = productRepository.findByIdOptional(warranty.getProduct().id);
-            if (product.isEmpty()) {
-                throw new IllegalArgumentException("Product not found");
-            }
-            warranty.setProduct(product.get());
-        }
-        
+
+//         Validate product exists if being updated
+
         return warrantyRepository.updateWarranty(warranty);
     }
-    
+
     /**
      * Delete a warranty by ID
      * @param id the warranty ID
@@ -186,7 +168,7 @@ public class WarrantyService {
     public void deleteWarranty(Long id) {
         warrantyRepository.deleteWarranty(id);
     }
-    
+
     /**
      * Check if a warranty is expired
      * @param warranty the warranty to check

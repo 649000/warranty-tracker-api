@@ -11,7 +11,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -43,7 +42,7 @@ public class UserResource extends BaseResource {
     public Response createUser() {
         try {
             String firebaseUid = jwt.getSubject();
-            
+
             // Check if user already exists
             if (userService.existsByFirebaseUid(firebaseUid)) {
                 return Response.status(Response.Status.CONFLICT)
@@ -68,7 +67,7 @@ public class UserResource extends BaseResource {
     public Response updateUser(User userData) {
         try {
             User user = validateCurrentUser();
-            
+
             // Only update display name from the provided data
             if (userData.getDisplayName() != null) {
                 user.setDisplayName(userData.getDisplayName());

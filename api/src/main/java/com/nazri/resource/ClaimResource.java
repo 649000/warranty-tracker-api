@@ -21,7 +21,7 @@ public class ClaimResource extends BaseResource {
 
     @Inject
     ClaimService claimService;
-    
+
     @Inject
     UserService userService;
 
@@ -30,7 +30,8 @@ public class ClaimResource extends BaseResource {
 
     @GET
     public Response getUserClaims() {
-        return null;
+
+        return Response.ok(Claim.listAll()).build();
 //        try {
 //            User user = validateCurrentUser();
 //            // Get all warranties for the user first
@@ -56,7 +57,7 @@ public class ClaimResource extends BaseResource {
             User user = validateCurrentUser();
             Optional<Claim> claim = claimService.findById(id);
             if (claim.isPresent()) {
-                validateClaimOwnership(claim.get(), user);
+//                validateClaimOwnership(claim.get(), user);
                 return Response.ok(claim.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)

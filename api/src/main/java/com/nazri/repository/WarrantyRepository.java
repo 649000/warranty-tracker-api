@@ -9,7 +9,7 @@ import java.util.List;
 
 @ApplicationScoped
 public class WarrantyRepository implements PanacheRepository<Warranty> {
-    
+
     /**
      * Find all warranties for a specific user
      * @param userId the user ID
@@ -18,7 +18,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findByUserId(Long userId) {
         return find("user.id", userId).list();
     }
-    
+
     /**
      * Find warranties by company
      * @param companyId the company ID
@@ -27,7 +27,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findByCompanyId(Long companyId) {
         return find("company.id", companyId).list();
     }
-    
+
     /**
      * Find warranties by status
      * @param status the warranty status
@@ -36,7 +36,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findByStatus(String status) {
         return find("status", status).list();
     }
-    
+
     /**
      * Find warranties expiring within a date range
      * @param startDate start date
@@ -46,7 +46,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findExpiringBetween(LocalDate startDate, LocalDate endDate) {
         return find("endDate >= ?1 and endDate <= ?2", startDate, endDate).list();
     }
-    
+
     /**
      * Find expired warranties
      * @return list of expired warranties
@@ -54,7 +54,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findExpiredWarranties() {
         return find("endDate < ?1 and status = ?2", LocalDate.now(), "ACTIVE").list();
     }
-    
+
     /**
      * Find warranties by product ID
      * @param productId the product ID
@@ -63,7 +63,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     public List<Warranty> findByProductId(Long productId) {
         return find("product.id", productId).list();
     }
-    
+
     /**
      * Create a new warranty
      * @param warranty the warranty to create
@@ -75,7 +75,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
         persistAndFlush(warranty);
         return warranty;
     }
-    
+
     /**
      * Update an existing warranty
      * @param warranty the warranty to update
@@ -86,7 +86,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
         getEntityManager().merge(warranty);
         return warranty;
     }
-    
+
     /**
      * Delete a warranty by ID
      * @param id the warranty ID

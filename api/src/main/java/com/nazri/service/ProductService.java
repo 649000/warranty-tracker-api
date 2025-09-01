@@ -22,12 +22,12 @@ public class ProductService {
     public Optional<Product> findById(Long id) {
         return Optional.ofNullable(productRepository.findById(id));
     }
-//
-//    /**
-//     * Find a product by serial number
-//     * @param serialNumber the product serial number
-//     * @return Optional containing the product if found
-//     */
+
+    /**
+     * Find a product by serial number
+     * @param serialNumber the product serial number
+     * @return Optional containing the product if found
+     */
 //    public Optional<Product> findBySerialNumber(String serialNumber) {
 //        return productRepository.findBySerialNumber(serialNumber);
 //    }
@@ -59,11 +59,11 @@ public class ProductService {
         return productRepository.findByModelNumberContaining(modelNumber);
     }
     
-//    /**
-//     * Create a new product
-//     * @param product the product to create
-//     * @return the created product
-//     */
+    /**
+     * Create a new product
+     * @param product the product to create
+     * @return the created product
+     */
 //    @Transactional
 //    public Product createProduct(Product product) {
 //        // Check if product with same serial number already exists

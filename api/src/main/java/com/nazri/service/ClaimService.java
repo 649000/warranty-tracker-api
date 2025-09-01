@@ -13,13 +13,13 @@ import java.util.Optional;
 
 @ApplicationScoped
 public class ClaimService {
-    
+
     @Inject
     ClaimRepository claimRepository;
-    
+
     @Inject
     WarrantyRepository warrantyRepository;
-    
+
     /**
      * Find a claim by its ID
      * @param id the claim ID
@@ -37,7 +37,7 @@ public class ClaimService {
     public List<Claim> findByWarrantyId(Long warrantyId) {
         return claimRepository.findByWarrantyId(warrantyId);
     }
-    
+
     /**
      * Find all claims for a list of warranty IDs
      * @param warrantyIds list of warranty IDs
@@ -46,7 +46,7 @@ public class ClaimService {
     public List<Claim> findByWarrantyIds(List<Long> warrantyIds) {
         return claimRepository.findByWarrantyIds(warrantyIds);
     }
-    
+
     /**
      * Find claims by warranty IDs and status
      * @param warrantyIds list of warranty IDs
@@ -56,7 +56,7 @@ public class ClaimService {
     public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
         return claimRepository.findByWarrantyIdsAndStatus(warrantyIds, status);
     }
-    
+
     /**
      * Find claims by status
      * @param status the claim status
@@ -65,7 +65,7 @@ public class ClaimService {
     public List<Claim> findByStatus(String status) {
         return claimRepository.findByStatus(status);
     }
-    
+
     /**
      * Find claims within a date range
      * @param startDate start date
@@ -75,7 +75,7 @@ public class ClaimService {
     public List<Claim> findByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return claimRepository.findByDateRange(startDate, endDate);
     }
-    
+
     /**
      * Create a new claim
      * @param claim the claim to create
@@ -87,26 +87,26 @@ public class ClaimService {
         if (claim.getWarranty() == null || claim.getWarranty().id == null) {
             throw new IllegalArgumentException("Warranty is required");
         }
-        
+
         Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().id);
         if (warranty.isEmpty()) {
             throw new IllegalArgumentException("Warranty not found");
         }
         claim.setWarranty(warranty.get());
-        
+
         // Set default status if not provided
         if (claim.getStatus() == null || claim.getStatus().isEmpty()) {
             claim.setStatus("SUBMITTED");
         }
-        
+
         // Set claim date if not provided
         if (claim.getClaimDate() == null) {
             claim.setClaimDate(LocalDateTime.now());
         }
-        
+
         return claimRepository.createClaim(claim);
     }
-    
+
     /**
      * Update an existing claim
      * @param claim the claim to update
@@ -122,10 +122,10 @@ public class ClaimService {
             }
             claim.setWarranty(warranty.get());
         }
-        
+
         return claimRepository.updateClaim(claim);
     }
-    
+
     /**
      * Delete a claim by ID
      * @param id the claim ID
