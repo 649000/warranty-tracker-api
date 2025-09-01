@@ -20,7 +20,7 @@ public class UserProductService {
      * @return Optional containing the user product if found
      */
     public Optional<UserProduct> findById(Long id) {
-        return userProductRepository.findById(id);
+        return Optional.ofNullable(userProductRepository.findById(id));
     }
     
     /**
