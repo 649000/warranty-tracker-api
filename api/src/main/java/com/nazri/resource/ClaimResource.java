@@ -30,24 +30,22 @@ public class ClaimResource extends BaseResource {
 
     @GET
     public Response getUserClaims() {
-
-        return Response.ok(Claim.listAll()).build();
-//        try {
-//            User user = validateCurrentUser();
-//            // Get all warranties for the user first
-//            List<Warranty> userWarranties = Warranty.list("user.id", user.id);
-//            // Extract warranty IDs
-//            List<Long> warrantyIds = userWarranties.stream()
-//                    .map(Warranty::getId)
-//                    .collect(Collectors.toList());
-//            // Get claims for those warranties
-//            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
-//            return Response.ok(claims).build();
-//        } catch (Exception e) {
-//            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
-//                    .build();
-//        }
+        try {
+            User user = validateCurrentUser();
+            // Get all warranties for the user first
+            List<Warranty> userWarranties = Warranty.list("user.id", user.id);
+            // Extract warranty IDs
+            List<Long> warrantyIds = userWarranties.stream()
+                    .map(Warranty::getId)
+                    .collect(Collectors.toList());
+            // Get claims for those warranties
+            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
+            return Response.ok(claims).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
     }
 
     @GET
