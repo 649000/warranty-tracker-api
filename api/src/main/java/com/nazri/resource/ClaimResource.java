@@ -171,4 +171,39 @@ public class ClaimResource extends BaseResource {
                 return Response.ok(updatedClaim).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Claim not found
+                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
+            }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(createErrorResponse("Error updating claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    public Response deleteClaim(@PathParam("id") Long id) {
+        try {
+            User user = validateCurrentUser();
+            Optional<Claim> claim = claimService.findById(id);
+            if (claim.isPresent()) {
+                validateClaimOwnership(claim.get(), user);
+                claimService.deleteClaim(id);
+                return Response.noContent().build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                        .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(createErrorResponse("Error deleting claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
+    }
+}
