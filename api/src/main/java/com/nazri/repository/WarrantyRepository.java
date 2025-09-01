@@ -3,6 +3,7 @@ package com.nazri.repository;
 import com.nazri.model.Warranty;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +18,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return Optional containing the warranty if found
      */
     public Optional<Warranty> findByIdOptional(Long id) {
-        return findById(id);
+        return Optional.ofNullable(findById(id));
     }
 
     /**

@@ -2,9 +2,7 @@ package com.nazri.resource;
 
 import com.nazri.model.Claim;
 import com.nazri.model.User;
-import com.nazri.model.Warranty;
 import com.nazri.service.ClaimService;
-import com.nazri.service.UserService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -12,7 +10,6 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Path("/claim")
 @Produces(MediaType.APPLICATION_JSON)
@@ -21,9 +18,6 @@ public class ClaimResource extends BaseResource {
 
     @Inject
     ClaimService claimService;
-
-    @Inject
-    UserService userService;
 
     @GET
     public Response getUserClaims() {
