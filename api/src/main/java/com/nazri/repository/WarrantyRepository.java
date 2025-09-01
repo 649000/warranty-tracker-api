@@ -16,7 +16,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @param id the warranty ID
      * @return Optional containing the warranty if found
      */
-    public Optional<Warranty> findById(Long id) {
+    public Optional<Warranty> findByIdOptional(Long id) {
         return find("id", id).firstResultOptional();
     }
 
