@@ -29,12 +29,8 @@ public class CompanyResource extends BaseResource {
             List<Company> companies = companyService.findAllCompanies();
             LOG.info("Found " + companies.size() + " companies");
 
-            // Convert to DTOs to avoid serialization issues
-            List<CompanyDTO> companyDTOs = companies.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
 
-            return Response.ok(companyDTOs).build();
+            return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error retrieving companies", e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
