@@ -69,29 +69,51 @@ public class ProductService {
     }
     
     /**
-     * Find products by name and model number
-     * @param name the product name
-     * @param modelNumber the model number
-     * @return list of products
+     * Search products by multiple criteria
+     * @param name the product name to search for (partial match)
+     * @param brand the brand to search for (partial match)
+     * @param modelNumber the model number to search for (partial match)
+     * @return list of products matching all provided criteria
      */
-    public List<Product> findByNameAndModelNumber(String name, String modelNumber) {
-        return productRepository.findByNameAndModelNumber(name, modelNumber);
+    public List<Product> searchProducts(String name, String brand, String modelNumber) {
+        // If no search parameters provided, return all products
+        if ((name == null || name.trim().isEmpty()) && 
+            (brand == null || brand.trim().isEmpty()) && 
+            (modelNumber == null || modelNumber.trim().isEmpty())) {
+            return findAllProducts();
+        }
+        
+        return productRepository.searchProducts(name, brand, modelNumber);
     }
     
     /**
      * Create a new product
      * @param product the product to create
      * @return the created product
-     * @throws IllegalArgumentException if a product with the same model number already exists
+     * @throws IllegalArgumentException if a product with the same model number already exists or validation fails
      */
     @Transactional
     public Product createProduct(Product product) {
+        // Validate required fields
+        if (product.getName() == null || product.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name is required");
+        }
+        
+        if (product.getModelNumber() == null || product.getModelNumber().trim().isEmpty()) {
+            throw new IllegalArgumentException("Model number is required");
+        }
+        
         // Check if product with same model number already exists
-        if (product.getModelNumber() != null && !product.getModelNumber().isEmpty()) {
-            Optional<Product> existingProduct = findByModelNumber(product.getModelNumber());
-            if (existingProduct.isPresent()) {
-                throw new IllegalArgumentException("Product with this model number already exists");
-            }
+        Optional<Product> existingProduct = findByModelNumber(product.getModelNumber().trim());
+        if (existingProduct.isPresent()) {
+            throw new IllegalArgumentException("Product with this model number already exists");
+        }
+
+        // Trim whitespace from fields
+        product.setName(product.getName().trim());
+        product.setModelNumber(product.getModelNumber().trim());
+        if (product.getBrand() != null) {
+            product.setBrand(product.getBrand().trim());
         }
 
         return productRepository.createProduct(product);
@@ -101,9 +123,26 @@ public class ProductService {
      * Update an existing product
      * @param product the product to update
      * @return the updated product
+     * @throws IllegalArgumentException if validation fails
      */
     @Transactional
     public Product updateProduct(Product product) {
+        // Validate required fields
+        if (product.getName() == null || product.getName().trim().isEmpty()) {
+            throw new IllegalArgumentException("Product name is required");
+        }
+        
+        if (product.getModelNumber() == null || product.getModelNumber().trim().isEmpty()) {
+            throw new IllegalArgumentException("Model number is required");
+        }
+        
+        // Trim whitespace from fields
+        product.setName(product.getName().trim());
+        product.setModelNumber(product.getModelNumber().trim());
+        if (product.getBrand() != null) {
+            product.setBrand(product.getBrand().trim());
+        }
+
         return productRepository.updateProduct(product);
     }
     

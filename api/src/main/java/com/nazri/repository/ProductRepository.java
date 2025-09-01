@@ -4,6 +4,7 @@ import com.nazri.model.Product;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -46,13 +47,38 @@ public class ProductRepository implements PanacheRepository<Product> {
     }
     
     /**
-     * Find products by name and model number
-     * @param name the product name
-     * @param modelNumber the model number
-     * @return list of products
+     * Search products by multiple criteria
+     * @param name the product name to search for (partial match)
+     * @param brand the brand to search for (partial match)
+     * @param modelNumber the model number to search for (partial match)
+     * @return list of products matching all provided criteria
      */
-    public List<Product> findByNameAndModelNumber(String name, String modelNumber) {
-        return find("name = ?1 and modelNumber = ?2", name, modelNumber).list();
+    public List<Product> searchProducts(String name, String brand, String modelNumber) {
+        List<String> conditions = new ArrayList<>();
+        List<Object> parameters = new ArrayList<>();
+        int paramIndex = 1;
+        
+        if (name != null && !name.trim().isEmpty()) {
+            conditions.add("name like ?" + paramIndex++);
+            parameters.add("%" + name.trim() + "%");
+        }
+        
+        if (brand != null && !brand.trim().isEmpty()) {
+            conditions.add("brand like ?" + paramIndex++);
+            parameters.add("%" + brand.trim() + "%");
+        }
+        
+        if (modelNumber != null && !modelNumber.trim().isEmpty()) {
+            conditions.add("modelNumber like ?" + paramIndex++);
+            parameters.add("%" + modelNumber.trim() + "%");
+        }
+        
+        if (conditions.isEmpty()) {
+            return listAll();
+        }
+        
+        String query = String.join(" and ", conditions);
+        return find(query, parameters.toArray()).list();
     }
     
     /**

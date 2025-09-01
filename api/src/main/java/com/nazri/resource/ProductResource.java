@@ -57,16 +57,7 @@ public class ProductResource extends BaseResource {
             @QueryParam("brand") String brand,
             @QueryParam("modelNumber") String modelNumber) {
         try {
-            List<Product> products;
-            if (name != null && !name.isEmpty()) {
-                products = productService.findByNameContaining(name);
-            } else if (brand != null && !brand.isEmpty()) {
-                products = productService.findByBrandContaining(brand);
-            } else if (modelNumber != null && !modelNumber.isEmpty()) {
-                products = productService.findByModelNumberContaining(modelNumber);
-            } else {
-                products = productService.findAllProducts();
-            }
+            List<Product> products = productService.searchProducts(name, brand, modelNumber);
             return Response.ok(products).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -79,6 +70,19 @@ public class ProductResource extends BaseResource {
     @RolesAllowed("admin")
     public Response createProduct(Product product) {
         try {
+            // Validate required fields
+            if (product.getName() == null || product.getName().trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(createErrorResponse("Product name is required", "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                        .build();
+            }
+            
+            if (product.getModelNumber() == null || product.getModelNumber().trim().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(createErrorResponse("Model number is required", "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                        .build();
+            }
+            
             Product createdProduct = productService.createProduct(product);
             return Response.status(Response.Status.CREATED).entity(createdProduct).build();
         } catch (IllegalArgumentException e) {
@@ -108,6 +112,10 @@ public class ProductResource extends BaseResource {
                         .entity(createErrorResponse("Product not found with id: " + id, "PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
                         .build();
             }
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error updating product: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
