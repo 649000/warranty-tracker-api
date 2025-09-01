@@ -37,7 +37,8 @@ public class ProductService {
      * @return Optional containing the product if found
      */
     public Optional<Product> findBySerialNumber(String serialNumber) {
-        return productRepository.findBySerialNumber(serialNumber);
+        List<Product> products = productRepository.findBySerialNumber(serialNumber);
+        return products.isEmpty() ? Optional.empty() : Optional.of(products.get(0));
     }
     
     /**
