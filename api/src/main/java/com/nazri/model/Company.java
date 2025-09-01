@@ -52,7 +52,7 @@ public class Company extends PanacheEntity {
     // Constructors
     public Company() {
     }
-    
+
     // Getters
     public String getName() {
         return name;

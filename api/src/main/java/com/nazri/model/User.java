@@ -90,6 +90,14 @@ public class User extends PanacheEntity {
         this.updatedAt = updatedAt;
     }
 
+    public List<UserProduct> getUserProducts() {
+        return userProducts;
+    }
+
+    public void setUserProducts(List<UserProduct> userProducts) {
+        this.userProducts = userProducts;
+    }
+
     @Override
     public String toString() {
         return "User{" +

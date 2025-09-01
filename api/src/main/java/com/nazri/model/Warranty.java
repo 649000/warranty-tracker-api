@@ -1,6 +1,7 @@
 package com.nazri.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.quarkus.hibernate.orm.panache.PanacheEntity;
 import jakarta.persistence.*;
 
@@ -46,7 +47,6 @@ public class Warranty extends PanacheEntity {
     @JoinColumn(name = "company_id", nullable = false)
     @JsonIgnore
     private Company company;
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_product_id", nullable = false)
