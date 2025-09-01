@@ -29,14 +29,7 @@ public class ClaimResource extends BaseResource {
     public Response getUserClaims() {
         try {
             User user = validateCurrentUser();
-            // Get all warranties for the user first
-            List<Warranty> userWarranties = userService.getWarrantiesByUserId(user.id);
-            // Extract warranty IDs
-            List<Long> warrantyIds = userWarranties.stream()
-                    .map(warranty -> warranty.id)
-                    .collect(Collectors.toList());
-            // Get claims for those warranties
-            List<Claim> claims = claimService.findByWarrantyIds(warrantyIds);
+            List<Claim> claims = claimService.findByUserId(user.id);
             return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -71,23 +64,8 @@ public class ClaimResource extends BaseResource {
     public Response getClaimsByWarrantyId(@PathParam("warrantyId") Long warrantyId) {
         try {
             User user = validateCurrentUser();
-            // Check if warranty belongs to the current user
-            Optional<Warranty> warrantyOpt = userService.getWarrantyById(warrantyId);
-            if (warrantyOpt.isPresent()) {
-                Warranty warranty = warrantyOpt.get();
-                if (warranty.getUser().id.equals(user.id)) {
-                    List<Claim> claims = claimService.findByWarrantyId(warrantyId);
-                    return Response.ok(claims).build();
-                } else {
-                    return Response.status(Response.Status.FORBIDDEN)
-                            .entity(createErrorResponse("Access denied: Warranty does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
-                            .build();
-                }
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Warranty not found with id: " + warrantyId, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            List<Claim> claims = claimService.findByWarrantyIdAndUserId(warrantyId, user.id);
+            return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
@@ -100,14 +78,7 @@ public class ClaimResource extends BaseResource {
     public Response getClaimsByStatus(@PathParam("status") String status) {
         try {
             User user = validateCurrentUser();
-            // Get all warranties for the user first
-            List<Warranty> userWarranties = userService.getWarrantiesByUserId(user.id);
-            // Extract warranty IDs
-            List<Long> warrantyIds = userWarranties.stream()
-                    .map(warranty -> warranty.id)
-                    .collect(Collectors.toList());
-            // Get claims for those warranties with the specified status
-            List<Claim> claims = claimService.findByWarrantyIdsAndStatus(warrantyIds, status);
+            List<Claim> claims = claimService.findByUserIdAndStatus(user.id, status);
             return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -120,29 +91,8 @@ public class ClaimResource extends BaseResource {
     public Response createClaim(Claim claim) {
         try {
             User user = validateCurrentUser();
-            // Check if warranty belongs to the current user
-            if (claim.getWarranty() != null && claim.getWarranty().id != null) {
-                Optional<Warranty> warrantyOpt = userService.getWarrantyById(claim.getWarranty().id);
-                if (warrantyOpt.isPresent()) {
-                    Warranty warranty = warrantyOpt.get();
-                    if (warranty.getUser().id.equals(user.id)) {
-                        Claim createdClaim = claimService.createClaim(claim);
-                        return Response.status(Response.Status.CREATED).entity(createdClaim).build();
-                    } else {
-                        return Response.status(Response.Status.FORBIDDEN)
-                                .entity(createErrorResponse("Access denied: Warranty does not belong to user", "ACCESS_DENIED", Response.Status.FORBIDDEN.getStatusCode()))
-                                .build();
-                    }
-                } else {
-                    return Response.status(Response.Status.BAD_REQUEST)
-                            .entity(createErrorResponse("Warranty not found", "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
-                            .build();
-                }
-            } else {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(createErrorResponse("Warranty information is required", "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
-                        .build();
-            }
+            Claim createdClaim = claimService.createClaim(claim, user);
+            return Response.status(Response.Status.CREATED).entity(createdClaim).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
@@ -162,9 +112,7 @@ public class ClaimResource extends BaseResource {
             Optional<Claim> existingClaim = claimService.findById(id);
             if (existingClaim.isPresent()) {
                 validateClaimOwnership(existingClaim.get(), user);
-                // Set the ID to ensure we're updating the correct claim
-                claim.id = id;
-                Claim updatedClaim = claimService.updateClaim(claim);
+                Claim updatedClaim = claimService.updateClaim(id, claim, user);
                 return Response.ok(updatedClaim).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
