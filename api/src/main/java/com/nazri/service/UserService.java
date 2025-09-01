@@ -1,10 +1,12 @@
 package com.nazri.service;
 
 import com.nazri.model.User;
+import com.nazri.model.Warranty;
 import com.nazri.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -79,5 +81,23 @@ public class UserService {
             return Optional.of(user);
         }
         return Optional.empty();
+    }
+    
+    /**
+     * Get all warranties for a specific user
+     * @param userId the user ID
+     * @return list of warranties
+     */
+    public List<Warranty> getWarrantiesByUserId(Long userId) {
+        return Warranty.list("user.id", userId);
+    }
+    
+    /**
+     * Get a warranty by its ID
+     * @param warrantyId the warranty ID
+     * @return Optional containing the warranty if found
+     */
+    public Optional<Warranty> getWarrantyById(Long warrantyId) {
+        return Optional.ofNullable(Warranty.findById(warrantyId));
     }
 }
