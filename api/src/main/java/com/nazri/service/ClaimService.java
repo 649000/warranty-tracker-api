@@ -5,7 +5,6 @@ import com.nazri.model.User;
 import com.nazri.model.Warranty;
 import com.nazri.repository.ClaimRepository;
 import com.nazri.repository.WarrantyRepository;
-import com.nazri.repository.UserRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -130,16 +129,22 @@ public class ClaimService {
     }
 
     /**
-     * Create a new claim
-     * @param claim the claim to create
+     * Validate claim data
+     * @param claim the claim to validate
      * @param user the current user
-     * @return the created claim
      */
-    @Transactional
-    public Claim createClaim(Claim claim, User user) {
+    private void validateClaim(Claim claim, User user) {
         // Validate required fields
         if (claim.getWarranty() == null || claim.getWarranty().id == null) {
             throw new IllegalArgumentException("Warranty is required");
+        }
+
+        if (claim.getClaimDate() == null) {
+            throw new IllegalArgumentException("Claim date is required");
+        }
+
+        if (claim.getStatus() == null || claim.getStatus().isEmpty()) {
+            throw new IllegalArgumentException("Status is required");
         }
 
         // Validate warranty exists and belongs to user
@@ -155,18 +160,29 @@ public class ClaimService {
         claim.setWarranty(warranty.get());
 
         // Validate status
-        if (claim.getStatus() != null && !VALID_STATUSES.contains(claim.getStatus().toUpperCase())) {
+        if (!VALID_STATUSES.contains(claim.getStatus().toUpperCase())) {
             throw new IllegalArgumentException("Invalid status. Valid statuses are: " + VALID_STATUSES);
+        }
+    }
+
+    /**
+     * Create a new claim
+     * @param claim the claim to create
+     * @param user the current user
+     * @return the created claim
+     */
+    @Transactional
+    public Claim createClaim(Claim claim, User user) {
+        validateClaim(claim, user);
+
+        // Set claim date if not provided
+        if (claim.getClaimDate() == null) {
+            claim.setClaimDate(LocalDateTime.now());
         }
 
         // Set default status if not provided
         if (claim.getStatus() == null || claim.getStatus().isEmpty()) {
             claim.setStatus("SUBMITTED");
-        }
-
-        // Set claim date if not provided
-        if (claim.getClaimDate() == null) {
-            claim.setClaimDate(LocalDateTime.now());
         }
 
         return claimRepository.createClaim(claim);
@@ -181,24 +197,18 @@ public class ClaimService {
      */
     @Transactional
     public Claim updateClaim(Long id, Claim claim, User user) {
-        // Validate warranty exists and belongs to user if being updated
-        if (claim.getWarranty() != null && claim.getWarranty().id != null) {
-            Optional<Warranty> warranty = warrantyRepository.findByIdOptional(claim.getWarranty().id);
-            if (warranty.isEmpty()) {
-                throw new IllegalArgumentException("Warranty not found");
-            }
-            
-            if (!warranty.get().getUser().id.equals(user.id)) {
-                throw new IllegalArgumentException("Warranty does not belong to user");
-            }
-            
-            claim.setWarranty(warranty.get());
+        // First, ensure the claim exists and belongs to the user
+        Optional<Claim> existingClaim = claimRepository.findByIdOptional(id);
+        if (existingClaim.isEmpty()) {
+            throw new IllegalArgumentException("Claim not found");
         }
 
-        // Validate status if being updated
-        if (claim.getStatus() != null && !VALID_STATUSES.contains(claim.getStatus().toUpperCase())) {
-            throw new IllegalArgumentException("Invalid status. Valid statuses are: " + VALID_STATUSES);
+        if (!existingClaim.get().getWarranty().getUser().id.equals(user.id)) {
+            throw new IllegalArgumentException("Claim does not belong to user");
         }
+
+        // Validate the claim data
+        validateClaim(claim, user);
 
         return claimRepository.updateClaim(claim);
     }
