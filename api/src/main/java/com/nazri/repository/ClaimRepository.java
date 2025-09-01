@@ -15,7 +15,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return list of claims
      */
     public List<Claim> findByWarrantyId(Long warrantyId) {
-        return find("warranty.id", warrantyId).list();
+        return list("warranty.id", warrantyId);
     }
     
     /**
@@ -24,7 +24,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return list of claims
      */
     public List<Claim> findByWarrantyIds(List<Long> warrantyIds) {
-        return find("warranty.id in ?1", warrantyIds).list();
+        return list("warranty.id in ?1", warrantyIds);
     }
     
     /**
@@ -34,7 +34,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return list of claims
      */
     public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
-        return find("warranty.id in ?1 and status = ?2", warrantyIds, status).list();
+        return list("warranty.id in ?1 and status = ?2", warrantyIds, status);
     }
     
     /**
@@ -43,7 +43,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return list of claims
      */
     public List<Claim> findByStatus(String status) {
-        return find("status", status).list();
+        return list("status", status);
     }
     
     /**
@@ -53,7 +53,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @return list of claims
      */
     public List<Claim> findByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
-        return find("claimDate >= ?1 and claimDate <= ?2", startDate, endDate).list();
+        return list("claimDate >= ?1 and claimDate <= ?2", startDate, endDate);
     }
     
     /**
