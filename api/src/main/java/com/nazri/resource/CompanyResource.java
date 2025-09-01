@@ -1,6 +1,5 @@
 package com.nazri.resource;
 
-import com.nazri.dto.CompanyDTO;
 import com.nazri.model.Company;
 import com.nazri.service.CompanyService;
 import jakarta.inject.Inject;
@@ -10,7 +9,6 @@ import jakarta.ws.rs.core.Response;
 import org.jboss.logging.Logger;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
@@ -29,7 +27,6 @@ public class CompanyResource extends BaseResource {
             List<Company> companies = companyService.findAllCompanies();
             LOG.info("Found " + companies.size() + " companies");
 
-
             return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error retrieving companies", e);
@@ -45,10 +42,7 @@ public class CompanyResource extends BaseResource {
         try {
             LOG.info("Fetching company by id: " + id);
             return companyService.findById(id)
-                    .map(company -> {
-                        CompanyDTO dto = convertToDTO(company);
-                        return Response.ok(dto).build();
-                    })
+                    .map(company -> Response.ok(company).build())
                     .orElse(Response.status(Response.Status.NOT_FOUND)
                             .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
                             .build());
@@ -72,13 +66,8 @@ public class CompanyResource extends BaseResource {
             } else {
                 companies = companyService.findByNameContaining(name);
             }
-            
-            // Convert to DTOs to avoid serialization issues
-            List<CompanyDTO> companyDTOs = companies.stream()
-                    .map(this::convertToDTO)
-                    .collect(Collectors.toList());
 
-            return Response.ok(companyDTOs).build();
+            return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error searching companies by name: " + name, e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -92,8 +81,12 @@ public class CompanyResource extends BaseResource {
         try {
             LOG.info("Creating company: " + company.getName());
             Company createdCompany = companyService.createCompany(company);
-            CompanyDTO dto = convertToDTO(createdCompany);
-            return Response.status(Response.Status.CREATED).entity(dto).build();
+            return Response.status(Response.Status.CREATED).entity(createdCompany).build();
+        } catch (IllegalArgumentException e) {
+            LOG.warn("Validation error creating company: " + e.getMessage());
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             LOG.error("Error creating company: " + company.getName(), e);
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -108,10 +101,7 @@ public class CompanyResource extends BaseResource {
         try {
             LOG.info("Updating company with id: " + id);
             return companyService.updateCompany(id, company)
-                    .map(updatedCompany -> {
-                        CompanyDTO dto = convertToDTO(updatedCompany);
-                        return Response.ok(dto).build();
-                    })
+                    .map(updatedCompany -> Response.ok(updatedCompany).build())
                     .orElse(Response.status(Response.Status.NOT_FOUND)
                             .entity(createErrorResponse("Company not found with id: " + id, "COMPANY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
                             .build());
@@ -141,23 +131,5 @@ public class CompanyResource extends BaseResource {
                     .entity(createErrorResponse("Error deleting company: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
         }
-    }
-
-    // Helper method to convert Company entity to CompanyDTO
-    private CompanyDTO convertToDTO(Company company) {
-        return new CompanyDTO(
-                company.id,
-                company.getName(),
-                company.getContactPhone(),
-                company.getContactEmail(),
-                company.getWebsite(),
-                company.getAddress(),
-                company.getClaimProcess(),
-                company.getClaimUrl(),
-                company.getSupportHours(),
-                company.getReturnInstructions(),
-                company.getCreatedAt(),
-                company.getUpdatedAt()
-        );
     }
 }

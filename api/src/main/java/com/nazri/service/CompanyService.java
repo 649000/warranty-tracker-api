@@ -22,7 +22,7 @@ public class CompanyService {
      * @return Optional containing the company if found
      */
     public Optional<Company> findById(Long id) {
-        return Optional.ofNullable(companyRepository.findById(id));
+        return companyRepository.findByIdOptional(id);
     }
 
     /**
