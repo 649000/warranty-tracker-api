@@ -129,41 +129,19 @@ public class WarrantyService {
      */
     @Transactional
     public Warranty createWarranty(Warranty warranty) {
-        // Validate user exists
+        // Validate required fields
         if (warranty.getUser() == null || warranty.getUser().id == null) {
             throw new IllegalArgumentException("User is required");
         }
 
-        Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
-        if (user.isEmpty()) {
-            throw new IllegalArgumentException("User not found");
-        }
-        warranty.setUser(user.get());
-
-        // Validate company exists if provided
-        if (warranty.getCompany() != null && warranty.getCompany().id != null) {
-            Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
-            if (company.isEmpty()) {
-                throw new IllegalArgumentException("Company not found");
-            }
-            warranty.setCompany(company.get());
+        if (warranty.getCompany() == null || warranty.getCompany().id == null) {
+            throw new IllegalArgumentException("Company is required");
         }
 
-        // Validate user product exists if provided
-        if (warranty.getUserProduct() != null && warranty.getUserProduct().id != null) {
-            Optional<UserProduct> userProduct = userProductRepository.findByIdOptional(warranty.getUserProduct().id);
-            if (userProduct.isEmpty()) {
-                throw new IllegalArgumentException("User product not found");
-            }
-            warranty.setUserProduct(userProduct.get());
+        if (warranty.getUserProduct() == null || warranty.getUserProduct().id == null) {
+            throw new IllegalArgumentException("User product is required");
         }
 
-        // Set default status if not provided
-        if (warranty.getStatus() == null || warranty.getStatus().isEmpty()) {
-            warranty.setStatus("ACTIVE");
-        }
-
-        // Validate dates
         if (warranty.getStartDate() == null) {
             throw new IllegalArgumentException("Start date is required");
         }
@@ -172,6 +150,33 @@ public class WarrantyService {
             throw new IllegalArgumentException("End date is required");
         }
 
+        // Validate user exists
+        Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found");
+        }
+        warranty.setUser(user.get());
+
+        // Validate company exists
+        Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
+        if (company.isEmpty()) {
+            throw new IllegalArgumentException("Company not found");
+        }
+        warranty.setCompany(company.get());
+
+        // Validate user product exists
+        Optional<UserProduct> userProduct = userProductRepository.findByIdOptional(warranty.getUserProduct().id);
+        if (userProduct.isEmpty()) {
+            throw new IllegalArgumentException("User product not found");
+        }
+        warranty.setUserProduct(userProduct.get());
+
+        // Set default status if not provided
+        if (warranty.getStatus() == null || warranty.getStatus().isEmpty()) {
+            warranty.setStatus("ACTIVE");
+        }
+
+        // Validate dates
         if (warranty.getEndDate().isBefore(warranty.getStartDate())) {
             throw new IllegalArgumentException("End date must be after start date");
         }
@@ -186,7 +191,7 @@ public class WarrantyService {
      */
     @Transactional
     public Warranty updateWarranty(Warranty warranty) {
-        // Validate user exists if being updated
+        // Validate required fields if being updated
         if (warranty.getUser() != null && warranty.getUser().id != null) {
             Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
             if (user.isEmpty()) {
@@ -195,7 +200,6 @@ public class WarrantyService {
             warranty.setUser(user.get());
         }
 
-        // Validate company exists if being updated
         if (warranty.getCompany() != null && warranty.getCompany().id != null) {
             Optional<Company> company = companyRepository.findByIdOptional(warranty.getCompany().id);
             if (company.isEmpty()) {
@@ -204,7 +208,6 @@ public class WarrantyService {
             warranty.setCompany(company.get());
         }
 
-        // Validate user product exists if being updated
         if (warranty.getUserProduct() != null && warranty.getUserProduct().id != null) {
             Optional<UserProduct> userProduct = userProductRepository.findByIdOptional(warranty.getUserProduct().id);
             if (userProduct.isEmpty()) {
