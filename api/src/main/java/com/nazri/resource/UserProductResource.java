@@ -3,12 +3,10 @@ package com.nazri.resource;
 import com.nazri.model.User;
 import com.nazri.model.UserProduct;
 import com.nazri.service.UserProductService;
-import com.nazri.service.UserService;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,12 +18,6 @@ public class UserProductResource extends BaseResource {
 
     @Inject
     UserProductService userProductService;
-
-    @Inject
-    UserService userService;
-
-    @Inject
-    JsonWebToken jwt;
 
     @GET
     public Response getUserProducts() {
