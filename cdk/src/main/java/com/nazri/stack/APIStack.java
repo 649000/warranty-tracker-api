@@ -386,6 +386,16 @@ public class APIStack extends Stack {
                 .build());
     }
     
+    private void addS3Route(HttpApi httpApi) {
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/s3/presigned-url")
+                .methods(List.of(HttpMethod.GET))
+                .integration(HttpLambdaIntegration.Builder
+                        .create("s3-presigned-url-integration", apiFunction)
+                        .build())
+                .build());
+    }
+
     private void addClaimRoute(HttpApi httpApi) {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim")
