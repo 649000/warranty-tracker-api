@@ -42,6 +42,7 @@ public class APIStack extends Stack {
         addUserProductRoute(httpApi);
         addWarrantyRoute(httpApi);
         addClaimRoute(httpApi);
+        addS3Route(httpApi);
         TagUtil.addTags(this.apiFunction, stackConfig);
     }
 
