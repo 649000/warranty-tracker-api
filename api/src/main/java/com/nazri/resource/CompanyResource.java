@@ -2,6 +2,7 @@ package com.nazri.resource;
 
 import com.nazri.model.Company;
 import com.nazri.service.CompanyService;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -77,6 +78,7 @@ public class CompanyResource extends BaseResource {
     }
 
     @POST
+    @RolesAllowed("admin")
     public Response createCompany(Company company) {
         try {
             LOG.info("Creating company: " + company.getName());
@@ -97,6 +99,7 @@ public class CompanyResource extends BaseResource {
 
     @PUT
     @Path("/{id}")
+    @RolesAllowed("admin")
     public Response updateCompany(@PathParam("id") Long id, Company company) {
         try {
             LOG.info("Updating company with id: " + id);
@@ -115,6 +118,7 @@ public class CompanyResource extends BaseResource {
 
     @DELETE
     @Path("/{id}")
+    @RolesAllowed("admin")
     public Response deleteCompany(@PathParam("id") Long id) {
         try {
             LOG.info("Deleting company with id: " + id);
