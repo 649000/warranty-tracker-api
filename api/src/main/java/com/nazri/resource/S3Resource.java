@@ -1,5 +1,6 @@
 package com.nazri.resource;
 
+import com.nazri.model.User;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
