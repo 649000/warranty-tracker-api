@@ -36,7 +36,7 @@ public class S3Resource extends BaseResource {
         
         if (fileName == null || fileName.trim().isEmpty()) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("{\"error\": \"fileName query parameter is required\"}")
+                    .entity(createErrorResponse("fileName query parameter is required", "MISSING_FILE_NAME", Response.Status.BAD_REQUEST.getStatusCode()))
                     .build();
         }
 
@@ -62,7 +62,7 @@ public class S3Resource extends BaseResource {
             return Response.ok("{\"url\": \"" + url + "\"}").build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("{\"error\": \"Failed to generate presigned URL: " + e.getMessage() + "\"}")
+                    .entity(createErrorResponse("Failed to generate presigned URL: " + e.getMessage(), "S3_URL_GENERATION_FAILED", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
                     .build();
         }
     }
