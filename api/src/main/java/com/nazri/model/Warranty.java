@@ -12,6 +12,10 @@ import java.util.List;
 @Table(name = "warranties", schema = "warranty_tracker")
 public class Warranty extends PanacheEntity {
 
+    public enum WarrantyStatus {
+        ACTIVE, EXPIRED, CANCELLED
+    }
+
     @Column(name = "start_date", nullable = false)
     private LocalDate startDate;
 
@@ -28,7 +32,8 @@ public class Warranty extends PanacheEntity {
     private String notes;
 
     @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private WarrantyStatus status;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -81,7 +86,7 @@ public class Warranty extends PanacheEntity {
         return notes;
     }
 
-    public String getStatus() {
+    public WarrantyStatus getStatus() {
         return status;
     }
 
@@ -131,7 +136,7 @@ public class Warranty extends PanacheEntity {
         this.notes = notes;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(WarrantyStatus status) {
         this.status = status;
     }
 

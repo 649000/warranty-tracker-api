@@ -10,11 +10,16 @@ import java.time.LocalDateTime;
 @Table(name = "claims", schema = "warranty_tracker")
 public class Claim extends PanacheEntity {
 
+    public enum ClaimStatus {
+        SUBMITTED, PROCESSING, APPROVED, DENIED, COMPLETED
+    }
+
     @Column(name = "claim_date", nullable = false)
     private LocalDateTime claimDate;
 
     @Column(name = "status", nullable = false)
-    private String status; // SUBMITTED, PROCESSING, APPROVED, DENIED, COMPLETED
+    @Enumerated(EnumType.STRING)
+    private ClaimStatus status;
 
     @Column(name = "reference_number")
     private String referenceNumber;
@@ -46,7 +51,7 @@ public class Claim extends PanacheEntity {
         return claimDate;
     }
 
-    public String getStatus() {
+    public ClaimStatus getStatus() {
         return status;
     }
 
@@ -79,7 +84,7 @@ public class Claim extends PanacheEntity {
         this.claimDate = claimDate;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ClaimStatus status) {
         this.status = status;
     }
 
