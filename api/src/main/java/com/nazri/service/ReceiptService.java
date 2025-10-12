@@ -9,7 +9,6 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import org.jboss.logging.Logger;
-import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -126,7 +125,7 @@ public class ReceiptService {
         return receiptRepository.updateReceipt(receipt);
     }
     
-    public InputStream getReceiptImage(Long receiptId, User user) throws Exception {
+    public String getReceiptImageUrl(Long receiptId, User user) {
         Optional<Receipt> optionalReceipt = receiptRepository.findByIdOptional(receiptId);
         if (optionalReceipt.isEmpty()) {
             throw new IllegalArgumentException("Receipt not found");
@@ -137,7 +136,7 @@ public class ReceiptService {
             throw new SecurityException("Access denied: Receipt does not belong to user");
         }
         
-        return s3Service.downloadReceipt(receipt.getS3Key());
+        return s3Service.generatePresignedUrl(receipt.getS3Key());
     }
     
     private boolean isValidFileType(String fileType) {

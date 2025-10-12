@@ -9,8 +9,10 @@ import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignGetObjectResponse;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -20,11 +22,13 @@ public class S3Service {
     private static final Logger LOG = Logger.getLogger(S3Service.class);
     
     private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     private final String bucketName;
     private final String environment;
     
     public S3Service() {
         this.s3Client = S3Client.builder().build();
+        this.s3Presigner = S3Presigner.builder().build();
         this.bucketName = System.getenv("RECEIPTS_BUCKET_NAME");
         this.environment = System.getenv("ENVIRONMENT") != null ? System.getenv("ENVIRONMENT") : "dev";
     }
@@ -53,19 +57,24 @@ public class S3Service {
         }
     }
     
-    public InputStream downloadReceipt(String s3Key) throws Exception {
+    public String generatePresignedUrl(String s3Key) {
         try {
             GetObjectRequest getObjectRequest = GetObjectRequest.builder()
                     .bucket(bucketName)
                     .key(s3Key)
                     .build();
             
-            ResponseInputStream<GetObjectResponse> inputStream = s3Client.getObject(getObjectRequest);
-            LOG.infof("Downloaded receipt from S3: %s", s3Key);
-            return inputStream;
-        } catch (S3Exception e) {
-            LOG.error("Error downloading receipt from S3", e);
-            throw new Exception("Failed to download receipt from S3", e);
+            GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                    .signatureDuration(Duration.ofHours(1))
+                    .getObjectRequest(getObjectRequest)
+                    .build();
+            
+            PresignGetObjectResponse presignedResponse = s3Presigner.presignGetObject(presignRequest);
+            LOG.infof("Generated presigned URL for: %s", s3Key);
+            return presignedResponse.url().toString();
+        } catch (Exception e) {
+            LOG.error("Error generating presigned URL", e);
+            throw new RuntimeException("Failed to generate presigned URL", e);
         }
     }
     

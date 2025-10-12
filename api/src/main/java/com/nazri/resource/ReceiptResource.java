@@ -7,8 +7,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
-import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Path("/receipts")
@@ -111,13 +111,12 @@ public class ReceiptResource extends BaseResource {
     }
     
     @GET
-    @Path("/{id}/image")
-    @Produces({"image/jpeg", "image/png"})
-    public Response getReceiptImage(@PathParam("id") Long id) {
+    @Path("/{id}/image-url")
+    public Response getReceiptImageUrl(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            InputStream imageStream = receiptService.getReceiptImage(id, user);
-            return Response.ok(imageStream).build();
+            String presignedUrl = receiptService.getReceiptImageUrl(id, user);
+            return Response.ok(Map.of("url", presignedUrl)).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.NOT_FOUND)
                     .entity(createErrorResponse(e.getMessage(), "RECEIPT_NOT_FOUND", 404))
@@ -128,7 +127,7 @@ public class ReceiptResource extends BaseResource {
                     .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorResponse("Failed to retrieve receipt image", "IMAGE_RETRIEVAL_ERROR", 500))
+                    .entity(createErrorResponse("Failed to generate receipt image URL", "URL_GENERATION_ERROR", 500))
                     .build();
         }
     }
