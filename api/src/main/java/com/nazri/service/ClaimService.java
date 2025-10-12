@@ -24,13 +24,13 @@ public class ClaimService {
     WarrantyRepository warrantyRepository;
 
     // Valid claim statuses
-    private static final Set<String> VALID_STATUSES = new HashSet<>();
+    private static final Set<Claim.ClaimStatus> VALID_STATUSES = new HashSet<>();
     static {
-        VALID_STATUSES.add("SUBMITTED");
-        VALID_STATUSES.add("PROCESSING");
-        VALID_STATUSES.add("APPROVED");
-        VALID_STATUSES.add("DENIED");
-        VALID_STATUSES.add("COMPLETED");
+        VALID_STATUSES.add(Claim.ClaimStatus.SUBMITTED);
+        VALID_STATUSES.add(Claim.ClaimStatus.PROCESSING);
+        VALID_STATUSES.add(Claim.ClaimStatus.APPROVED);
+        VALID_STATUSES.add(Claim.ClaimStatus.DENIED);
+        VALID_STATUSES.add(Claim.ClaimStatus.COMPLETED);
     }
 
     /**
@@ -88,7 +88,7 @@ public class ClaimService {
      * @param status the claim status
      * @return list of claims
      */
-    public List<Claim> findByUserIdAndStatus(Long userId, String status) {
+    public List<Claim> findByUserIdAndStatus(Long userId, Claim.ClaimStatus status) {
         // Get all warranties for the user first
         List<Warranty> userWarranties = warrantyRepository.findByUserId(userId);
         // Extract warranty IDs
@@ -105,7 +105,7 @@ public class ClaimService {
      * @param status the claim status
      * @return list of claims
      */
-    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
+    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, Claim.ClaimStatus status) {
         return claimRepository.findByWarrantyIdsAndStatus(warrantyIds, status);
     }
 
@@ -114,7 +114,7 @@ public class ClaimService {
      * @param status the claim status
      * @return list of claims
      */
-    public List<Claim> findByStatus(String status) {
+    public List<Claim> findByStatus(Claim.ClaimStatus status) {
         return claimRepository.findByStatus(status);
     }
 
@@ -143,7 +143,7 @@ public class ClaimService {
             throw new IllegalArgumentException("Claim date is required");
         }
 
-        if (claim.getStatus() == null || claim.getStatus().isEmpty()) {
+        if (claim.getStatus() == null) {
             throw new IllegalArgumentException("Status is required");
         }
 
@@ -160,7 +160,7 @@ public class ClaimService {
         claim.setWarranty(warranty.get());
 
         // Validate status
-        if (!VALID_STATUSES.contains(claim.getStatus().toUpperCase())) {
+        if (!VALID_STATUSES.contains(claim.getStatus())) {
             throw new IllegalArgumentException("Invalid status. Valid statuses are: " + VALID_STATUSES);
         }
     }
@@ -181,8 +181,8 @@ public class ClaimService {
         }
 
         // Set default status if not provided
-        if (claim.getStatus() == null || claim.getStatus().isEmpty()) {
-            claim.setStatus("SUBMITTED");
+        if (claim.getStatus() == null) {
+            claim.setStatus(Claim.ClaimStatus.SUBMITTED);
         }
 
         return claimRepository.createClaim(claim);
