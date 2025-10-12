@@ -62,7 +62,7 @@ public class WarrantyService {
      * @param status the warranty status
      * @return list of warranties
      */
-    public List<Warranty> findByStatus(String status) {
+    public List<Warranty> findByStatus(Warranty.WarrantyStatus status) {
         return warrantyRepository.findByStatus(status);
     }
 
@@ -72,7 +72,7 @@ public class WarrantyService {
      * @param status the warranty status
      * @return list of warranties
      */
-    public List<Warranty> findByUserIdAndStatus(Long userId, String status) {
+    public List<Warranty> findByUserIdAndStatus(Long userId, Warranty.WarrantyStatus status) {
         return warrantyRepository.findByUserIdAndStatus(userId, status);
     }
 
@@ -172,8 +172,8 @@ public class WarrantyService {
         warranty.setUserProduct(userProduct.get());
 
         // Set default status if not provided
-        if (warranty.getStatus() == null || warranty.getStatus().isEmpty()) {
-            warranty.setStatus("ACTIVE");
+        if (warranty.getStatus() == null) {
+            warranty.setStatus(Warranty.WarrantyStatus.ACTIVE);
         }
 
         // Validate dates

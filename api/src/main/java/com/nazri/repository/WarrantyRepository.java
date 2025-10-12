@@ -44,7 +44,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @param status the warranty status
      * @return list of warranties
      */
-    public List<Warranty> findByStatus(String status) {
+    public List<Warranty> findByStatus(Warranty.WarrantyStatus status) {
         return list("status", status);
     }
 
@@ -54,7 +54,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @param status the warranty status
      * @return list of warranties
      */
-    public List<Warranty> findByUserIdAndStatus(Long userId, String status) {
+    public List<Warranty> findByUserIdAndStatus(Long userId, Warranty.WarrantyStatus status) {
         return list("user.id = ?1 and status = ?2", userId, status);
     }
 
@@ -77,7 +77,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      */
     public List<Warranty> findExpiringWarranties(Long userId, LocalDate startDate, LocalDate endDate) {
         return list("user.id = ?1 and endDate >= ?2 and endDate <= ?3 and status = ?4", 
-                   userId, startDate, endDate, "ACTIVE");
+                   userId, startDate, endDate, Warranty.WarrantyStatus.ACTIVE);
     }
 
     /**
@@ -85,7 +85,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
      * @return list of expired warranties
      */
     public List<Warranty> findExpiredWarranties() {
-        return list("endDate < ?1 and status = ?2", LocalDate.now(), "ACTIVE");
+        return list("endDate < ?1 and status = ?2", LocalDate.now(), Warranty.WarrantyStatus.ACTIVE);
     }
 
     /**
