@@ -43,7 +43,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @param status the claim status
      * @return list of claims
      */
-    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, String status) {
+    public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, Claim.ClaimStatus status) {
         return list("warranty.id in ?1 and status = ?2", warrantyIds, status);
     }
     
@@ -52,7 +52,7 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      * @param status the claim status
      * @return list of claims
      */
-    public List<Claim> findByStatus(String status) {
+    public List<Claim> findByStatus(Claim.ClaimStatus status) {
         return list("status", status);
     }
     
