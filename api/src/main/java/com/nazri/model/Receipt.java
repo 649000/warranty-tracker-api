@@ -32,10 +32,10 @@ public class Receipt extends PanacheEntity {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_product_id", nullable = false)
     @JsonIgnore
-    private User user;
+    private UserProduct userProduct;
     
     // Constructors
     public Receipt() {}
@@ -69,8 +69,8 @@ public class Receipt extends PanacheEntity {
         return updatedAt;
     }
     
-    public User getUser() {
-        return user;
+    public UserProduct getUserProduct() {
+        return userProduct;
     }
     
     // Setters
@@ -102,7 +102,7 @@ public class Receipt extends PanacheEntity {
         this.updatedAt = updatedAt;
     }
     
-    public void setUser(User user) {
-        this.user = user;
+    public void setUserProduct(UserProduct userProduct) {
+        this.userProduct = userProduct;
     }
 }

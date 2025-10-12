@@ -50,9 +50,9 @@ public class UserProduct extends PanacheEntity {
     @OneToMany(mappedBy = "userProduct", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Warranty> warranties;
 
-//    // Status of uploaded receipt. Processing, Pending Review/Ready, Confirmed
-//    @Column(name = "status", nullable = false)
-//    private String status;
+    @OneToOne(mappedBy = "userProduct", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private Receipt receipt;
     
     // Constructors
     public UserProduct() {}
@@ -102,6 +102,10 @@ public class UserProduct extends PanacheEntity {
         return warranties;
     }
     
+    public Receipt getReceipt() {
+        return receipt;
+    }
+    
     // Setters
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
@@ -147,13 +151,9 @@ public class UserProduct extends PanacheEntity {
         this.warranties = warranties;
     }
 
-//    public String getStatus() {
-//        return status;
-//    }
-//
-//    public void setStatus(String status) {
-//        this.status = status;
-//    }
+    public void setReceipt(Receipt receipt) {
+        this.receipt = receipt;
+    }
 
     @Override
     public String toString() {
@@ -167,7 +167,6 @@ public class UserProduct extends PanacheEntity {
                 ", notes='" + notes + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
-//                ", status=" + status +
                 '}';
     }
 }

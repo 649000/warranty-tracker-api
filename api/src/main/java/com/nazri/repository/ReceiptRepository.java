@@ -15,11 +15,11 @@ public class ReceiptRepository implements PanacheRepository<Receipt> {
     }
     
     public List<Receipt> findByUserId(Long userId) {
-        return list("user.id", userId);
+        return list("userProduct.user.id", userId);
     }
     
     public List<Receipt> findByUserIdAndConfirmed(Long userId, Boolean isConfirmed) {
-        return list("user.id = ?1 and isConfirmed = ?2", userId, isConfirmed);
+        return list("userProduct.user.id = ?1 and isConfirmed = ?2", userId, isConfirmed);
     }
     
     public Receipt createReceipt(Receipt receipt) {

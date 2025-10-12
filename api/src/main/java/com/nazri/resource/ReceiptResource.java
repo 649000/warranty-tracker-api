@@ -25,6 +25,9 @@ public class ReceiptResource extends BaseResource {
         
         @FormParam("fileType")
         public String fileType;
+        
+        @FormParam("userProductId")
+        public Long userProductId;
     }
     
     @POST
@@ -32,11 +35,15 @@ public class ReceiptResource extends BaseResource {
     public Response uploadReceipt(@MultipartForm ReceiptUploadForm form) {
         try {
             User user = validateCurrentUser();
-            ReceiptService.ReceiptData receiptData = receiptService.uploadReceipt(form.file, form.fileType, user);
+            ReceiptService.ReceiptData receiptData = receiptService.uploadReceipt(form.file, form.fileType, form.userProductId, user);
             return Response.ok(receiptData).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", 400))
+                    .build();
+        } catch (SecurityException e) {
+            return Response.status(Response.Status.FORBIDDEN)
+                    .entity(createErrorResponse(e.getMessage(), "ACCESS_DENIED", 403))
                     .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

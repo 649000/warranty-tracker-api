@@ -2,7 +2,9 @@ package com.nazri.service;
 
 import com.nazri.model.Receipt;
 import com.nazri.model.User;
+import com.nazri.model.UserProduct;
 import com.nazri.repository.ReceiptRepository;
+import com.nazri.repository.UserProductRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -24,6 +26,9 @@ public class ReceiptService {
     ReceiptRepository receiptRepository;
     
     @Inject
+    UserProductRepository userProductRepository;
+    
+    @Inject
     S3Service s3Service;
     
     @Inject
@@ -35,7 +40,7 @@ public class ReceiptService {
         this.bucketName = System.getenv("RECEIPTS_BUCKET_NAME");
     }
     
-    public ReceiptData uploadReceipt(byte[] fileData, String fileType, User user) throws Exception {
+    public ReceiptData uploadReceipt(byte[] fileData, String fileType, Long userProductId, User user) throws Exception {
         // Validate file type
         if (!isValidFileType(fileType)) {
             throw new IllegalArgumentException("Invalid file type. Only JPEG and PNG files are allowed.");
@@ -46,13 +51,24 @@ public class ReceiptService {
             throw new IllegalArgumentException("File size exceeds maximum limit of 10MB.");
         }
         
+        // Validate user product exists and belongs to user
+        Optional<UserProduct> userProductOpt = userProductRepository.findByIdOptional(userProductId);
+        if (userProductOpt.isEmpty()) {
+            throw new IllegalArgumentException("User product not found");
+        }
+        
+        UserProduct userProduct = userProductOpt.get();
+        if (!userProduct.getUser().id.equals(user.id)) {
+            throw new SecurityException("Access denied: User product does not belong to user");
+        }
+        
         // Upload to S3
         String s3Key = s3Service.uploadReceipt(fileData, user.id, fileType);
         
         // Create initial receipt record
         Receipt receipt = new Receipt();
         receipt.setS3Key(s3Key);
-        receipt.setUser(user);
+        receipt.setUserProduct(userProduct);
         receipt.setIsConfirmed(false);
         receipt.setCreatedAt(LocalDateTime.now());
         receipt.setUpdatedAt(LocalDateTime.now());
@@ -82,7 +98,7 @@ public class ReceiptService {
     
     public Optional<Receipt> getReceiptById(Long id, User user) {
         Optional<Receipt> receipt = receiptRepository.findByIdOptional(id);
-        if (receipt.isPresent() && !receipt.get().getUser().id.equals(user.id)) {
+        if (receipt.isPresent() && !receipt.get().getUserProduct().getUser().id.equals(user.id)) {
             throw new SecurityException("Access denied: Receipt does not belong to user");
         }
         return receipt;
@@ -100,7 +116,7 @@ public class ReceiptService {
         }
         
         Receipt receipt = optionalReceipt.get();
-        if (!receipt.getUser().id.equals(user.id)) {
+        if (!receipt.getUserProduct().getUser().id.equals(user.id)) {
             throw new SecurityException("Access denied: Receipt does not belong to user");
         }
         
@@ -117,7 +133,7 @@ public class ReceiptService {
         }
         
         Receipt receipt = optionalReceipt.get();
-        if (!receipt.getUser().id.equals(user.id)) {
+        if (!receipt.getUserProduct().getUser().id.equals(user.id)) {
             throw new SecurityException("Access denied: Receipt does not belong to user");
         }
         
