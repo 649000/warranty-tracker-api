@@ -72,7 +72,15 @@ public class ClaimResource extends BaseResource {
     public Response getClaimsByStatus(@PathParam("status") String status) {
         try {
             User user = validateCurrentUser();
-            List<Claim> claims = claimService.findByUserIdAndStatus(user.id, status);
+            Claim.ClaimStatus claimStatus;
+            try {
+                claimStatus = Claim.ClaimStatus.valueOf(status.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity(createErrorResponse("Invalid claim status: " + status, "INVALID_STATUS", Response.Status.BAD_REQUEST.getStatusCode()))
+                        .build();
+            }
+            List<Claim> claims = claimService.findByUserIdAndStatus(user.id, claimStatus);
             return Response.ok(claims).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
