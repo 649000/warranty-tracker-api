@@ -68,7 +68,7 @@ public class ProductResource extends BaseResource {
 
     @POST
     @RolesAllowed("admin")
-    public Response createProduct(Product product) {
+    public Response adminCreateProduct(Product product) {
         try {
             // Validate required fields
             if (product.getName() == null || product.getName().trim().isEmpty()) {
@@ -99,7 +99,7 @@ public class ProductResource extends BaseResource {
     @PUT
     @Path("/{id}")
     @RolesAllowed("admin")
-    public Response updateProduct(@PathParam("id") Long id, Product product) {
+    public Response adminUpdateProduct(@PathParam("id") Long id, Product product) {
         try {
             Optional<Product> existingProduct = productService.findById(id);
             if (existingProduct.isPresent()) {
@@ -126,7 +126,7 @@ public class ProductResource extends BaseResource {
     @DELETE
     @Path("/{id}")
     @RolesAllowed("admin")
-    public Response deleteProduct(@PathParam("id") Long id) {
+    public Response adminDeleteProduct(@PathParam("id") Long id) {
         try {
             Optional<Product> product = productService.findById(id);
             if (product.isPresent()) {
