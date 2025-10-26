@@ -63,13 +63,7 @@ public class CompanyResource extends BaseResource {
     public Response searchCompanies(@QueryParam("name") String name) {
         try {
             LOG.info("Searching companies by name: " + name);
-            List<Company> companies;
-            if (name == null || name.trim().isEmpty()) {
-                companies = companyService.findAllCompanies();
-            } else {
-                companies = companyService.findByNameContaining(name);
-            }
-
+            List<Company> companies = companyService.findByNameContaining(name);
             return Response.ok(companies).build();
         } catch (Exception e) {
             LOG.error("Error searching companies by name: " + name, e);

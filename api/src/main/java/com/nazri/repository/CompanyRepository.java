@@ -6,19 +6,10 @@ import jakarta.enterprise.context.ApplicationScoped;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @ApplicationScoped
 public class CompanyRepository implements PanacheRepository<Company> {
-
-    /**
-     * Find a company by name
-     *
-     * @param name the company name
-     * @return list of companies with matching name
-     */
-    public List<Company> findByName(String name) {
-        return find("name", name).list();
-    }
 
     /**
      * Find companies by name (partial match)
@@ -31,21 +22,12 @@ public class CompanyRepository implements PanacheRepository<Company> {
     }
 
     /**
-     * Get all companies
+     * Save a new company
      *
-     * @return list of all companies
+     * @param company the company to save
+     * @return the saved company
      */
-    public List<Company> findAllCompanies() {
-        return findAll().list();
-    }
-
-    /**
-     * Create a new company
-     *
-     * @param company the company to create
-     * @return the created company
-     */
-    public Company createCompany(Company company) {
+    public Company save(Company company) {
         company.setCreatedAt(LocalDateTime.now());
         company.setUpdatedAt(LocalDateTime.now());
         persistAndFlush(company);
@@ -58,19 +40,19 @@ public class CompanyRepository implements PanacheRepository<Company> {
      * @param company the company to update
      * @return the updated company
      */
-    public Company updateCompany(Company company) {
+    public Company update(Company company) {
         company.setUpdatedAt(LocalDateTime.now());
         getEntityManager().merge(company);
         return company;
     }
-    
+
     /**
-     * Delete a company by ID
+     * Find a company by ID
      *
      * @param id the company ID
-     * @return true if company was deleted, false if not found
+     * @return Optional containing the company if found
      */
-    public boolean deleteById(Long id) {
-        return deleteById(id);
+    public Optional<Company> findByIdOptional(Long id) {
+        return Optional.ofNullable(findById(id));
     }
 }

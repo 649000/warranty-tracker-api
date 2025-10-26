@@ -41,7 +41,7 @@ public class CompanyService {
      * @return list of all companies
      */
     public List<Company> findAllCompanies() {
-        return companyRepository.findAllCompanies();
+        return companyRepository.listAll();
     }
 
     /**
@@ -63,7 +63,7 @@ public class CompanyService {
             }
         }
 
-        return companyRepository.createCompany(company);
+        return companyRepository.save(company);
     }
 
     /**
@@ -87,7 +87,7 @@ public class CompanyService {
             companyToUpdate.setClaimUrl(company.getClaimUrl());
             companyToUpdate.setSupportHours(company.getSupportHours());
             companyToUpdate.setReturnInstructions(company.getReturnInstructions());
-            return Optional.of(companyRepository.updateCompany(companyToUpdate));
+            return Optional.of(companyRepository.update(companyToUpdate));
         }
         return Optional.empty();
     }
