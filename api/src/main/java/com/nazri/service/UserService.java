@@ -1,9 +1,7 @@
 package com.nazri.service;
 
 import com.nazri.model.User;
-import com.nazri.model.Warranty;
 import com.nazri.repository.UserRepository;
-import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -64,42 +62,6 @@ public class UserService {
     @Transactional
     public User updateUser(User user) {
         return userRepository.updateUser(user);
-    }
-    
-    /**
-     * Update user profile information
-     * @param firebaseUid the Firebase UID of the user
-     * @param displayName the new display name
-     * @return the updated user or empty optional if user not found
-     */
-    @Transactional
-    public Optional<User> updateUserProfile(String firebaseUid, String displayName) {
-        Optional<User> userOptional = userRepository.findByFirebaseUid(firebaseUid);
-        if (userOptional.isPresent()) {
-            User user = userOptional.get();
-            user.setDisplayName(displayName);
-            userRepository.updateUser(user);
-            return Optional.of(user);
-        }
-        return Optional.empty();
-    }
-    
-    /**
-     * Get all warranties for a specific user
-     * @param userId the user ID
-     * @return list of warranties
-     */
-    public List<Warranty> getWarrantiesByUserId(Long userId) {
-        return Warranty.list("user.id", userId);
-    }
-    
-    /**
-     * Get a warranty by its ID
-     * @param warrantyId the warranty ID
-     * @return Optional containing the warranty if found
-     */
-    public Optional<Warranty> getWarrantyById(Long warrantyId) {
-        return Optional.ofNullable(Warranty.findById(warrantyId));
     }
     
     /**
