@@ -3,12 +3,12 @@ package com.nazri.resource;
 import com.nazri.model.User;
 import com.nazri.service.UserService;
 import io.quarkus.security.Authenticated;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,7 +23,7 @@ public class UserResource extends BaseResource {
     UserService userService;
 
     @Inject
-    JsonWebToken jwt;
+    SecurityIdentity securityIdentity;
 
     @GET
     public Response getJwtUser() {
@@ -43,7 +43,7 @@ public class UserResource extends BaseResource {
     @POST
     public Response createUser() {
         try {
-            String firebaseUid = jwt.getSubject();
+            String firebaseUid = securityIdentity.getPrincipal().getName();
 
             // Check if user already exists
             if (userService.existsByFirebaseUid(firebaseUid)) {
@@ -54,8 +54,8 @@ public class UserResource extends BaseResource {
 
             User createdUser = userService.createUser(
                     firebaseUid,
-                    jwt.getClaim("email"),
-                    jwt.getClaim("preferredUsername")
+                    securityIdentity.getAttribute("email"),
+                    securityIdentity.getAttribute("preferredUsername")
             );
             return Response.status(Response.Status.CREATED).entity(createdUser).build();
         } catch (Exception e) {
