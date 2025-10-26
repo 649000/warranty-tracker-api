@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+import io.quarkus.security.Authenticated;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Path("/product")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class ProductResource extends BaseResource {
 
     @Inject
@@ -67,6 +69,7 @@ public class ProductResource extends BaseResource {
     }
 
     @POST
+    @Path("/admin")
     @RolesAllowed("admin")
     public Response adminCreateProduct(Product product) {
         try {
@@ -97,7 +100,7 @@ public class ProductResource extends BaseResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response adminUpdateProduct(@PathParam("id") Long id, Product product) {
         try {
@@ -124,7 +127,7 @@ public class ProductResource extends BaseResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response adminDeleteProduct(@PathParam("id") Long id) {
         try {
