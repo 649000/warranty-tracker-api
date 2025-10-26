@@ -1,12 +1,11 @@
 package com.nazri.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.jboss.logging.Logger;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
@@ -21,14 +20,16 @@ public class S3Service {
     
     private static final Logger LOG = Logger.getLogger(S3Service.class);
     
-    private final S3Client s3Client;
-    private final S3Presigner s3Presigner;
+    @Inject
+    S3Client s3Client;
+    
+    @Inject
+    S3Presigner s3Presigner;
+    
     private final String bucketName;
     private final String environment;
     
     public S3Service() {
-        this.s3Client = S3Client.builder().build();
-        this.s3Presigner = S3Presigner.builder().build();
         this.bucketName = System.getenv("RECEIPTS_BUCKET_NAME");
         this.environment = System.getenv("ENVIRONMENT") != null ? System.getenv("ENVIRONMENT") : "dev";
     }
