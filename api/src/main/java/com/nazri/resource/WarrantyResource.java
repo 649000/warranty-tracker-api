@@ -68,8 +68,13 @@ public class WarrantyResource extends BaseResource {
     public Response getWarrantiesByStatus(@PathParam("status") String status) {
         try {
             User user = validateCurrentUser();
-            List<Warranty> warranties = warrantyService.findByUserIdAndStatus(user.id, status);
+            Warranty.WarrantyStatus warrantyStatus = Warranty.WarrantyStatus.valueOf(status.toUpperCase());
+            List<Warranty> warranties = warrantyService.findByUserIdAndStatus(user.id, warrantyStatus);
             return Response.ok(warranties).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Invalid status value: " + status, "INVALID_STATUS", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving warranties: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
