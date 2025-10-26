@@ -2,11 +2,18 @@ package com.nazri.resource;
 
 import com.nazri.model.User;
 import com.nazri.service.ReceiptService;
+import io.quarkus.logging.Log;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.jboss.resteasy.annotations.providers.multipart.MultipartForm;
+import org.jboss.resteasy.reactive.RestForm;
+import org.jboss.resteasy.reactive.RestMulti;
+import org.jboss.resteasy.reactive.RestResponse;
+import org.jboss.resteasy.reactive.multipart.FileUpload;
+
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -18,40 +25,40 @@ public class ReceiptResource extends BaseResource {
 
     @Inject
     ReceiptService receiptService;
-    
-    public static class ReceiptUploadForm {
-        @FormParam("file")
-        public byte[] file;
-        
-        @FormParam("fileType")
-        public String fileType;
-        
-        @FormParam("userProductId")
-        public Long userProductId;
-    }
-    
+
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public Response uploadReceipt(@MultipartForm ReceiptUploadForm form) {
+    public RestResponse<?> uploadReceipt(@RestForm("file") FileUpload file,
+                                         @RestForm("fileType") String fileType,
+                                         @RestForm("userProductId") Long userProductId) {
         try {
             User user = validateCurrentUser();
-            ReceiptService.ReceiptData receiptData = receiptService.uploadReceipt(form.file, form.fileType, form.userProductId, user);
-            return Response.ok(receiptData).build();
+            
+            // Read file data
+            byte[] fileData;
+            try {
+                fileData = Files.readAllBytes(file.getFile());
+            } catch (IOException e) {
+                Log.error("Failed to read uploaded file", e);
+                return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR,
+                        createErrorResponse("Failed to read uploaded file", "FILE_READ_ERROR", 500));
+            }
+
+            ReceiptService.ReceiptData receiptData = receiptService.uploadReceipt(fileData, fileType, userProductId, user);
+            return RestResponse.ok(receiptData);
         } catch (IllegalArgumentException e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", 400))
-                    .build();
+            return RestResponse.status(Response.Status.BAD_REQUEST,
+                    createErrorResponse(e.getMessage(), "INVALID_INPUT", 400));
         } catch (SecurityException e) {
-            return Response.status(Response.Status.FORBIDDEN)
-                    .entity(createErrorResponse(e.getMessage(), "ACCESS_DENIED", 403))
-                    .build();
+            return RestResponse.status(Response.Status.FORBIDDEN,
+                    createErrorResponse(e.getMessage(), "ACCESS_DENIED", 403));
         } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity(createErrorResponse("Failed to process receipt", "PROCESSING_ERROR", 500))
-                    .build();
+            Log.error("Failed to process receipt", e);
+            return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR,
+                    createErrorResponse("Failed to process receipt", "PROCESSING_ERROR", 500));
         }
     }
-    
+
     @GET
     @Path("/{id}")
     public Response getReceipt(@PathParam("id") Long id) {
@@ -74,7 +81,7 @@ public class ReceiptResource extends BaseResource {
                     .build();
         }
     }
-    
+
     @GET
     public Response listReceipts() {
         try {
@@ -87,7 +94,7 @@ public class ReceiptResource extends BaseResource {
                     .build();
         }
     }
-    
+
     @POST
     @Path("/{id}/confirm")
     public Response confirmReceipt(@PathParam("id") Long id) {
@@ -109,7 +116,7 @@ public class ReceiptResource extends BaseResource {
                     .build();
         }
     }
-    
+
     @GET
     @Path("/{id}/image-url")
     public Response getReceiptImageUrl(@PathParam("id") Long id) {
