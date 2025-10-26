@@ -3,6 +3,7 @@ package com.nazri.service;
 import com.nazri.model.User;
 import com.nazri.model.Warranty;
 import com.nazri.repository.UserRepository;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -99,5 +100,56 @@ public class UserService {
      */
     public Optional<Warranty> getWarrantyById(Long warrantyId) {
         return Optional.ofNullable(Warranty.findById(warrantyId));
+    }
+    
+    /**
+     * Get all users (admin only)
+     * @return list of all users
+     */
+    public List<User> getAllUsers() {
+        return userRepository.listAll();
+    }
+    
+    /**
+     * Find user by ID (admin only)
+     * @param id the user ID
+     * @return Optional containing the user if found
+     */
+    public Optional<User> findUserById(Long id) {
+        return Optional.ofNullable(userRepository.findById(id));
+    }
+    
+    /**
+     * Delete user by ID (admin only)
+     * @param id the user ID
+     * @return true if user was deleted, false if not found
+     */
+    @Transactional
+    public boolean deleteUserById(Long id) {
+        return userRepository.deleteById(id);
+    }
+    
+    /**
+     * Update user by ID (admin only)
+     * @param id the user ID
+     * @param email the new email
+     * @param displayName the new display name
+     * @return Optional containing the updated user if found
+     */
+    @Transactional
+    public Optional<User> updateUserById(Long id, String email, String displayName) {
+        Optional<User> userOptional = findUserById(id);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
+            if (email != null) {
+                user.setEmail(email);
+            }
+            if (displayName != null) {
+                user.setDisplayName(displayName);
+            }
+            userRepository.updateUser(user);
+            return Optional.of(user);
+        }
+        return Optional.empty();
     }
 }

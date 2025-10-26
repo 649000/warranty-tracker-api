@@ -10,8 +10,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
@@ -92,7 +92,7 @@ public class UserResource extends BaseResource {
     @RolesAllowed("admin")
     public Response adminGetAllUsers() {
         try {
-            List<User> users = User.listAll();
+            List<User> users = userService.getAllUsers();
             return Response.ok(users).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -106,9 +106,9 @@ public class UserResource extends BaseResource {
     @RolesAllowed("admin")
     public Response adminGetUserById(@PathParam("id") Long id) {
         try {
-            User user = User.findById(id);
-            if (user != null) {
-                return Response.ok(user).build();
+            Optional<User> userOptional = userService.findUserById(id);
+            if (userOptional.isPresent()) {
+                return Response.ok(userOptional.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("User not found with id: " + id, "USER_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
@@ -126,9 +126,8 @@ public class UserResource extends BaseResource {
     @RolesAllowed("admin")
     public Response adminDeleteUser(@PathParam("id") Long id) {
         try {
-            User user = User.findById(id);
-            if (user != null) {
-                user.delete();
+            boolean deleted = userService.deleteUserById(id);
+            if (deleted) {
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -147,18 +146,9 @@ public class UserResource extends BaseResource {
     @RolesAllowed("admin")
     public Response adminUpdateUser(@PathParam("id") Long id, User userData) {
         try {
-            User existingUser = User.findById(id);
-            if (existingUser != null) {
-                // Update user fields
-                if (userData.getEmail() != null) {
-                    existingUser.setEmail(userData.getEmail());
-                }
-                if (userData.getDisplayName() != null) {
-                    existingUser.setDisplayName(userData.getDisplayName());
-                }
-                existingUser.setUpdatedAt(LocalDateTime.now());
-                existingUser.persist();
-                return Response.ok(existingUser).build();
+            Optional<User> userOptional = userService.updateUserById(id, userData.getEmail(), userData.getDisplayName());
+            if (userOptional.isPresent()) {
+                return Response.ok(userOptional.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("User not found with id: " + id, "USER_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
