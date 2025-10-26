@@ -3,6 +3,7 @@ package com.nazri.resource;
 import com.nazri.model.User;
 import com.nazri.model.UserProduct;
 import com.nazri.service.UserProductService;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @Path("/user-product")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class UserProductResource extends BaseResource {
 
     @Inject
