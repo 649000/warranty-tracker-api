@@ -82,7 +82,7 @@ public class CompanyResource extends BaseResource {
     @POST
     @Path("/admin")
     @RolesAllowed("admin")
-    public Response createCompany(Company company) {
+    public Response adminCreateCompany(Company company) {
         try {
             LOG.info("Creating company: " + company.getName());
             Company createdCompany = companyService.createCompany(company);
@@ -103,7 +103,7 @@ public class CompanyResource extends BaseResource {
     @PUT
     @Path("/admin/{id}")
     @RolesAllowed("admin")
-    public Response updateCompany(@PathParam("id") Long id, Company company) {
+    public Response adminUpdateCompany(@PathParam("id") Long id, Company company) {
         try {
             LOG.info("Updating company with id: " + id);
             return companyService.updateCompany(id, company)
@@ -122,7 +122,7 @@ public class CompanyResource extends BaseResource {
     @DELETE
     @Path("/admin/{id}")
     @RolesAllowed("admin")
-    public Response deleteCompany(@PathParam("id") Long id) {
+    public Response adminDeleteCompany(@PathParam("id") Long id) {
         try {
             LOG.info("Deleting company with id: " + id);
             if (companyService.deleteCompany(id)) {
