@@ -8,7 +8,6 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.jboss.resteasy.reactive.RestForm;
-import org.jboss.resteasy.reactive.RestMulti;
 import org.jboss.resteasy.reactive.RestResponse;
 import org.jboss.resteasy.reactive.multipart.FileUpload;
 
@@ -33,11 +32,11 @@ public class ReceiptResource extends BaseResource {
                                          @RestForm("userProductId") Long userProductId) {
         try {
             User user = validateCurrentUser();
-            
+
             // Read file data
             byte[] fileData;
             try {
-                fileData = Files.readAllBytes(file.getFile());
+                fileData = Files.readAllBytes(file.uploadedFile());
             } catch (IOException e) {
                 Log.error("Failed to read uploaded file", e);
                 return RestResponse.status(Response.Status.INTERNAL_SERVER_ERROR,
