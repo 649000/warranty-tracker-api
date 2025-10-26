@@ -80,6 +80,7 @@ public class CompanyResource extends BaseResource {
     }
 
     @POST
+    @Path("/admin")
     @RolesAllowed("admin")
     public Response createCompany(Company company) {
         try {
@@ -100,7 +101,7 @@ public class CompanyResource extends BaseResource {
     }
 
     @PUT
-    @Path("/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response updateCompany(@PathParam("id") Long id, Company company) {
         try {
@@ -119,7 +120,7 @@ public class CompanyResource extends BaseResource {
     }
 
     @DELETE
-    @Path("/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response deleteCompany(@PathParam("id") Long id) {
         try {
