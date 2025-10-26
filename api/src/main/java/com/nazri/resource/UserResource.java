@@ -100,7 +100,7 @@ public class UserResource extends BaseResource {
     }
 
     @GET
-    @Path("/admin/user/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response adminGetUserById(@PathParam("id") Long id) {
         try {
@@ -120,7 +120,7 @@ public class UserResource extends BaseResource {
     }
 
     @DELETE
-    @Path("/admin/user/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response adminDeleteUser(@PathParam("id") Long id) {
         try {
@@ -141,7 +141,7 @@ public class UserResource extends BaseResource {
     }
 
     @PUT
-    @Path("/admin/user/{id}")
+    @Path("/admin/{id}")
     @RolesAllowed("admin")
     public Response adminUpdateUser(@PathParam("id") Long id, User userData) {
         try {
