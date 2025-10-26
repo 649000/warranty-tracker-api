@@ -15,6 +15,17 @@ public class UserProductService {
     UserProductRepository userProductRepository;
     
     /**
+     * Find a user product by its ID that belongs to the specified user
+     * @param id the user product ID
+     * @param userId the user ID
+     * @return Optional containing the user product if found
+     */
+    public Optional<UserProduct> findByIdAndUserId(Long id, Long userId) {
+        UserProduct userProduct = userProductRepository.findByIdAndUserId(id, userId);
+        return Optional.ofNullable(userProduct);
+    }
+    
+    /**
      * Find a user product by its ID
      * @param id the user product ID
      * @return Optional containing the user product if found
@@ -70,7 +81,7 @@ public class UserProductService {
     public UserProduct createUserProduct(UserProduct userProduct) {
         // Check if a user product with the same serial number already exists for this user
         if (userProduct.getSerialNumber() != null &&
-                existsByUserIdAndSerialNumber(userProduct.getUser().id, userProduct.getSerialNumber())) {
+                userProductRepository.existsByUserIdAndSerialNumber(userProduct.getUser().id, userProduct.getSerialNumber())) {
             throw new IllegalArgumentException("User product with this serial number already exists for this user");
         }
 
@@ -80,20 +91,23 @@ public class UserProductService {
     /**
      * Update an existing user product
      * @param userProduct the user product to update
+     * @param userId the ID of the user who owns the product
      * @return the updated user product
      * @throws IllegalArgumentException if changing to a serial number that already exists for this user
      */
     @Transactional
-    public UserProduct updateUserProduct(UserProduct userProduct) {
+    public UserProduct updateUserProduct(UserProduct userProduct, Long userId) {
         // Check if changing to a serial number that already exists for this user
         if (userProduct.getSerialNumber() != null) {
-            Optional<UserProduct> existingUserProductOpt = findById(userProduct.id);
+            Optional<UserProduct> existingUserProductOpt = findByIdAndUserId(userProduct.id, userId);
             if (existingUserProductOpt.isPresent()) {
                 UserProduct existingUserProduct = existingUserProductOpt.get();
                 if (!userProduct.getSerialNumber().equals(existingUserProduct.getSerialNumber()) &&
-                        existsByUserIdAndSerialNumber(userProduct.getUser().id, userProduct.getSerialNumber())) {
+                        userProductRepository.existsByUserIdAndSerialNumber(userId, userProduct.getSerialNumber())) {
                     throw new IllegalArgumentException("User product with this serial number already exists for this user");
                 }
+            } else {
+                throw new IllegalArgumentException("User product not found or does not belong to user");
             }
         }
 
@@ -101,12 +115,16 @@ public class UserProductService {
     }
     
     /**
-     * Delete a user product by ID
+     * Delete a user product by ID that belongs to the specified user
      * @param id the user product ID
+     * @param userId the user ID
      */
     @Transactional
-    public void deleteUserProduct(Long id) {
-        userProductRepository.deleteUserProduct(id);
+    public void deleteUserProduct(Long id, Long userId) {
+        UserProduct userProduct = userProductRepository.findByIdAndUserId(id, userId);
+        if (userProduct != null) {
+            userProductRepository.deleteUserProduct(id);
+        }
     }
     
     /**

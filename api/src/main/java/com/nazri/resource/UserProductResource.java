@@ -37,11 +37,9 @@ public class UserProductResource extends BaseResource {
     public Response getUserProductById(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<UserProduct> userProductOpt = userProductService.findById(id);
+            Optional<UserProduct> userProductOpt = userProductService.findByIdAndUserId(id, user.id);
             if (userProductOpt.isPresent()) {
-                UserProduct userProduct = userProductOpt.get();
-                validateUserProductOwnership(userProduct, user);
-                return Response.ok(userProduct).build();
+                return Response.ok(userProductOpt.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
                         .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
@@ -94,21 +92,12 @@ public class UserProductResource extends BaseResource {
     public Response updateUserProduct(@PathParam("id") Long id, UserProduct userProduct) {
         try {
             User user = validateCurrentUser();
-            Optional<UserProduct> existingUserProductOpt = userProductService.findById(id);
-            if (existingUserProductOpt.isPresent()) {
-                UserProduct existingUserProduct = existingUserProductOpt.get();
-                validateUserProductOwnership(existingUserProduct, user);
-
-                // Set the ID and user to ensure we're updating the correct user product
-                userProduct.id = id;
-                userProduct.setUser(user);
-                UserProduct updatedUserProduct = userProductService.updateUserProduct(userProduct);
-                return Response.ok(updatedUserProduct).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("User product not found with id: " + id, "USER_PRODUCT_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            
+            // Set the ID and user to ensure we're updating the correct user product
+            userProduct.id = id;
+            userProduct.setUser(user);
+            UserProduct updatedUserProduct = userProductService.updateUserProduct(userProduct, user.id);
+            return Response.ok(updatedUserProduct).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse(e.getMessage(), "VALIDATION_ERROR", Response.Status.BAD_REQUEST.getStatusCode()))
@@ -125,11 +114,9 @@ public class UserProductResource extends BaseResource {
     public Response deleteUserProduct(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<UserProduct> userProductOpt = userProductService.findById(id);
+            Optional<UserProduct> userProductOpt = userProductService.findByIdAndUserId(id, user.id);
             if (userProductOpt.isPresent()) {
-                UserProduct userProduct = userProductOpt.get();
-                validateUserProductOwnership(userProduct, user);
-                userProductService.deleteUserProduct(id);
+                userProductService.deleteUserProduct(id, user.id);
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)

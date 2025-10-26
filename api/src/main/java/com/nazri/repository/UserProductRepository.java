@@ -11,6 +11,16 @@ import java.util.Optional;
 public class UserProductRepository implements PanacheRepository<UserProduct> {
     
     /**
+     * Find a user product by its ID and user ID
+     * @param id the user product ID
+     * @param userId the user ID
+     * @return the user product if found, null otherwise
+     */
+    public UserProduct findByIdAndUserId(Long id, Long userId) {
+        return find("id = ?1 and user.id = ?2", id, userId).firstResult();
+    }
+    
+    /**
      * Find a user product by its ID
      * @param id the user product ID
      * @return the user product if found, null otherwise
@@ -27,12 +37,16 @@ public class UserProductRepository implements PanacheRepository<UserProduct> {
         return find("product.id", productId).list();
     }
     
+    public List<UserProduct> findByUserIdAndProductId(Long userId, Long productId) {
+        return find("user.id = ?1 and product.id = ?2", userId, productId).list();
+    }
+    
     public Optional<UserProduct> findBySerialNumber(String serialNumber) {
         return find("serialNumber", serialNumber).firstResultOptional();
     }
     
-    public List<UserProduct> findByUserIdAndProductId(Long userId, Long productId) {
-        return find("user.id = ?1 and product.id = ?2", userId, productId).list();
+    public Optional<UserProduct> findBySerialNumberAndUserId(String serialNumber, Long userId) {
+        return find("serialNumber = ?1 and user.id = ?2", serialNumber, userId).firstResultOptional();
     }
     
     public UserProduct createUserProduct(UserProduct userProduct) {
