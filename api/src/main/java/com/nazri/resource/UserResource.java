@@ -2,6 +2,7 @@ package com.nazri.resource;
 
 import com.nazri.model.User;
 import com.nazri.service.UserService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -15,6 +16,7 @@ import java.util.List;
 @Path("/user")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class UserResource extends BaseResource {
 
     @Inject
