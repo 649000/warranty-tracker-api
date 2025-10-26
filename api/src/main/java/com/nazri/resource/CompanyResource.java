@@ -2,6 +2,7 @@ package com.nazri.resource;
 
 import com.nazri.model.Company;
 import com.nazri.service.CompanyService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -14,6 +15,7 @@ import java.util.List;
 @Path("/company")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class CompanyResource extends BaseResource {
 
     private static final Logger LOG = Logger.getLogger(CompanyResource.class);
