@@ -88,7 +88,7 @@ public class UserResource extends BaseResource {
     @GET
     @Path("/admin/all")
     @RolesAllowed("admin")
-    public Response getAllUsers() {
+    public Response adminGetAllUsers() {
         try {
             List<User> users = User.listAll();
             return Response.ok(users).build();
@@ -100,9 +100,9 @@ public class UserResource extends BaseResource {
     }
 
     @GET
-    @Path("/admin/{id}")
+    @Path("/admin/user/{id}")
     @RolesAllowed("admin")
-    public Response getUserById(@PathParam("id") Long id) {
+    public Response adminGetUserById(@PathParam("id") Long id) {
         try {
             User user = User.findById(id);
             if (user != null) {
@@ -120,9 +120,9 @@ public class UserResource extends BaseResource {
     }
 
     @DELETE
-    @Path("/admin/{id}")
+    @Path("/admin/user/{id}")
     @RolesAllowed("admin")
-    public Response deleteUser(@PathParam("id") Long id) {
+    public Response adminDeleteUser(@PathParam("id") Long id) {
         try {
             User user = User.findById(id);
             if (user != null) {
@@ -141,7 +141,7 @@ public class UserResource extends BaseResource {
     }
 
     @PUT
-    @Path("/admin/{id}")
+    @Path("/admin/user/{id}")
     @RolesAllowed("admin")
     public Response adminUpdateUser(@PathParam("id") Long id, User userData) {
         try {
