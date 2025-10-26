@@ -1,6 +1,5 @@
-package com.nazri.security;
+package com.nazri;
 
-import com.nazri.model.User;
 import com.nazri.service.UserService;
 import io.quarkus.security.identity.AuthenticationRequestContext;
 import io.quarkus.security.identity.SecurityIdentity;
