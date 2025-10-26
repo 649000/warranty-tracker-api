@@ -42,33 +42,6 @@ public class ProductService {
     }
     
     /**
-     * Find products by name (partial match)
-     * @param name the product name to search for
-     * @return list of products
-     */
-    public List<Product> findByNameContaining(String name) {
-        return productRepository.findByNameContaining(name);
-    }
-    
-    /**
-     * Find products by brand (partial match)
-     * @param brand the brand to search for
-     * @return list of products
-     */
-    public List<Product> findByBrandContaining(String brand) {
-        return productRepository.findByBrandContaining(brand);
-    }
-    
-    /**
-     * Find products by model number (partial match)
-     * @param modelNumber the model number to search for
-     * @return list of products
-     */
-    public List<Product> findByModelNumberContaining(String modelNumber) {
-        return productRepository.findByModelNumberContaining(modelNumber);
-    }
-    
-    /**
      * Search products by multiple criteria
      * @param name the product name to search for (partial match)
      * @param brand the brand to search for (partial match)

@@ -4,7 +4,6 @@ import com.nazri.model.Product;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @ApplicationScoped
@@ -20,33 +19,6 @@ public class ProductRepository implements PanacheRepository<Product> {
     }
     
     /**
-     * Find products by name (partial match)
-     * @param name the product name to search for
-     * @return list of products
-     */
-    public List<Product> findByNameContaining(String name) {
-        return find("name like ?1", "%" + name + "%").list();
-    }
-    
-    /**
-     * Find products by brand (partial match)
-     * @param brand the brand to search for
-     * @return list of products
-     */
-    public List<Product> findByBrandContaining(String brand) {
-        return find("brand like ?1", "%" + brand + "%").list();
-    }
-    
-    /**
-     * Find products by model number (partial match)
-     * @param modelNumber the model number to search for
-     * @return list of products
-     */
-    public List<Product> findByModelNumberContaining(String modelNumber) {
-        return find("modelNumber like ?1", "%" + modelNumber + "%").list();
-    }
-    
-    /**
      * Search products by multiple criteria
      * @param name the product name to search for (partial match)
      * @param brand the brand to search for (partial match)
@@ -54,31 +26,37 @@ public class ProductRepository implements PanacheRepository<Product> {
      * @return list of products matching all provided criteria
      */
     public List<Product> searchProducts(String name, String brand, String modelNumber) {
-        List<String> conditions = new ArrayList<>();
-        List<Object> parameters = new ArrayList<>();
+        StringBuilder query = new StringBuilder();
+        StringBuilder whereClause = new StringBuilder();
         int paramIndex = 1;
         
         if (name != null && !name.trim().isEmpty()) {
-            conditions.add("name like ?" + paramIndex++);
-            parameters.add("%" + name.trim() + "%");
+            whereClause.append(" and name like ?").append(paramIndex++);
         }
         
         if (brand != null && !brand.trim().isEmpty()) {
-            conditions.add("brand like ?" + paramIndex++);
-            parameters.add("%" + brand.trim() + "%");
+            whereClause.append(" and brand like ?").append(paramIndex++);
         }
         
         if (modelNumber != null && !modelNumber.trim().isEmpty()) {
-            conditions.add("modelNumber like ?" + paramIndex++);
-            parameters.add("%" + modelNumber.trim() + "%");
+            whereClause.append(" and modelNumber like ?").append(paramIndex++);
         }
         
-        if (conditions.isEmpty()) {
-            return listAll();
+        if (whereClause.length() > 0) {
+            // Remove the first " and " 
+            query.append("FROM Product WHERE ").append(whereClause.substring(5));
+            return find(query.toString(), getParameters(name, brand, modelNumber)).list();
         }
         
-        String query = String.join(" and ", conditions);
-        return find(query, parameters.toArray()).list();
+        return findAll().list();
+    }
+    
+    private Object[] getParameters(String name, String brand, String modelNumber) {
+        return new Object[] {
+            name != null && !name.trim().isEmpty() ? "%" + name.trim() + "%" : null,
+            brand != null && !brand.trim().isEmpty() ? "%" + brand.trim() + "%" : null,
+            modelNumber != null && !modelNumber.trim().isEmpty() ? "%" + modelNumber.trim() + "%" : null
+        };
     }
     
     /**
@@ -110,22 +88,5 @@ public class ProductRepository implements PanacheRepository<Product> {
      */
     public void deleteProduct(Long id) {
         deleteById(id);
-    }
-    
-    /**
-     * Find all products
-     * @return list of all products
-     */
-    public List<Product> listAll() {
-        return findAll().list();
-    }
-    
-    /**
-     * Find a product by ID
-     * @param id the product ID
-     * @return the product if found, null otherwise
-     */
-    public Product findById(Long id) {
-        return find("id", id).firstResult();
     }
 }
