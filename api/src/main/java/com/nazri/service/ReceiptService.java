@@ -96,10 +96,7 @@ public class ReceiptService {
     }
     
     public Optional<Receipt> getReceiptById(Long id, User user) {
-        Optional<Receipt> receipt = receiptRepository.findByIdOptional(id);
-        if (receipt.isPresent() && !receipt.get().getUserProduct().getUser().id.equals(user.id)) {
-            throw new SecurityException("Access denied: Receipt does not belong to user");
-        }
+        Optional<Receipt> receipt = receiptRepository.findByIdAndUserId(id, user.id);
         return receipt;
     }
     
@@ -109,16 +106,12 @@ public class ReceiptService {
     
     @Transactional
     public Receipt confirmReceipt(Long receiptId, User user) {
-        Optional<Receipt> optionalReceipt = receiptRepository.findByIdOptional(receiptId);
+        Optional<Receipt> optionalReceipt = receiptRepository.findByIdAndUserId(receiptId, user.id);
         if (optionalReceipt.isEmpty()) {
             throw new IllegalArgumentException("Receipt not found");
         }
         
         Receipt receipt = optionalReceipt.get();
-        if (!receipt.getUserProduct().getUser().id.equals(user.id)) {
-            throw new SecurityException("Access denied: Receipt does not belong to user");
-        }
-        
         receipt.setIsConfirmed(true);
         receipt.setUpdatedAt(LocalDateTime.now());
         
@@ -126,16 +119,12 @@ public class ReceiptService {
     }
     
     public String getReceiptImageUrl(Long receiptId, User user) {
-        Optional<Receipt> optionalReceipt = receiptRepository.findByIdOptional(receiptId);
+        Optional<Receipt> optionalReceipt = receiptRepository.findByIdAndUserId(receiptId, user.id);
         if (optionalReceipt.isEmpty()) {
             throw new IllegalArgumentException("Receipt not found");
         }
         
         Receipt receipt = optionalReceipt.get();
-        if (!receipt.getUserProduct().getUser().id.equals(user.id)) {
-            throw new SecurityException("Access denied: Receipt does not belong to user");
-        }
-        
         return s3Service.generatePresignedUrl(receipt.getS3Key());
     }
     

@@ -14,6 +14,10 @@ public class ReceiptRepository implements PanacheRepository<Receipt> {
         return Optional.ofNullable(findById(id));
     }
     
+    public Optional<Receipt> findByIdAndUserId(Long id, Long userId) {
+        return find("id = ?1 and userProduct.user.id = ?2", id, userId).firstResultOptional();
+    }
+    
     public List<Receipt> findByUserId(Long userId) {
         return list("userProduct.user.id", userId);
     }
