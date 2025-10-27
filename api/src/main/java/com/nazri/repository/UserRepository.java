@@ -4,6 +4,8 @@ import com.nazri.model.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.transaction.Transactional;
+
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -15,15 +17,16 @@ public class UserRepository implements PanacheRepository<User> {
      * @param firebaseUid the Firebase UID
      * @return Uni containing Optional with the user if found
      */
-    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
-        return find("firebaseUid", firebaseUid).firstResultOptional();
-    }
+//    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
+//        return find("firebaseUid", firebaseUid).firstResultOptional();
+//    }
     
     /**
      * Find a user by their Firebase UID
      * @param firebaseUid the Firebase UID
      * @return Optional containing the user if found
      */
+    @Transactional
     public Optional<User> findByFirebaseUid(String firebaseUid) {
         return find("firebaseUid", firebaseUid).firstResultOptional();
     }

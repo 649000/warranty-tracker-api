@@ -20,9 +20,9 @@ public class UserService {
      * @param firebaseUid the Firebase UID
      * @return Uni containing Optional with the user if found
      */
-    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
-        return userRepository.findByFirebaseUidAsync(firebaseUid);
-    }
+//    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
+//        return userRepository.findByFirebaseUidAsync(firebaseUid);
+//    }
     
     /**
      * Find a user by their Firebase UID
