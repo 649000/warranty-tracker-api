@@ -16,7 +16,7 @@ public class UserRepository implements PanacheRepository<User> {
      * @return Uni containing Optional with the user if found
      */
     public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
-        return find("firebaseUid", firebaseUid).firstResultOptional().map(Optional::ofNullable);
+        return find("firebaseUid", firebaseUid).firstResultOptional();
     }
     
     /**
