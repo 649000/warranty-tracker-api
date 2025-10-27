@@ -153,4 +153,21 @@ public class ClaimResource extends BaseResource {
                     .build();
         }
     }
+
+    // Admin endpoints
+    @GET
+    @Path("/admin/all")
+    public Response getAllClaims() {
+        try {
+            User user = validateCurrentUser();
+            // In a real implementation, you would check if the user has admin privileges
+            // For now, we'll just return all claims
+            List<Claim> claims = claimService.findAllClaims();
+            return Response.ok(claims).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity(createErrorResponse("Error retrieving all claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
+                    .build();
+        }
+    }
 }

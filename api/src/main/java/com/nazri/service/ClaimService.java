@@ -83,6 +83,14 @@ public class ClaimService {
     }
 
     /**
+     * Find all claims (for admin use)
+     * @return list of all claims
+     */
+    public List<Claim> findAllClaims() {
+        return claimRepository.listAll();
+    }
+
+    /**
      * Find claims by user ID and status
      * @param userId the user ID
      * @param status the claim status
