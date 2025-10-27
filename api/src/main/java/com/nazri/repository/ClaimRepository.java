@@ -20,6 +20,14 @@ public class ClaimRepository implements PanacheRepository<Claim> {
     }
     
     /**
+     * Find all claims
+     * @return list of all claims
+     */
+    public List<Claim> findAllClaims() {
+        return listAll();
+    }
+    
+    /**
      * Find all claims for a specific warranty
      * @param warrantyId the warranty ID
      * @return list of claims

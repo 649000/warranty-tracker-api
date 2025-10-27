@@ -74,20 +74,11 @@ public class ClaimService {
     }
 
     /**
-     * Find all claims for a list of warranty IDs
-     * @param warrantyIds list of warranty IDs
-     * @return list of claims
-     */
-    public List<Claim> findByWarrantyIds(List<Long> warrantyIds) {
-        return claimRepository.findByWarrantyIds(warrantyIds);
-    }
-
-    /**
      * Find all claims (for admin use)
      * @return list of all claims
      */
     public List<Claim> findAllClaims() {
-        return claimRepository.listAll();
+        return claimRepository.findAllClaims();
     }
 
     /**
