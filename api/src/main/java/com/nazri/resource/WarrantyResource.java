@@ -168,11 +168,11 @@ public class WarrantyResource extends BaseResource {
         }
     }
 
-    // Admin endpoints
+    // Admin endpoints with /admin prefix
     @GET
-    @Path("/admin/all")
+    @Path("/admin")
     @RolesAllowed("admin")
-    public Response getAllWarranties() {
+    public Response adminGetAllWarranties() {
         try {
             // Admin can see all warranties
             List<Warranty> warranties = warrantyService.findAllWarranties();
@@ -187,7 +187,7 @@ public class WarrantyResource extends BaseResource {
     @GET
     @Path("/admin/user/{userId}")
     @RolesAllowed("admin")
-    public Response getWarrantiesByUserId(@PathParam("userId") Long userId) {
+    public Response adminGetWarrantiesByUserId(@PathParam("userId") Long userId) {
         try {
             List<Warranty> warranties = warrantyService.findByUserId(userId);
             return Response.ok(warranties).build();
@@ -201,7 +201,7 @@ public class WarrantyResource extends BaseResource {
     @GET
     @Path("/admin/company/{companyId}")
     @RolesAllowed("admin")
-    public Response getWarrantiesByCompanyId(@PathParam("companyId") Long companyId) {
+    public Response adminGetWarrantiesByCompanyId(@PathParam("companyId") Long companyId) {
         try {
             List<Warranty> warranties = warrantyService.findByCompanyId(companyId);
             return Response.ok(warranties).build();
@@ -215,7 +215,7 @@ public class WarrantyResource extends BaseResource {
     @GET
     @Path("/admin/expired")
     @RolesAllowed("admin")
-    public Response getExpiredWarranties() {
+    public Response adminGetExpiredWarranties() {
         try {
             List<Warranty> warranties = warrantyService.findExpiredWarranties();
             return Response.ok(warranties).build();
@@ -229,7 +229,7 @@ public class WarrantyResource extends BaseResource {
     @GET
     @Path("/admin/expiring")
     @RolesAllowed("admin")
-    public Response getExpiringWarrantiesAdmin(
+    public Response adminGetExpiringWarranties(
             @QueryParam("startDate") String startDateStr,
             @QueryParam("endDate") String endDateStr) {
         try {
