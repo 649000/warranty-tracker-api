@@ -3,6 +3,8 @@ package com.nazri.resource;
 import com.nazri.model.Claim;
 import com.nazri.model.User;
 import com.nazri.service.ClaimService;
+import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -14,6 +16,7 @@ import java.util.Optional;
 @Path("/claim")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class ClaimResource extends BaseResource {
 
     @Inject
@@ -157,11 +160,9 @@ public class ClaimResource extends BaseResource {
     // Admin endpoints
     @GET
     @Path("/admin/all")
+    @RolesAllowed("admin")
     public Response getAllClaims() {
         try {
-            User user = validateCurrentUser();
-            // In a real implementation, you would check if the user has admin privileges
-            // For now, we'll just return all claims
             List<Claim> claims = claimService.findAllClaims();
             return Response.ok(claims).build();
         } catch (Exception e) {
