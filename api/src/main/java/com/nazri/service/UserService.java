@@ -2,6 +2,7 @@ package com.nazri.service;
 
 import com.nazri.model.User;
 import com.nazri.repository.UserRepository;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,15 @@ public class UserService {
     
     @Inject
     UserRepository userRepository;
+    
+    /**
+     * Find a user by their Firebase UID (async version)
+     * @param firebaseUid the Firebase UID
+     * @return Uni containing Optional with the user if found
+     */
+    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
+        return userRepository.findByFirebaseUidAsync(firebaseUid);
+    }
     
     /**
      * Find a user by their Firebase UID

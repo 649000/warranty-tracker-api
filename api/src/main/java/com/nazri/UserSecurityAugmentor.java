@@ -15,30 +15,6 @@ public class UserSecurityAugmentor implements SecurityIdentityAugmentor {
     @Inject
     UserService userService;
 
-//    @Override
-//    public Uni<SecurityIdentity> augment(SecurityIdentity identity, AuthenticationRequestContext context) {
-//        // Skip if anonymous
-//        if (identity.isAnonymous()) {
-//            return Uni.createFrom().item(identity);
-//        }
-//
-//        // Extract Firebase UID from JWT (usually the subject)
-//        String firebaseUid = identity.getPrincipal().getName();
-//
-//        // Resolve user from database
-//        return userService.findByFirebaseUid(firebaseUid)
-//            .map(user -> {
-//                if (user != null) {
-//                    // Add user to security identity
-//                    return identity.withAttribute("user", user);
-//                } else {
-//                    // User not found in database - return anonymous identity
-//                    return identity;
-//                }
-//            })
-//            .orElse(Uni.createFrom().item(identity));
-//    }
-
     @Override
     public Uni<SecurityIdentity> augment(SecurityIdentity identity, AuthenticationRequestContext context) {
         if (identity.isAnonymous()) {
@@ -47,9 +23,10 @@ public class UserSecurityAugmentor implements SecurityIdentityAugmentor {
 
         String firebaseUid = identity.getPrincipal().getName();
 
-        return Uni.createFrom().item(() -> {
-            return userService.findByFirebaseUid(firebaseUid)
-                    .map(user -> {
+        // Use the async method from userService
+        return userService.findByFirebaseUidAsync(firebaseUid)
+                .map(userOptional -> {
+                    if (userOptional.isPresent()) {
                         // Convert to a QuarkusSecurityIdentity.Builder
                         QuarkusSecurityIdentity.Builder builder;
                         if (identity instanceof QuarkusSecurityIdentity qsi) {
@@ -59,12 +36,14 @@ public class UserSecurityAugmentor implements SecurityIdentityAugmentor {
                         }
 
                         // Add our custom user attribute
-                        builder.addAttribute("user", user);
+                        builder.addAttribute("user", userOptional.get());
 
                         // Build new identity
                         return builder.build();
-                    })
-                    .orElse((QuarkusSecurityIdentity) identity);
-        });
+                    } else {
+                        // User not found, return original identity
+                        return identity;
+                    }
+                });
     }
 }

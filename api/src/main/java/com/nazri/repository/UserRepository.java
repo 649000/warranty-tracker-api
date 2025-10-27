@@ -2,12 +2,22 @@ package com.nazri.repository;
 
 import com.nazri.model.User;
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
+import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
 @ApplicationScoped
 public class UserRepository implements PanacheRepository<User> {
+    
+    /**
+     * Find a user by their Firebase UID (async version)
+     * @param firebaseUid the Firebase UID
+     * @return Uni containing Optional with the user if found
+     */
+    public Uni<Optional<User>> findByFirebaseUidAsync(String firebaseUid) {
+        return find("firebaseUid", firebaseUid).firstResultOptional().map(Optional::ofNullable);
+    }
     
     /**
      * Find a user by their Firebase UID
