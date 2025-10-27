@@ -241,6 +241,6 @@ public class WarrantyService {
      * @return true if expired, false otherwise
      */
     public boolean isWarrantyExpired(Warranty warranty) {
-        return warranty.getEndDate().isBefore(LocalDate.now());
+        return warrantyRepository.isWarrantyExpired(warranty);
     }
 }

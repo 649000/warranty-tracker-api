@@ -106,6 +106,15 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
+     * Check if a warranty is expired
+     * @param warranty the warranty to check
+     * @return true if expired, false otherwise
+     */
+    public boolean isWarrantyExpired(Warranty warranty) {
+        return warranty.getEndDate().isBefore(LocalDate.now());
+    }
+
+    /**
      * Create a new warranty
      * @param warranty the warranty to create
      * @return the created warranty
