@@ -1,6 +1,7 @@
 package com.nazri.resource;
 
 import com.nazri.model.User;
+import io.quarkus.security.Authenticated;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -20,6 +21,7 @@ import java.time.Duration;
 @Path("/s3")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class S3Resource extends BaseResource {
 
     @Inject

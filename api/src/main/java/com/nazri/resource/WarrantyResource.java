@@ -4,6 +4,7 @@ import com.nazri.model.User;
 import com.nazri.model.Warranty;
 import com.nazri.service.UserService;
 import com.nazri.service.WarrantyService;
+import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -18,6 +19,7 @@ import java.util.Optional;
 @Path("/warranty")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class WarrantyResource extends BaseResource {
 
     @Inject

@@ -3,6 +3,7 @@ package com.nazri.resource;
 import com.nazri.model.User;
 import com.nazri.service.ReceiptService;
 import io.quarkus.logging.Log;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -20,6 +21,7 @@ import java.util.Optional;
 @Path("/receipts")
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
+@Authenticated
 public class ReceiptResource extends BaseResource {
 
     @Inject
