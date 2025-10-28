@@ -2,7 +2,6 @@ package com.nazri.resource;
 
 import com.nazri.model.User;
 import com.nazri.model.Warranty;
-import com.nazri.service.UserService;
 import com.nazri.service.WarrantyService;
 import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
@@ -10,7 +9,6 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,12 +22,6 @@ public class WarrantyResource extends BaseResource {
 
     @Inject
     WarrantyService warrantyService;
-
-    @Inject
-    UserService userService;
-
-    @Inject
-    JsonWebToken jwt;
 
     @GET
     public Response getUserWarranties() {

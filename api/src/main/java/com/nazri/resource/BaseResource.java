@@ -1,11 +1,10 @@
 package com.nazri.resource;
 
 import com.nazri.model.User;
-import com.nazri.service.UserService;
 import io.quarkus.security.identity.SecurityIdentity;
+import jakarta.inject.Inject;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import jakarta.inject.Inject;
 
 import java.util.Collections;
 import java.util.List;
@@ -16,9 +15,6 @@ import java.util.UUID;
  * Base resource class providing common functionality for all resource classes
  */
 public abstract class BaseResource {
-
-    @Inject
-    protected UserService userService;
 
     // Use SecurityIdentity instead of JsonWebToken
     @Inject

@@ -3,7 +3,6 @@ package com.nazri.resource;
 import com.nazri.model.Company;
 import com.nazri.service.CompanyService;
 import io.quarkus.security.Authenticated;
-import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
@@ -24,14 +23,9 @@ public class CompanyResource extends BaseResource {
     @Inject
     CompanyService companyService;
 
-    @Inject
-    SecurityIdentity securityIdentity;
-
     @GET
     public Response getAllCompanies() {
         try {
-            LOG.info(securityIdentity.getPrincipal().getName());
-            LOG.info(securityIdentity.getRoles().toString());
 
             LOG.info("Fetching all companies");
             List<Company> companies = companyService.findAllCompanies();
