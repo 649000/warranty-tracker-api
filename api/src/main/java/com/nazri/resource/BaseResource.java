@@ -2,10 +2,11 @@ package com.nazri.resource;
 
 import com.nazri.model.User;
 import com.nazri.service.UserService;
+import io.quarkus.security.identity.SecurityIdentity;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 import jakarta.inject.Inject;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -19,15 +20,17 @@ public abstract class BaseResource {
     @Inject
     protected UserService userService;
 
+    // Use SecurityIdentity instead of JsonWebToken
     @Inject
-    protected JsonWebToken jwt;
+    protected SecurityIdentity securityIdentity;
 
     /**
-     * Helper method to get current user from JWT token
+     * Helper method to get current user from SecurityIdentity
      * @return Optional containing the user if found
      */
     protected Optional<User> getCurrentUser() {
-        String firebaseUid = jwt.getSubject();
+        // Get the principal name (Firebase UID) from SecurityIdentity
+        String firebaseUid = securityIdentity.getPrincipal().getName();
         return userService.findByFirebaseUid(firebaseUid);
     }
     
