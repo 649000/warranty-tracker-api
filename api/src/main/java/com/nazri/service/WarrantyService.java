@@ -31,19 +31,13 @@ public class WarrantyService {
     UserProductRepository userProductRepository;
 
     /**
-     * Find a warranty by its ID
+     * Find a warranty by its ID with ownership verification at query level
      * @param userId the user ID
      * @param id the warranty ID
-     * @return Optional containing the warranty if found
+     * @return Optional containing the warranty if found and owned by the user
      */
     public Optional<Warranty> findById(Long userId, Long id) {
-        // This method would need to be implemented to check ownership at query level
-        // For now, we'll use the existing findById method
-        Optional<Warranty> warranty = warrantyRepository.findByIdOptional(id);
-        if (warranty.isPresent() && warranty.get().getUser().id.equals(userId)) {
-            return warranty;
-        }
-        return Optional.empty();
+        return warrantyRepository.findByIdAndUserId(id, userId);
     }
 
     /**
@@ -190,7 +184,7 @@ public class WarrantyService {
      */
     @Transactional
     public Warranty updateWarranty(Long userId, Warranty warranty) {
-        // First check if the warranty belongs to the user
+        // First check if the warranty belongs to the user using query-level filtering
         Optional<Warranty> existingWarranty = findById(userId, warranty.id);
         if (existingWarranty.isEmpty()) {
             throw new IllegalArgumentException("Warranty not found or does not belong to user");

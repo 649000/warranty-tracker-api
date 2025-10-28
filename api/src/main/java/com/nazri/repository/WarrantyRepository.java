@@ -22,6 +22,16 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
+     * Find a warranty by its ID and user ID (ownership check at query level)
+     * @param id the warranty ID
+     * @param userId the user ID
+     * @return Optional containing the warranty if found and owned by the user
+     */
+    public Optional<Warranty> findByIdAndUserId(Long id, Long userId) {
+        return find("id = ?1 and user.id = ?2", id, userId).firstResultOptional();
+    }
+
+    /**
      * Find all warranties for a specific user
      * @param userId the user ID
      * @return list of warranties
