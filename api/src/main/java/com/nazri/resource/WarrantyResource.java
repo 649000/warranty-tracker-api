@@ -49,9 +49,8 @@ public class WarrantyResource extends BaseResource {
     public Response getWarrantyById(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<Warranty> warranty = warrantyService.findById(id);
+            Optional<Warranty> warranty = warrantyService.findById(user.id, id);
             if (warranty.isPresent()) {
-                validateWarrantyOwnership(warranty.get(), user);
                 return Response.ok(warranty.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -124,19 +123,11 @@ public class WarrantyResource extends BaseResource {
     public Response updateWarranty(@PathParam("id") Long id, Warranty warranty) {
         try {
             User user = validateCurrentUser();
-            Optional<Warranty> existingWarranty = warrantyService.findById(id);
-            if (existingWarranty.isPresent()) {
-                validateWarrantyOwnership(existingWarranty.get(), user);
-                // Set the ID and user to ensure we're updating the correct warranty
-                warranty.id = id;
-                warranty.setUser(user);
-                Warranty updatedWarranty = warrantyService.updateWarranty(warranty);
-                return Response.ok(updatedWarranty).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Warranty not found with id: " + id, "WARRANTY_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            // Set the ID and user to ensure we're updating the correct warranty
+            warranty.id = id;
+            warranty.setUser(user);
+            Warranty updatedWarranty = warrantyService.updateWarranty(user.id, warranty);
+            return Response.ok(updatedWarranty).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
@@ -153,10 +144,9 @@ public class WarrantyResource extends BaseResource {
     public Response deleteWarranty(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<Warranty> warranty = warrantyService.findById(id);
+            Optional<Warranty> warranty = warrantyService.findById(user.id, id);
             if (warranty.isPresent()) {
-                validateWarrantyOwnership(warranty.get(), user);
-                warrantyService.deleteWarranty(id);
+                warrantyService.deleteWarranty(user.id, id);
                 return Response.noContent().build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -238,7 +228,7 @@ public class WarrantyResource extends BaseResource {
             LocalDate startDate = startDateStr != null ? LocalDate.parse(startDateStr) : LocalDate.now();
             LocalDate endDate = endDateStr != null ? LocalDate.parse(endDateStr) : LocalDate.now().plusDays(30);
 
-            List<Warranty> warranties = warrantyService.findExpiringBetween(startDate, endDate);
+            List<Warranty> warranties = warrantyService.findExpiringWarranties(null, startDate, endDate);
             return Response.ok(warranties).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)

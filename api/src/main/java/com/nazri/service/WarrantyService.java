@@ -32,11 +32,18 @@ public class WarrantyService {
 
     /**
      * Find a warranty by its ID
+     * @param userId the user ID
      * @param id the warranty ID
      * @return Optional containing the warranty if found
      */
-    public Optional<Warranty> findById(Long id) {
-        return warrantyRepository.findByIdOptional(id);
+    public Optional<Warranty> findById(Long userId, Long id) {
+        // This method would need to be implemented to check ownership at query level
+        // For now, we'll use the existing findById method
+        Optional<Warranty> warranty = warrantyRepository.findByIdOptional(id);
+        if (warranty.isPresent() && warranty.get().getUser().id.equals(userId)) {
+            return warranty;
+        }
+        return Optional.empty();
     }
 
     /**
@@ -78,16 +85,6 @@ public class WarrantyService {
 
     /**
      * Find warranties expiring within a date range
-     * @param startDate start date
-     * @param endDate end date
-     * @return list of warranties
-     */
-    public List<Warranty> findExpiringBetween(LocalDate startDate, LocalDate endDate) {
-        return warrantyRepository.findExpiringBetween(startDate, endDate);
-    }
-
-    /**
-     * Find expiring warranties for a user within a date range
      * @param userId the user ID
      * @param startDate start date
      * @param endDate end date
@@ -115,11 +112,12 @@ public class WarrantyService {
 
     /**
      * Find warranties by user product ID
+     * @param userId the user ID
      * @param userProductId the user product ID
      * @return list of warranties
      */
-    public List<Warranty> findByUserProductId(Long userProductId) {
-        return warrantyRepository.findByUserProductId(userProductId);
+    public List<Warranty> findByUserProductId(Long userId, Long userProductId) {
+        return warrantyRepository.findByUserProductId(userId, userProductId);
     }
 
     /**
@@ -186,11 +184,18 @@ public class WarrantyService {
 
     /**
      * Update an existing warranty
+     * @param userId the user ID
      * @param warranty the warranty to update
      * @return the updated warranty
      */
     @Transactional
-    public Warranty updateWarranty(Warranty warranty) {
+    public Warranty updateWarranty(Long userId, Warranty warranty) {
+        // First check if the warranty belongs to the user
+        Optional<Warranty> existingWarranty = findById(userId, warranty.id);
+        if (existingWarranty.isEmpty()) {
+            throw new IllegalArgumentException("Warranty not found or does not belong to user");
+        }
+
         // Validate required fields if being updated
         if (warranty.getUser() != null && warranty.getUser().id != null) {
             Optional<User> user = userRepository.findByIdOptional(warranty.getUser().id);
@@ -228,11 +233,12 @@ public class WarrantyService {
 
     /**
      * Delete a warranty by ID
+     * @param userId the user ID
      * @param id the warranty ID
      */
     @Transactional
-    public void deleteWarranty(Long id) {
-        warrantyRepository.deleteWarranty(id);
+    public void deleteWarranty(Long userId, Long id) {
+        warrantyRepository.deleteWarranty(userId, id);
     }
 
     /**

@@ -59,17 +59,7 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
-     * Find warranties expiring within a date range
-     * @param startDate start date
-     * @param endDate end date
-     * @return list of warranties
-     */
-    public List<Warranty> findExpiringBetween(LocalDate startDate, LocalDate endDate) {
-        return list("endDate >= ?1 and endDate <= ?2", startDate, endDate);
-    }
-
-    /**
-     * Find expiring warranties for a user within a date range
+     * Find warranties expiring within a date range for a specific user
      * @param userId the user ID
      * @param startDate start date
      * @param endDate end date
@@ -97,12 +87,13 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
-     * Find warranties by user product ID
+     * Find warranties by user product ID for a specific user
+     * @param userId the user ID
      * @param userProductId the user product ID
      * @return list of warranties
      */
-    public List<Warranty> findByUserProductId(Long userProductId) {
-        return list("userProduct.id", userProductId);
+    public List<Warranty> findByUserProductId(Long userId, Long userProductId) {
+        return list("user.id = ?1 and userProduct.id = ?2", userId, userProductId);
     }
 
     /**
@@ -138,10 +129,11 @@ public class WarrantyRepository implements PanacheRepository<Warranty> {
     }
 
     /**
-     * Delete a warranty by ID
+     * Delete a warranty by ID for a specific user
+     * @param userId the user ID
      * @param id the warranty ID
      */
-    public void deleteWarranty(Long id) {
-        deleteById(id);
+    public void deleteWarranty(Long userId, Long id) {
+        delete("id = ?1 and user.id = ?2", id, userId);
     }
 }
