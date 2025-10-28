@@ -131,58 +131,44 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         // Admin user endpoints
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user/admin/all")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-admin-get-all-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user/admin/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-admin-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user/admin/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-admin-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user/admin/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-admin-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
 
@@ -191,49 +177,37 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company/search")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-search-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         // Admin company endpoints
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company/admin")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-admin-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company/admin/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-admin-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/company/admin/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("company-admin-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
@@ -242,49 +216,37 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product/search")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-search-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         // Admin product endpoints
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product/admin")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-admin-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product/admin/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-admin-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/product/admin/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("product-admin-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
@@ -293,48 +255,36 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product/product/{productId}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-get-by-product-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/user-product/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("user-product-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
@@ -343,97 +293,73 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/status/{status}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-get-by-status-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/expiring")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-get-expiring-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         
         // Admin warranty endpoints
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/admin")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-admin-get-all-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/admin/user/{userId}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-admin-get-by-user-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/admin/company/{companyId}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-admin-get-by-company-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/admin/expired")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-admin-get-expired-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/warranty/admin/expiring")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("warranty-admin-get-expiring-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
@@ -441,9 +367,7 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/s3/presigned-url")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("s3-presigned-url-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
 
@@ -452,65 +376,49 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-get-one-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/warranty/{warrantyId}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-get-by-warranty-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/status/{status}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-get-by-status-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-post-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/{id}")
                 .methods(List.of(HttpMethod.PUT))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-put-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/{id}")
                 .methods(List.of(HttpMethod.DELETE))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-delete-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         
         // Admin claim endpoints
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/claim/admin/all")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("claim-admin-get-all-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
@@ -519,33 +427,25 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/receipts")
                 .methods(List.of(HttpMethod.GET, HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("receipts-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/receipts/{id}")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("receipt-get-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/receipts/{id}/confirm")
                 .methods(List.of(HttpMethod.POST))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("receipt-confirm-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
         
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/receipts/{id}/image-url")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("receipt-image-url-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
 }
