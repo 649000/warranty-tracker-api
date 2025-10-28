@@ -40,9 +40,8 @@ public class ClaimResource extends BaseResource {
     public Response getClaimById(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<Claim> claim = claimService.findById(id);
+            Optional<Claim> claim = claimService.findByIdAndUserId(id, user.id);
             if (claim.isPresent()) {
-                validateClaimOwnership(claim.get(), user);
                 return Response.ok(claim.get()).build();
             } else {
                 return Response.status(Response.Status.NOT_FOUND)
@@ -114,16 +113,8 @@ public class ClaimResource extends BaseResource {
     public Response updateClaim(@PathParam("id") Long id, Claim claim) {
         try {
             User user = validateCurrentUser();
-            Optional<Claim> existingClaim = claimService.findById(id);
-            if (existingClaim.isPresent()) {
-                validateClaimOwnership(existingClaim.get(), user);
-                Claim updatedClaim = claimService.updateClaim(id, claim, user);
-                return Response.ok(updatedClaim).build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            Claim updatedClaim = claimService.updateClaim(id, claim, user);
+            return Response.ok(updatedClaim).build();
         } catch (IllegalArgumentException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(createErrorResponse(e.getMessage(), "INVALID_INPUT", Response.Status.BAD_REQUEST.getStatusCode()))
@@ -140,16 +131,12 @@ public class ClaimResource extends BaseResource {
     public Response deleteClaim(@PathParam("id") Long id) {
         try {
             User user = validateCurrentUser();
-            Optional<Claim> claim = claimService.findById(id);
-            if (claim.isPresent()) {
-                validateClaimOwnership(claim.get(), user);
-                claimService.deleteClaim(id);
-                return Response.noContent().build();
-            } else {
-                return Response.status(Response.Status.NOT_FOUND)
-                        .entity(createErrorResponse("Claim not found with id: " + id, "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
-                        .build();
-            }
+            claimService.deleteClaim(id, user.id);
+            return Response.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.NOT_FOUND)
+                    .entity(createErrorResponse(e.getMessage(), "CLAIM_NOT_FOUND", Response.Status.NOT_FOUND.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error deleting claim: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))

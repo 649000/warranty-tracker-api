@@ -46,6 +46,25 @@ public class ClaimRepository implements PanacheRepository<Claim> {
     }
     
     /**
+     * Find all claims for a specific user
+     * @param userId the user ID
+     * @return list of claims
+     */
+    public List<Claim> findByUserId(Long userId) {
+        return list("warranty.user.id", userId);
+    }
+    
+    /**
+     * Find all claims for a specific warranty and user
+     * @param warrantyId the warranty ID
+     * @param userId the user ID
+     * @return list of claims
+     */
+    public List<Claim> findByWarrantyIdAndUserId(Long warrantyId, Long userId) {
+        return list("warranty.id = ?1 and warranty.user.id = ?2", warrantyId, userId);
+    }
+    
+    /**
      * Find claims by warranty IDs and status
      * @param warrantyIds list of warranty IDs
      * @param status the claim status
@@ -53,6 +72,16 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      */
     public List<Claim> findByWarrantyIdsAndStatus(List<Long> warrantyIds, Claim.ClaimStatus status) {
         return list("warranty.id in ?1 and status = ?2", warrantyIds, status);
+    }
+    
+    /**
+     * Find claims by user ID and status
+     * @param userId the user ID
+     * @param status the claim status
+     * @return list of claims
+     */
+    public List<Claim> findByUserIdAndStatus(Long userId, Claim.ClaimStatus status) {
+        return list("warranty.user.id = ?1 and status = ?2", userId, status);
     }
     
     /**
@@ -72,6 +101,16 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      */
     public List<Claim> findByDateRange(LocalDateTime startDate, LocalDateTime endDate) {
         return list("claimDate >= ?1 and claimDate <= ?2", startDate, endDate);
+    }
+    
+    /**
+     * Find a claim by ID and user ID
+     * @param id the claim ID
+     * @param userId the user ID
+     * @return Optional containing the claim if found
+     */
+    public Optional<Claim> findByIdAndUserId(Long id, Long userId) {
+        return Optional.ofNullable(find("id = ?1 and warranty.user.id = ?2", id, userId).firstResult());
     }
     
     /**
@@ -103,5 +142,15 @@ public class ClaimRepository implements PanacheRepository<Claim> {
      */
     public void deleteClaim(Long id) {
         deleteById(id);
+    }
+    
+    /**
+     * Delete a claim by ID and user ID
+     * @param id the claim ID
+     * @param userId the user ID
+     * @return true if deleted, false if not found
+     */
+    public boolean deleteClaimByIdAndUserId(Long id, Long userId) {
+        return delete("id = ?1 and warranty.user.id = ?2", id, userId) > 0;
     }
 }

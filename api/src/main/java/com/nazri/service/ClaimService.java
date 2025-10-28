@@ -43,19 +43,22 @@ public class ClaimService {
     }
 
     /**
+     * Find a claim by its ID and user ID
+     * @param id the claim ID
+     * @param userId the user ID
+     * @return Optional containing the claim if found
+     */
+    public Optional<Claim> findByIdAndUserId(Long id, Long userId) {
+        return claimRepository.findByIdAndUserId(id, userId);
+    }
+
+    /**
      * Find all claims for a specific user
      * @param userId the user ID
      * @return list of claims
      */
     public List<Claim> findByUserId(Long userId) {
-        // Get all warranties for the user first
-        List<Warranty> userWarranties = warrantyRepository.findByUserId(userId);
-        // Extract warranty IDs
-        List<Long> warrantyIds = userWarranties.stream()
-                .map(warranty -> warranty.id)
-                .toList();
-        // Get claims for those warranties
-        return claimRepository.findByWarrantyIds(warrantyIds);
+        return claimRepository.findByUserId(userId);
     }
 
     /**
@@ -65,12 +68,7 @@ public class ClaimService {
      * @return list of claims
      */
     public List<Claim> findByWarrantyIdAndUserId(Long warrantyId, Long userId) {
-        // Check if warranty belongs to the user
-        Optional<Warranty> warranty = warrantyRepository.findByIdOptional(warrantyId);
-        if (warranty.isPresent() && warranty.get().getUser().id.equals(userId)) {
-            return claimRepository.findByWarrantyId(warrantyId);
-        }
-        return List.of(); // Return empty list if warranty doesn't belong to user
+        return claimRepository.findByWarrantyIdAndUserId(warrantyId, userId);
     }
 
     /**
@@ -88,14 +86,7 @@ public class ClaimService {
      * @return list of claims
      */
     public List<Claim> findByUserIdAndStatus(Long userId, Claim.ClaimStatus status) {
-        // Get all warranties for the user first
-        List<Warranty> userWarranties = warrantyRepository.findByUserId(userId);
-        // Extract warranty IDs
-        List<Long> warrantyIds = userWarranties.stream()
-                .map(warranty -> warranty.id)
-                .toList();
-        // Get claims for those warranties with the specified status
-        return claimRepository.findByWarrantyIdsAndStatus(warrantyIds, status);
+        return claimRepository.findByUserIdAndStatus(userId, status);
     }
 
     /**
@@ -197,13 +188,9 @@ public class ClaimService {
     @Transactional
     public Claim updateClaim(Long id, Claim claim, User user) {
         // First, ensure the claim exists and belongs to the user
-        Optional<Claim> existingClaim = claimRepository.findByIdOptional(id);
+        Optional<Claim> existingClaim = claimRepository.findByIdAndUserId(id, user.id);
         if (existingClaim.isEmpty()) {
-            throw new IllegalArgumentException("Claim not found");
-        }
-
-        if (!existingClaim.get().getWarranty().getUser().id.equals(user.id)) {
-            throw new IllegalArgumentException("Claim does not belong to user");
+            throw new IllegalArgumentException("Claim not found or does not belong to user");
         }
 
         // Validate the claim data
@@ -215,9 +202,12 @@ public class ClaimService {
     /**
      * Delete a claim by ID
      * @param id the claim ID
+     * @param userId the user ID
      */
     @Transactional
-    public void deleteClaim(Long id) {
-        claimRepository.deleteClaim(id);
+    public void deleteClaim(Long id, Long userId) {
+        if (!claimRepository.deleteClaimByIdAndUserId(id, userId)) {
+            throw new IllegalArgumentException("Claim not found or does not belong to user");
+        }
     }
 }
