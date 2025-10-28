@@ -23,6 +23,8 @@ public class APIStack extends Stack {
 
     private final Function apiFunction;
 
+    HttpLambdaIntegration apiIntegration;
+
     public APIStack(final Construct scope, final String id, final StackProps props, StackConfig stackConfig, HttpApi httpApi) {
         super(scope, id, props);
         final String environment = stackConfig.getTags().get(Constant.ENVIRONMENT);
@@ -34,6 +36,11 @@ public class APIStack extends Stack {
         } else {
             this.apiFunction = createJVMApiFunction(environment, lambdaEnvConfig);
         }
+
+        apiIntegration = HttpLambdaIntegration.Builder
+                .create("api-integration", apiFunction)
+                .build();
+
 
         addHealthRoute(httpApi);
         addUserRoute(httpApi);
@@ -109,17 +116,13 @@ public class APIStack extends Stack {
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/q")
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("quarkus-q-root-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
 
         httpApi.addRoutes(AddRoutesOptions.builder()
                 .path("/api/q/{proxy+}") // captures /q/* and deeper
                 .methods(List.of(HttpMethod.GET))
-                .integration(HttpLambdaIntegration.Builder
-                        .create("quarkus-q-endpoints-integration", apiFunction)
-                        .build())
+                .integration(apiIntegration)
                 .build());
     }
     
