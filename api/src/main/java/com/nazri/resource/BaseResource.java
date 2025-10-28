@@ -29,9 +29,12 @@ public abstract class BaseResource {
      * @return Optional containing the user if found
      */
     protected Optional<User> getCurrentUser() {
-        // Get the principal name (Firebase UID) from SecurityIdentity
-        String firebaseUid = securityIdentity.getPrincipal().getName();
-        return userService.findByFirebaseUid(firebaseUid);
+        // Get the user from the security identity attributes (added by UserSecurityAugmentor)
+        Object userAttribute = securityIdentity.getAttribute("user");
+        if (userAttribute instanceof User) {
+            return Optional.of((User) userAttribute);
+        }
+        return Optional.empty();
     }
     
     /**
