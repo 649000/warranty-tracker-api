@@ -41,16 +41,21 @@ public class APIStack extends Stack {
                 .create("api-integration", apiFunction)
                 .build();
 
+        httpApi.addRoutes(AddRoutesOptions.builder()
+                .path("/api/{proxy+}")
+                .methods(List.of(HttpMethod.ANY))
+                .integration(apiIntegration)
+                .build());
 
-        addHealthRoute(httpApi);
-        addUserRoute(httpApi);
-        addCompanyRoute(httpApi);
-        addProductRoute(httpApi);
-        addUserProductRoute(httpApi);
-        addWarrantyRoute(httpApi);
-        addClaimRoute(httpApi);
-        addS3Route(httpApi);
-        addReceiptRoute(httpApi);
+//        addHealthRoute(httpApi);
+//        addUserRoute(httpApi);
+//        addCompanyRoute(httpApi);
+//        addProductRoute(httpApi);
+//        addUserProductRoute(httpApi);
+//        addWarrantyRoute(httpApi);
+//        addClaimRoute(httpApi);
+//        addS3Route(httpApi);
+//        addReceiptRoute(httpApi);
         TagUtil.addTags(this.apiFunction, stackConfig);
     }
 
@@ -112,340 +117,312 @@ public class APIStack extends Stack {
                 .build();
     }
 
-    private void addHealthRoute(HttpApi httpApi) {
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/q")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
+//    private void addHealthRoute(HttpApi httpApi) {
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/q")
+//                .path("/api/q/{proxy+}") // captures /q/* and deeper
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addUserRoute(HttpApi httpApi) {
+//        // User endpoints - combine all methods for same path
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user")
+//                .methods(List.of(HttpMethod.GET, HttpMethod.POST, HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin user endpoints - GET for specific path
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user/admin/all")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin user by ID - combine all methods for same path
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user/admin/{id}")
+//                .methods(List.of(HttpMethod.GET, HttpMethod.DELETE, HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//    }
 
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/q/{proxy+}") // captures /q/* and deeper
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-    }
+//    private void addCompanyRoute(HttpApi httpApi) {
+//        // Company endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company/search")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin company endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company/admin")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company/admin/{id}")
+//                .methods(List.of(HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/company/admin/{id}")
+//                .methods(List.of(HttpMethod.DELETE))
+//                .integration(apiIntegration)
+//                .build());
+//    }
     
-    private void addUserRoute(HttpApi httpApi) {
-        // User endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        // Admin user endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user/admin/all")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user/admin/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user/admin/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user/admin/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-    }
-
-    private void addCompanyRoute(HttpApi httpApi) {
-        // Company endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company/search")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        // Admin company endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company/admin")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company/admin/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/company/admin/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-    }
-    
-    private void addProductRoute(HttpApi httpApi) {
-        // Product endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product/search")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        // Admin product endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product/admin")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product/admin/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/product/admin/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-    }
-    
-    private void addUserProductRoute(HttpApi httpApi) {
-        // User product endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product/product/{productId}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/user-product/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-    }
-    
-    private void addWarrantyRoute(HttpApi httpApi) {
-        // Regular warranty endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/status/{status}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/expiring")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-        
-        // Admin warranty endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/admin")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/admin/user/{userId}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/admin/company/{companyId}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/admin/expired")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/warranty/admin/expiring")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-    }
-    
-    private void addS3Route(HttpApi httpApi) {
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/s3/presigned-url")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-    }
-
-    private void addClaimRoute(HttpApi httpApi) {
-        // Regular claim endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/warranty/{warrantyId}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/status/{status}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/{id}")
-                .methods(List.of(HttpMethod.PUT))
-                .integration(apiIntegration)
-                .build());
-
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/{id}")
-                .methods(List.of(HttpMethod.DELETE))
-                .integration(apiIntegration)
-                .build());
-        
-        // Admin claim endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/claim/admin/all")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-    }
-    
-    private void addReceiptRoute(HttpApi httpApi) {
-        // Receipt endpoints
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/receipts")
-                .methods(List.of(HttpMethod.GET, HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-        
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/receipts/{id}")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-        
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/receipts/{id}/confirm")
-                .methods(List.of(HttpMethod.POST))
-                .integration(apiIntegration)
-                .build());
-        
-        httpApi.addRoutes(AddRoutesOptions.builder()
-                .path("/api/receipts/{id}/image-url")
-                .methods(List.of(HttpMethod.GET))
-                .integration(apiIntegration)
-                .build());
-    }
+//    private void addProductRoute(HttpApi httpApi) {
+//        // Product endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product/search")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin product endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product/admin")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product/admin/{id}")
+//                .methods(List.of(HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/product/admin/{id}")
+//                .methods(List.of(HttpMethod.DELETE))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addUserProductRoute(HttpApi httpApi) {
+//        // User product endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product/product/{productId}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product/{id}")
+//                .methods(List.of(HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/user-product/{id}")
+//                .methods(List.of(HttpMethod.DELETE))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addWarrantyRoute(HttpApi httpApi) {
+//        // Regular warranty endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/status/{status}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/expiring")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/{id}")
+//                .methods(List.of(HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/{id}")
+//                .methods(List.of(HttpMethod.DELETE))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin warranty endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/admin")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/admin/user/{userId}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/admin/company/{companyId}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/admin/expired")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/warranty/admin/expiring")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addS3Route(HttpApi httpApi) {
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/s3/presigned-url")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addClaimRoute(HttpApi httpApi) {
+//        // Regular claim endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/warranty/{warrantyId}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/status/{status}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/{id}")
+//                .methods(List.of(HttpMethod.PUT))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/{id}")
+//                .methods(List.of(HttpMethod.DELETE))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        // Admin claim endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/claim/admin/all")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//    }
+//
+//    private void addReceiptRoute(HttpApi httpApi) {
+//        // Receipt endpoints
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/receipts")
+//                .methods(List.of(HttpMethod.GET, HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/receipts/{id}")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/receipts/{id}/confirm")
+//                .methods(List.of(HttpMethod.POST))
+//                .integration(apiIntegration)
+//                .build());
+//
+//        httpApi.addRoutes(AddRoutesOptions.builder()
+//                .path("/api/receipts/{id}/image-url")
+//                .methods(List.of(HttpMethod.GET))
+//                .integration(apiIntegration)
+//                .build());
+//    }
 }
