@@ -75,15 +75,14 @@ public class ClaimResource extends BaseResource {
         try {
             User user = validateCurrentUser();
             Claim.ClaimStatus claimStatus;
-            try {
-                claimStatus = Claim.ClaimStatus.valueOf(status.toUpperCase());
-            } catch (IllegalArgumentException e) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity(createErrorResponse("Invalid claim status: " + status, "INVALID_STATUS", Response.Status.BAD_REQUEST.getStatusCode()))
-                        .build();
-            }
+
+            claimStatus = Claim.ClaimStatus.valueOf(status.toUpperCase());
             List<Claim> claims = claimService.findByUserIdAndStatus(user.id, claimStatus);
             return Response.ok(claims).build();
+        } catch (IllegalArgumentException e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(createErrorResponse("Invalid claim status: " + status, "INVALID_STATUS", Response.Status.BAD_REQUEST.getStatusCode()))
+                    .build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity(createErrorResponse("Error retrieving claims: " + e.getMessage(), "INTERNAL_ERROR", Response.Status.INTERNAL_SERVER_ERROR.getStatusCode()))
