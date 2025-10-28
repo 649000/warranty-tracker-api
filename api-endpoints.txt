@@ -2,23 +2,28 @@
 
 ## User Endpoints
 POST /api/user - Create user
+GET /api/user - Get current user
 PUT /api/user - Update user
+GET /api/user/admin/all - Get all users (admin only)
+GET /api/user/admin/{id} - Get user by ID (admin only)
+PUT /api/user/admin/{id} - Update user by ID (admin only)
+DELETE /api/user/admin/{id} - Delete user by ID (admin only)
 
 ## Company Endpoints
 GET /api/company - Get all companies
 GET /api/company/{id} - Get company by ID
 GET /api/company/search?name={name} - Search companies by name
-POST /api/company - Create company (admin only)
-PUT /api/company/{id} - Update company (admin only)
-DELETE /api/company/{id} - Delete company (admin only)
+POST /api/company/admin - Create company (admin only)
+PUT /api/company/admin/{id} - Update company (admin only)
+DELETE /api/company/admin/{id} - Delete company (admin only)
 
 ## Product Endpoints
 GET /api/product - Get all products
 GET /api/product/{id} - Get product by ID
 GET /api/product/search?name={name}&brand={brand}&modelNumber={modelNumber} - Search products
-POST /api/product - Create product (admin only)
-PUT /api/product/{id} - Update product (admin only)
-DELETE /api/product/{id} - Delete product (admin only)
+POST /api/product/admin - Create product (admin only)
+PUT /api/product/admin/{id} - Update product (admin only)
+DELETE /api/product/admin/{id} - Delete product (admin only)
 
 ## User Product Endpoints
 GET /api/user-product - Get user's products
@@ -38,7 +43,7 @@ PUT /api/warranty/{id} - Update warranty
 DELETE /api/warranty/{id} - Delete warranty
 
 ## Warranty Admin Endpoints
-GET /api/warranty/admin/all - Get all warranties (admin only)
+GET /api/warranty/admin - Get all warranties (admin only)
 GET /api/warranty/admin/user/{userId} - Get warranties by user ID (admin only)
 GET /api/warranty/admin/company/{companyId} - Get warranties by company ID (admin only)
 GET /api/warranty/admin/expired - Get expired warranties (admin only)
@@ -52,3 +57,16 @@ GET /api/claim/status/{status} - Get user's claims by status
 POST /api/claim - Create claim
 PUT /api/claim/{id} - Update claim
 DELETE /api/claim/{id} - Delete claim
+
+## Claim Admin Endpoints
+GET /api/claim/admin/all - Get all claims (admin only)
+
+## Receipt Endpoints
+POST /api/receipts - Upload receipt
+GET /api/receipts/{id} - Get receipt by ID
+GET /api/receipts - Get user's receipts
+POST /api/receipts/{id}/confirm - Confirm receipt
+GET /api/receipts/{id}/image-url - Get receipt image URL
+
+## S3 Endpoints
+GET /api/s3/presigned-url?fileName={fileName} - Get presigned URL for S3 upload
