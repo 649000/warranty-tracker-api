@@ -142,8 +142,8 @@ The application includes SmallRye Health checks accessible at `/q/health`:
 
 ### Prerequisites
 
-- Java 17+
-- Maven 3.8+
+- Java 21+
+- Maven 3.9+
 - PostgreSQL database
 - AWS account (for deployment)
 - Firebase project (for authentication)
@@ -218,10 +218,6 @@ See `cdk/README.md` for detailed deployment instructions and environment configu
 
 ## Development
 
-### Hot Reload
-
-Quarkus provides hot reload during development. Changes to Java files are automatically compiled and reloaded when you refresh your browser or make a new request. No need to restart the application.
-
 ### Dev UI
 
 The Dev UI at http://localhost:8080/q/dev/ provides useful tools for:
@@ -255,8 +251,6 @@ The following improvements are planned to enhance scalability, observability, an
 
 **Caching Layer** - Introduce ElastiCache (Redis) for frequently accessed data like product catalogs and user profiles. Implement cache-aside pattern with TTL-based invalidation to reduce database load and improve response times.
 
-**Connection Pooling** - Optimize database connection management with HikariCP tuning specific to Lambda's execution model, including connection lifecycle management across warm starts.
-
 ### Database Management
 
 **Schema Migrations** - Replace Hibernate's schema validation with Flyway or Liquibase for version-controlled database migrations. This enables safer deployments with rollback capabilities and audit trails of schema changes.
@@ -277,12 +271,6 @@ The following improvements are planned to enhance scalability, observability, an
 
 **Request Signing** - Add request signature validation for S3 operations to prevent unauthorized access and ensure request integrity.
 
-### High Availability & Disaster Recovery
-
-**Multi-Region Deployment** - Deploy the application across multiple AWS regions with Route53 health checks and failover routing for improved availability and disaster recovery.
-
-**Backup Strategy** - Implement automated RDS snapshots with cross-region replication and point-in-time recovery capabilities.
-
 ### API Evolution
 
 **Versioning Strategy** - Introduce `/api/v1/` URL versioning to support backward compatibility as the API evolves. This enables gradual migration for clients and prevents breaking changes.
@@ -295,7 +283,6 @@ The following improvements are planned to enhance scalability, observability, an
 
 **Contract Testing** - Implement consumer-driven contract tests to ensure API compatibility across versions and prevent breaking changes.
 
-**Load Testing** - Document performance benchmarks and establish baseline metrics for response times, throughput, and resource utilization under various load conditions.
 
 ### CI/CD Pipeline
 
@@ -310,11 +297,3 @@ The following improvements are planned to enhance scalability, observability, an
 **Lambda Optimization** - Document cost analysis comparing JVM vs native runtimes, including cold start frequency and execution duration metrics.
 
 **S3 Lifecycle Policies** - Implement intelligent tiering and lifecycle policies to automatically move old receipts to cheaper storage classes (S3-IA, Glacier).
-
-**Reserved Capacity** - Analyze usage patterns to identify opportunities for RDS reserved instances and Lambda provisioned concurrency where cost-effective.
-
-## Related Projects
-
-This API was originally built with Spring Boot. The migration to Quarkus was driven by the need for better serverless performance and native compilation support. The original Spring Boot version can be found in the project history.
-
-For more information about Quarkus features and guides, visit https://quarkus.io/
