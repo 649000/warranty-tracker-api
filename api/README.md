@@ -39,8 +39,9 @@ This project was migrated from Spring Boot to Quarkus for several key reasons:
 This application is built specifically for AWS Lambda, not adapted from a traditional server-based architecture. Key architectural decisions:
 
 **Why Lambda over ECS/EKS:**
-- Warranty tracking has unpredictable traffic patterns (spikes during purchase seasons, quiet periods otherwise)
-- No need to pay for idle capacity during low-traffic periods
+- This is a personal project with minimal traffic - no need to pay for idle servers
+- Lambda's pay-per-request model means zero cost when not in use
+- Great opportunity to learn serverless architecture and deployment patterns
 - Sub-second cold starts with GraalVM native images make Lambda viable for user-facing APIs
 - Automatic scaling without managing cluster capacity or auto-scaling groups
 
@@ -56,13 +57,21 @@ This application is built specifically for AWS Lambda, not adapted from a tradit
 - Complex relational queries (warranties linked to products, users, companies, claims)
 - ACID transactions for warranty claim processing
 - Existing SQL expertise and tooling
-- Supabase provides connection pooling (PgBouncer) which is critical for Lambda
+- Supabase provides built-in connection pooling (PgBouncer) which is critical for serverless
 
-**Connection Management Challenge:**
+**Why Supabase over AWS RDS:**
+- Built-in connection pooler designed specifically for serverless workloads
+- No need to manage separate RDS Proxy or configure connection pooling
+- Supabase handles the Lambda connection churn automatically
+- Lower operational overhead and simpler configuration
+- Free tier suitable for personal projects
+
+**Connection Management in Serverless:**
 - Lambda functions are stateless and short-lived
 - Traditional connection pools don't work well (connections die between invocations)
+- Supabase's PgBouncer sits between Lambda and PostgreSQL, pooling connections efficiently
 - Hibernate's `validate` strategy in production prevents schema drift
-- Supabase's connection pooler handles the Lambda connection churn
+- Each Lambda invocation gets a connection from the pool, returns it after use
 
 ### Storage Strategy
 
@@ -126,13 +135,15 @@ The system manages the following entities:
 - No WebSockets (HTTP API Gateway doesn't support them)
 - No long-running background jobs (15-second Lambda timeout)
 - Cold start latency for infrequent endpoints (mitigated by native compilation)
-- Connection pooling complexity with RDS
+- Connection pooling complexity (solved by Supabase's built-in pooler)
 
 **What we gained:**
+- Zero cost when not in use (perfect for personal projects)
 - Zero infrastructure management
 - Automatic scaling from 0 to thousands of requests
 - Pay only for actual usage
 - Built-in high availability across multiple AZs
+- Hands-on experience with serverless architecture
 
 ## Technical Implementation
 
@@ -203,7 +214,7 @@ The application includes SmallRye Health checks accessible at `/q/health`:
 
 - Java 21+
 - Maven 3.9+
-- PostgreSQL database
+- Supabase PostgreSQL database
 - AWS account (for deployment)
 - Firebase project (for authentication)
 
@@ -300,7 +311,7 @@ The following improvements are planned to enhance scalability, observability, an
 
 ### Observability & Monitoring
 
-**Distributed Tracing** - Integrate AWS X-Ray for end-to-end request tracing across Lambda, API Gateway, RDS, and external services. This would provide visibility into performance bottlenecks and help identify optimization opportunities.
+**Distributed Tracing** - Integrate AWS X-Ray for end-to-end request tracing across Lambda, API Gateway, Supabase, and external services. This would provide visibility into performance bottlenecks and help identify optimization opportunities.
 
 **Structured Logging** - Implement JSON-formatted logs with correlation IDs to enable better log aggregation and analysis in CloudWatch Logs Insights. Each request would carry a unique trace ID throughout its lifecycle.
 
@@ -314,7 +325,7 @@ The following improvements are planned to enhance scalability, observability, an
 
 **Schema Migrations** - Replace Hibernate's schema validation with Flyway or Liquibase for version-controlled database migrations. This enables safer deployments with rollback capabilities and audit trails of schema changes.
 
-**Read Replicas** - Implement read/write splitting to distribute query load across RDS read replicas, improving performance for read-heavy operations like product searches.
+**Read Replicas** - Leverage Supabase's read replica capabilities to distribute query load, improving performance for read-heavy operations like product searches.
 
 ### Event-Driven Architecture
 
@@ -341,7 +352,6 @@ The following improvements are planned to enhance scalability, observability, an
 **Integration Testing** - Add Testcontainers-based integration tests with PostgreSQL to validate database interactions and query performance.
 
 **Contract Testing** - Implement consumer-driven contract tests to ensure API compatibility across versions and prevent breaking changes.
-
 
 ### CI/CD Pipeline
 
