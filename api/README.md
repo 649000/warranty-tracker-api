@@ -34,14 +34,61 @@ This project was migrated from Spring Boot to Quarkus for several key reasons:
 
 ## Architecture
 
-### Application Layers
+### Serverless-First Design
 
-This application follows a layered architecture:
+This application is built specifically for AWS Lambda, not adapted from a traditional server-based architecture. Key architectural decisions:
 
-- **Resources** - REST endpoints that handle HTTP requests and responses
-- **Services** - Business logic layer that orchestrates operations
-- **Repositories** - Data access layer using Panache (Quarkus ORM) for database operations
-- **Models** - JPA entities representing the domain model
+**Why Lambda over ECS/EKS:**
+- Warranty tracking has unpredictable traffic patterns (spikes during purchase seasons, quiet periods otherwise)
+- No need to pay for idle capacity during low-traffic periods
+- Sub-second cold starts with GraalVM native images make Lambda viable for user-facing APIs
+- Automatic scaling without managing cluster capacity or auto-scaling groups
+
+**Why HTTP API Gateway over REST API:**
+- Lower cost (up to 70% cheaper than REST API)
+- Lower latency
+- Simpler configuration for proxy integration
+- No need for REST API features like API keys or usage plans (handled by Firebase auth)
+
+### Database Architecture
+
+**PostgreSQL via Supabase instead of DynamoDB:**
+- Complex relational queries (warranties linked to products, users, companies, claims)
+- ACID transactions for warranty claim processing
+- Existing SQL expertise and tooling
+- Supabase provides connection pooling (PgBouncer) which is critical for Lambda
+
+**Connection Management Challenge:**
+- Lambda functions are stateless and short-lived
+- Traditional connection pools don't work well (connections die between invocations)
+- Hibernate's `validate` strategy in production prevents schema drift
+- Supabase's connection pooler handles the Lambda connection churn
+
+### Storage Strategy
+
+**S3 with Presigned URLs instead of direct API uploads:**
+- Offloads bandwidth from Lambda (no need to proxy large files)
+- Client uploads directly to S3, reducing Lambda execution time and cost
+- Presigned URLs provide time-limited, secure upload capability without exposing credentials
+- Lambda only generates URLs and stores metadata, not the actual file transfer
+
+**Textract Integration:**
+- Receipt OCR is handled synchronously for now (acceptable for small receipts)
+- Textract processes images directly from S3 (no need to download to Lambda)
+- Extracted data (merchant, amount, date) is parsed and stored in PostgreSQL
+
+### Authentication Flow
+
+**Firebase JWT + Custom Security Augmentor:**
+- Firebase handles user authentication (no need to build auth infrastructure)
+- JWT tokens verified using Google's public keys (fetched from JWK endpoint)
+- Custom `UserSecurityAugmentor` loads the User entity once per request and caches it in `SecurityIdentity`
+- Eliminates N+1 query problem where every endpoint would otherwise query the users table
+
+**Why this matters in Lambda:**
+- Each Lambda invocation is a fresh request context
+- Without the augmentor, every protected endpoint would hit the database twice (once for auth, once for user data)
+- The augmentor pattern reduces database round-trips by 50% for authenticated requests
 
 ### Domain Model
 
@@ -53,27 +100,39 @@ The system manages the following entities:
 - **Warranty** - Warranty coverage periods linked to user products
 - **Claim** - Warranty claims with status tracking
 - **Company** - Warranty provider companies
-- **Receipt** - Purchase receipt storage
+- **Receipt** - Purchase receipt storage with S3 references
 
-### Cloud Infrastructure
+### Deployment Architecture
 
-This API is designed to run on AWS Lambda with API Gateway integration. The serverless architecture provides:
+**Development Environment:**
+- JVM-based Lambda for faster build times (no native compilation wait)
+- Easier debugging with standard Java tooling
+- Same codebase as production, just different runtime
 
-- Automatic scaling based on request volume
-- Pay-per-use pricing model
-- No server management overhead
-- Built-in high availability
+**Production Environment:**
+- GraalVM native compilation to ARM64 for Graviton2 processors
+- 50-70% memory reduction compared to JVM
+- Cold starts under 1 second vs 5-10 seconds for JVM
+- Lower Lambda costs due to reduced execution time and memory
 
-#### AWS Services
+**Infrastructure as Code:**
+- AWS CDK (Java) for type-safe infrastructure definitions
+- Separate stacks for API Gateway and Lambda (independent deployment)
+- Environment-specific configuration (dev/prod) via CDK context
 
-- **AWS Lambda** - Serverless compute for API execution (optimized with GraalVM native images)
-- **API Gateway** - HTTP API endpoint management
-- **RDS PostgreSQL** - Relational database for persistent storage (via Supabase)
-- **S3** - Object storage for receipt images and documents
-- **Textract** - OCR service for extracting data from receipt images
-- **CDK** - Infrastructure as Code for provisioning AWS resources
+### Trade-offs and Constraints
 
-The CDK stack (in the `cdk/` directory) defines the infrastructure including Lambda functions, API Gateway, and IAM roles.
+**What we gave up for serverless:**
+- No WebSockets (HTTP API Gateway doesn't support them)
+- No long-running background jobs (15-second Lambda timeout)
+- Cold start latency for infrequent endpoints (mitigated by native compilation)
+- Connection pooling complexity with RDS
+
+**What we gained:**
+- Zero infrastructure management
+- Automatic scaling from 0 to thousands of requests
+- Pay only for actual usage
+- Built-in high availability across multiple AZs
 
 ## Technical Implementation
 
