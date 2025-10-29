@@ -1,59 +1,54 @@
-# api
+# Warranty Tracker API service
 
-This project uses Quarkus, the Supersonic Subatomic Java Framework.
+## Overview
+The Warranty Tracker API service, built on Spring Boot, is designed to streamline warranty management for your products, providing a reliable and efficient platform for tracking warranty details effortlessly.
 
-If you want to learn more about Quarkus, please visit its website: <https://quarkus.io/>.
+## Objectives
+* Familiarization with Spring Boot: Gain proficiency in utilizing the Spring Boot framework for building robust and scalable APIs.
+* Building OAuth2 Resource Server: Learn the implementation of OAuth2 resource server functionality to enhance security and access control.
+* Exploration of Identity as a Service (IDaaS) Solutions: Explore services like AWS Cognito to understand their role in providing secure identity management solutions.
 
-## Running the application in dev mode
+## Features
+The API service allows users to:
 
-You can run your application in dev mode that enables live coding using:
+* Document warranties for their products, including key details like expected expiry dates and associated company information for technical support.
+* Email reminders for products with warranties that are nearing expiration
 
-```shell script
-./mvnw quarkus:dev
+
+## Technologies Utilized
+* Spring Boot: Leveraged for efficient API development.
+* Spring Security & OAuth2: Ensures robust security measures for access control.
+* Lombok: Streamlines Java code with annotations, reducing boilerplate code.
+* Maven: Used for project management and build automation.
+* MapStruct: Facilitates mapping between Java bean types.
+* AWS Java SDK for Amazon DynamoDB: Employed for seamless integration with Amazon DynamoDB.
+
+
+
+## Installation and Setup Instructions
+AWS Access and Secret keys are required and must be set as an environment variable to run this app
+
+Example on setting environment variable on macOS:
+```
+export aws_accesskey=<KEY GOES HERE>
+export aws_secretkey=<KEY GOES HERE>
 ```
 
-> **_NOTE:_**  Quarkus now ships with a Dev UI, which is available in dev mode only at <http://localhost:8080/q/dev/>.
+To run the service, navigate to the root of the project and execute the command
 
-## Packaging and running the application
-
-The application can be packaged using:
-
-```shell script
-./mvnw package
 ```
-
-It produces the `quarkus-run.jar` file in the `target/quarkus-app/` directory.
-Be aware that it’s not an _über-jar_ as the dependencies are copied into the `target/quarkus-app/lib/` directory.
-
-The application is now runnable using `java -jar target/quarkus-app/quarkus-run.jar`.
-
-If you want to build an _über-jar_, execute the following command:
-
-```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+mvn spring-boot:run
 ```
+## Endpoints
+|          | localhost                                   | Render                                                     |
+|----------|---------------------------------------------|-------------------------------------------------------------|
+| Open API | http://localhost:8080/swagger-ui/index.html | https://warranty-tracker-api.onrender.com/swagger-ui/index.html |
+| Actuator | http://localhost:8080/actuator              | https://warranty-tracker-api.onrender.com/actuator              |
 
-The application, packaged as an _über-jar_, is now runnable using `java -jar target/*-runner.jar`.
+Note that endpoints are secured by Spring Security and require a valid JWT access token to be called. Only the `/actuator` and `/swagger-ui/**` endpoints are not secured.
 
-## Creating a native executable
+Service on Render may spin down due to inactivity, resulting in delays of 50 seconds or more for requests.
 
-You can create a native executable using:
+## Reflection
 
-```shell script
-./mvnw package -Dnative
-```
-
-Or, if you don't have GraalVM installed, you can run the native executable build in a container using:
-
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
-
-You can then execute your native executable with: `./target/api-1.0-SNAPSHOT-runner`
-
-If you want to learn more about building native executables, please consult <https://quarkus.io/guides/maven-tooling>.
-
-## Related Guides
-
-- AWS Lambda Gateway REST API ([guide](https://quarkus.io/guides/aws-lambda-http)): Build an API Gateway REST API with
-  Lambda integration
+This project bears resemblance to the [Subtracker project](https://github.com/649000/subtracker-rest-api) I previously worked on. Here, I've integrated AWS Cognito, an Identity as a Service solution offered by AWS. The primary objective was to acquaint myself with AWS services, which play a crucial role in my preparation for the AWS certification.
