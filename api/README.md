@@ -85,102 +85,95 @@ API endpoints require Firebase authentication. The application verifies JWT toke
 - Current user is extracted from JWT via `SecurityIdentity`
 - `UserSecurityAugmentor` enriches the security context with user entity data
 
-## Building for Production
+## Building and Deployment
 
-Package the application as a standard JAR:
+This project uses AWS CDK for infrastructure provisioning and deployment. The build process differs between development and production environments.
 
-```shell script
-./mvnw package
-```
+### Development Build (JVM)
 
-This creates `quarkus-run.jar` in `target/quarkus-app/`. Dependencies are in `target/quarkus-app/lib/`.
-
-Run the packaged application:
+Development uses standard JVM runtime for faster iteration:
 
 ```shell script
-java -jar target/quarkus-app/quarkus-run.jar
+./mvnw clean package
 ```
 
-### Uber JAR
+This creates a `function.zip` in `target/` containing the Quarkus application ready for Lambda deployment.
 
-Build a single JAR with all dependencies:
+### Production Build (Native)
+
+Production uses GraalVM native compilation for optimal performance:
 
 ```shell script
-./mvnw package -Dquarkus.package.jar.type=uber-jar
+./mvnw clean package -Dnative -Dquarkus.native.container-build=true
 ```
 
-Run it:
+The native build:
+- Compiles to ARM64 architecture for AWS Graviton2 processors
+- Produces a standalone executable with no JVM dependency
+- Reduces cold start times from seconds to milliseconds
+- Cuts memory usage by 50-70% compared to JVM
+
+### Deploying to AWS
+
+Deploy using CDK from the `cdk/` directory:
 
 ```shell script
-java -jar target/*-runner.jar
+# Development
+cd cdk
+cdk deploy --all
+
+# Production
+cd cdk
+cdk deploy -c env=prd --all
 ```
 
-## Native Executable (Recommended for Lambda)
+See `cdk/README.md` for detailed deployment instructions and environment configuration.
 
-Build a native executable with GraalVM for optimal Lambda performance:
+## Technical Implementation
 
-```shell script
-./mvnw package -Dnative
-```
+### Custom Security Integration
 
-Or build in a container without local GraalVM installation:
+The application implements a custom security augmentor (`UserSecurityAugmentor`) that enriches the security context with user entity data. This eliminates redundant database queries by loading the user once during authentication and making it available throughout the request lifecycle via `SecurityIdentity.getAttribute("user")`.
 
-```shell script
-./mvnw package -Dnative -Dquarkus.native.container-build=true
-```
+### Exception Handling Strategy
 
-Execute the native binary:
+A global exception mapper (`GlobalExceptionHandler`) translates domain exceptions into JSON:API compliant error responses. This provides:
+- Consistent error format across all endpoints
+- Unique error IDs for tracking and debugging
+- Structured error codes for client-side handling
+- Proper HTTP status code mapping
 
-```shell script
-./target/api-1.0-SNAPSHOT-runner
-```
+Custom exceptions include:
+- `ResourceNotFoundException` - 404 responses with resource type and ID
+- `ResourceConflictException` - 409 responses for duplicate resources
+- `ValidationException` - 400 responses with field-level validation errors
+- `UnauthorizedException` / `ForbiddenException` - 401/403 for auth failures
 
-Native executables provide:
-- **Fast startup** - Sub-second cold starts on Lambda
-- **Low memory** - Significantly reduced memory footprint
-- **Cost savings** - Lower Lambda execution costs due to reduced duration and memory usage
+### AWS Integration
 
-## Configuration
+The application integrates with AWS services using the Quarkus AWS SDK extensions:
 
-The application supports multiple profiles:
+**S3 Integration** - Receipt image storage with presigned URL generation for secure client-side uploads. The service handles multipart uploads and generates time-limited download URLs.
 
-- **dev** - Development configuration with Swagger UI enabled
-- **prod** - Production configuration with Swagger UI disabled
+**Textract Integration** - OCR processing for receipt images. The `TextractService` extracts structured data (merchant name, total amount, date) from uploaded receipts using AWS Textract's document analysis API.
 
-Profile-specific properties are in `application-dev.properties` and `application-prod.properties`.
+Both services use Apache HTTP client for native compilation compatibility.
 
-Key configuration options:
+### Database Schema Management
 
-```properties
-# API base path
-quarkus.http.root-path=/api
+The application uses Hibernate ORM with a strict validation strategy in production (`validate`). Schema changes are managed through:
+- Development: `update` strategy for rapid iteration
+- Production: `validate` strategy to prevent accidental schema modifications
+- All entities use the `warranty_tracker` schema for namespace isolation
 
-# Pagination limits
-app.pagination.default-size=20
-app.pagination.max-size=20
-app.pagination.max-page=500
+### Pagination and Query Optimization
 
-# AWS S3 bucket
-app.s3.bucket-name=warranty-tracker-dev
+Repository layer implements configurable pagination with:
+- Default page size: 20 items
+- Maximum page size: 20 items (prevents excessive memory usage)
+- Maximum page number: 500 (prevents deep pagination performance issues)
 
-# Firebase JWT verification
-mp.jwt.verify.publickey.location=https://www.googleapis.com/service_accounts/v1/jwk/securetoken%40system.gserviceaccount.com
-mp.jwt.verify.issuer=https://securetoken.google.com/your-project-id
-```
-
-## API Endpoints
-
-### Products
-
-- `GET /api/product/search` - Search products by name, brand, or model number
-
-### User Products
-
-- `POST /api/user-product` - Register a new product for the current user
-- `PUT /api/user-product/{id}` - Update user product details
-- `DELETE /api/user-product/{id}` - Remove a user product
-
-All endpoints require authentication and return JSON API formatted responses with proper error handling.
+Search queries use LIKE patterns with proper indexing for efficient filtering.
 
 ## Development
 
