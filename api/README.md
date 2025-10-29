@@ -79,11 +79,11 @@ See `cdk/README.md` for infrastructure details.
 
 ## Future Work
 
-- X-Ray tracing
-- Structured logging with correlation IDs
-- ElastiCache for product catalog
-- Flyway migrations
-- SQS for async Textract processing
-- SNS for warranty expiration notifications
-- Secrets Manager for credentials
-- GitHub Actions CI/CD
+- **X-Ray tracing** - End-to-end request tracing across Lambda, API Gateway, and Supabase to identify performance bottlenecks.
+- **Structured logging** - JSON logs with correlation IDs for better CloudWatch Logs Insights queries and request tracking.
+- **ElastiCache** - Redis cache for product catalog and user profiles to reduce database load.
+- **Flyway migrations** - Version-controlled database schema changes instead of Hibernate's auto-update.
+- **SQS for Textract** - Move OCR processing to async queue to improve API response times and handle retries.
+- **SNS notifications** - Publish warranty lifecycle events (expiring soon, expired) for real-time alerts.
+- **Secrets Manager** - Centralized credential management with automatic rotation instead of environment variables.
+- **GitHub Actions CI/CD** - Automated testing, native compilation, and deployment pipeline with security scanning.
