@@ -40,14 +40,10 @@ public class StackConfig {
 
         public Builder withEnvironment(String environment) {
             tags.put(Constant.PROJECT, Constant.WARRANTY_TRACKER);
+            tags.put(Constant.ENVIRONMENT, environment);
             switch (environment) {
                 case Constant.DEV -> {
                     logger.info("DEV StackConfig");
-                    // TODO: Retrieve Account and Region from cdk.json
-                    // App app = new App();
-                    // String environment =  (String) app.getNode().tryGetContext("env");
-                    // String account = (String) app.getNode().tryGetContext("env");
-                    tags.put(Constant.ENVIRONMENT, Constant.DEV);
                     stackProps.env(Environment.builder()
                                     .region("ap-southeast-1")
                                     .build()
@@ -57,13 +53,20 @@ public class StackConfig {
                 }
                 case Constant.PRD -> {
                     logger.info("PRD StackConfig");
-                    tags.put(Constant.ENVIRONMENT, Constant.PRD);
                     stackProps.env(Environment.builder()
                                     .region("ap-southeast-1")
                                     .build()
                             )
                             .tags(tags);
                     graalvm = true;
+                }
+                default -> {
+                    stackProps.env(Environment.builder()
+                                    .region("ap-southeast-1")
+                                    .build()
+                            )
+                            .tags(tags);
+                    graalvm = false;
                 }
             }
             return this;

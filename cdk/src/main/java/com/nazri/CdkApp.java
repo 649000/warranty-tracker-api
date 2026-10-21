@@ -10,14 +10,9 @@ public class CdkApp {
     public static void main(final String[] args) {
         App app = new App();
 
-        // Get environment from context or default to dev
-        String environment = (String) app.getNode().tryGetContext("env");
-
-        if (environment.equalsIgnoreCase(Constant.PRD)) {
-            environment = Constant.PRD;
-        } else {
-            environment = Constant.DEV;
-        }
+        // Get environment from context or default to dev safely
+        String envContext = (String) app.getNode().tryGetContext("env");
+        String environment = Constant.PRD.equalsIgnoreCase(envContext) ? Constant.PRD : Constant.DEV;
 
         StackConfig stackConfig = getStackConfig(environment);
 
