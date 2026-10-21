@@ -89,9 +89,20 @@ jobs:
         run: mvn package -DskipTests -pl api --batch-mode
 
       - name: Run CDK Unit Tests
+        env:
+          SUPABASE_DB_URL: "jdbc:postgresql://localhost:5432/test"
+          SUPABASE_DB_USER: "postgres"
+          SUPABASE_DB_PASSWORD: "password"
         run: mvn test -pl cdk --batch-mode
 
       - name: Synthesize CloudFormation Templates (Dev & Prod)
+        env:
+          SUPABASE_DB_URL: "jdbc:postgresql://localhost:5432/test"
+          SUPABASE_DB_USER: "postgres"
+          SUPABASE_DB_PASSWORD: "password"
+          SUPABASE_PROD_DB_URL: "jdbc:postgresql://localhost:5432/prod"
+          SUPABASE_PROD_DB_USER: "postgres"
+          SUPABASE_PROD_DB_PASSWORD: "password"
         run: |
           cd cdk
           cdk synth --all
