@@ -1,0 +1,33 @@
+# Dependabot configuration for Warranty Tracker API
+# Automatically checks for security updates and version bumps
+version: 2
+updates:
+  # Check Maven dependencies across all modules (root, api, cdk)
+  - package-ecosystem: "maven"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Asia/Singapore"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "devops"
+    commit-message:
+      prefix: "build(deps)"
+
+  # Check GitHub Actions dependencies in .github/workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "04:00"
+      timezone: "Asia/Singapore"
+    open-pull-requests-limit: 10
+    labels:
+      - "github-actions"
+      - "devops"
+    commit-message:
+      prefix: "ci(deps)"
