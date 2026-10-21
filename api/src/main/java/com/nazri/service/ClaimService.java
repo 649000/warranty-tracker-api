@@ -123,7 +123,7 @@ public class ClaimService {
      * @param claim the claim to validate
      * @param user the current user
      */
-    private void validateClaim(Claim claim, User user) {
+    void validateClaim(Claim claim, User user) {
         // Validate required fields
         if (claim.getWarranty() == null || claim.getWarranty().id == null) {
             throw new IllegalArgumentException("Warranty is required");
