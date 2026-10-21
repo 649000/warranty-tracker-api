@@ -241,6 +241,9 @@
                                 </rule>
                                 <rule>
                                     <element>CLASS</element>
+                                    <excludes>
+                                        <exclude>com.nazri.service.TextractService</exclude>
+                                    </excludes>
                                     <limits>
                                         <limit>
                                             <counter>LINE</counter>

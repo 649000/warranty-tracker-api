@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import software.amazon.awssdk.services.textract.TextractClient;
 import software.amazon.awssdk.services.textract.model.*;
 
-import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
@@ -18,18 +17,8 @@ public class TextractServiceTest {
 
     @Test
     void testExtractReceiptData() throws Exception {
-        TextractService service;
-        try {
-            service = new TextractService();
-        } catch (Exception e) {
-            // If AWS credentials prevent client builder from running in sandbox, skip
-            return;
-        }
-
         TextractClient mockClient = mock(TextractClient.class);
-        Field clientField = TextractService.class.getDeclaredField("textractClient");
-        clientField.setAccessible(true);
-        clientField.set(service, mockClient);
+        TextractService service = new TextractService(mockClient);
 
         Block line1 = Block.builder()
                 .blockType(BlockType.LINE)
@@ -60,17 +49,8 @@ public class TextractServiceTest {
 
     @Test
     void testExtractReceiptData_TextractException() throws Exception {
-        TextractService service;
-        try {
-            service = new TextractService();
-        } catch (Exception e) {
-            return;
-        }
-
         TextractClient mockClient = mock(TextractClient.class);
-        Field clientField = TextractService.class.getDeclaredField("textractClient");
-        clientField.setAccessible(true);
-        clientField.set(service, mockClient);
+        TextractService service = new TextractService(mockClient);
 
         when(mockClient.detectDocumentText(any(DetectDocumentTextRequest.class)))
                 .thenThrow(TextractException.builder().message("Invalid image").build());
@@ -84,17 +64,8 @@ public class TextractServiceTest {
 
     @Test
     void testExtractReceiptData_NoAmountNoDate_BlankText() throws Exception {
-        TextractService service;
-        try {
-            service = new TextractService();
-        } catch (Exception e) {
-            return;
-        }
-
         TextractClient mockClient = mock(TextractClient.class);
-        Field clientField = TextractService.class.getDeclaredField("textractClient");
-        clientField.setAccessible(true);
-        clientField.set(service, mockClient);
+        TextractService service = new TextractService(mockClient);
 
         Block blankLine = Block.builder()
                 .blockType(BlockType.LINE)
@@ -117,17 +88,8 @@ public class TextractServiceTest {
 
     @Test
     void testExtractReceiptData_AlternativeFormats() throws Exception {
-        TextractService service;
-        try {
-            service = new TextractService();
-        } catch (Exception e) {
-            return;
-        }
-
         TextractClient mockClient = mock(TextractClient.class);
-        Field clientField = TextractService.class.getDeclaredField("textractClient");
-        clientField.setAccessible(true);
-        clientField.set(service, mockClient);
+        TextractService service = new TextractService(mockClient);
 
         Block line1 = Block.builder()
                 .blockType(BlockType.LINE)

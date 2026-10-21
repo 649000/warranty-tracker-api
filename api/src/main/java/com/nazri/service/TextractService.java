@@ -22,6 +22,10 @@ public class TextractService {
     public TextractService() {
         this.textractClient = TextractClient.builder().build();
     }
+
+    public TextractService(TextractClient textractClient) {
+        this.textractClient = textractClient;
+    }
     
     public Map<String, Object> extractReceiptData(String bucketName, String key) throws Exception {
         try {

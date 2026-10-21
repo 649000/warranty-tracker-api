@@ -1,0 +1,7 @@
+# Gitleaks baseline ignore file
+# These are legacy 2020/2022 commits containing old, decommissioned Heroku passwords
+ea058ce007c62461b0e52bc3189f80a7ccafeb01:src/main/resources/application-dev.properties:generic-api-key:8
+9b34fc69355a5c16a1e5f24f4fa883ed789c253d:src/main/resources/application-dev.properties:generic-api-key:8
+8579d61917f313331035c7bb9615ee4d7bdb75a8:src/main/resources/application-dev.properties:generic-api-key:8
+6ebd8047d25224d0483d12e6ff10d212de6e204d:src/main/resources/application-dev.properties:generic-api-key:8
+2bdcba9c3baed87c1ee17f66a596183ea6e3d619:src/main/resources/application.properties:generic-api-key:8
